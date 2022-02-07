@@ -1,4 +1,4 @@
-const API_HOST = "http://bjewel.it.pointpark.edu/CMPS480%20Site/Module%203%20Snapshot/json";
+const API_HOST = "http://bjewel.it.pointpark.edu/CMPS480%20Site/Module%203%20Snapshot/JSON";
 //const API_HOST = "http://45.55.44.163/json";
 
 async function apiCall (path) {
