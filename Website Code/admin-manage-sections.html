@@ -112,7 +112,7 @@
         <div
           class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 class="h2">Admin View</h1>
-          <div class="btn-toolbar mb-2 mb-md-0">
+          <!-- <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group me-2">
               <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
               <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
@@ -121,15 +121,20 @@
               <span data-feather="calendar"></span>
               This week
             </button>
-          </div>
+          </div> -->
         </div>
 
         <!-- main page content, forked from admin dashboard -->
         <h1 class="h3">Manage Courses</h1>
-        <ul jput="users" jput-jsondata='[{"name":"User 1"},{"name":"User 2"},{"name":"User 3"}]'>
+        <!-- Debug area:
+        <ul jput="courses" jput-dataName="courses" jput-ajax_url="JSON/admin-view/manage-courses.json" jput-jsondata='[{"name":"User 1", "courseCode":"MATH 101"},{"name":"User 2"},{"name":"User 3"}]'>
           <li>{{json.name}}</li>
-        </ul>
+          <li>{{json.courseCode}}</li>
+          <li>{{json.sectionCode}}</li>
+          <li>{{json.numStudents}}</li>
+        </ul> -->
 
+        <!-- jput-jsondata='[{"name":"User 1","courseCode":"Math 101","sectionCode":"A1","numStudents":8}]' -->
 
         <div class="table-responsive">
           <table class="table table-striped table-sm">
@@ -142,7 +147,7 @@
                 <th scope="col">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody jput="courses" jput-dataName="courses" jput-ajax_url="JSON/admin-view/manage-courses.json" jput-repeat="numStudents">
               <tr>
                 <td>{{json.name}}</td>
                 <td>{{json.courseCode}}</td>
