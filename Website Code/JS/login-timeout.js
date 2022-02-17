@@ -7,12 +7,12 @@
         // Start warning timer.
         function StartWarningTimer() {
             warningTimer = setTimeout("IdleTimeout()", timoutWarning);
-            console.log("Timer set")
+            // console.log("Timer set")
         }
 
         // Reset timer.
         function ResetTimeOutTimer() {
-            console.log("")
+            // console.log("")
             clearTimeout(warningTimer)
             StartWarningTimer();
         }
