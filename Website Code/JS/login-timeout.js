@@ -1,6 +1,6 @@
         // Set timeout variables.
         var timoutWarning = 900000; // Display warning in 15 Mins.
-        var logoutUrl = 'logout'; // URL to logout page.
+        var logoutUrl = 'logout.html'; // URL to logout page.
 
         var warningTimer;
 
