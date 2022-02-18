@@ -9,10 +9,12 @@
   <meta name="generator" content="Hugo 0.88.1">
   <title>Dashboard Template · Bootstrap v5.1</title>
 
-  <script src="//code.jquery.com/jquery-3.6.0.min.js" onload="loaded=true;"></script>
+  <script src="js/login-timeout.js"></script>
+  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script> -->
   <!-- Allows icons to work: -->
-  <link href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css" rel="stylesheet">
+  <link href="https://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css" rel="stylesheet">
   <script src="Lib/jPut/js/jput-2.js"></script>
   <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/dashboard/">
 
@@ -49,11 +51,6 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
-    <div class="navbar-nav">
-      <div class="nav-item text-nowrap">
-        <a class="nav-link px-3" href="#">Sign out</a>
-      </div>
-    </div>
   </header>
 
 
@@ -63,39 +60,21 @@
         <div class="position-sticky pt-3">
           <ul class="nav flex-column">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">
+              <a class="nav-link" href="admin-department1.html">
                 <span data-feather="home"></span>
                 Dashboard
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="department1.html">
+              <a class="nav-link active" aria-current="page" href="#">
                 <span data-feather="book"></span>
-                Deparment 1
+                Manage Courses
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="department2.html">
-                <span data-feather="shopping-cart"></span>
-                Deparment 2
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="department3.html">
-                <span data-feather="users"></span>
-                Deparment 3
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="department4.html">
-                <span data-feather="bar-chart-2"></span>
-                Deparment 4
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="department5.html">
-                <span data-feather="layers"></span>
-                Deparment 5
+              <a class="nav-link" href="logout.html">
+                <span data-feather="log-out"></span>
+                Log Out
               </a>
             </li>
           </ul>
