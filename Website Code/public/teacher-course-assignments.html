@@ -6,6 +6,7 @@
     <link href="CSS/dashboard.css" rel="stylesheet">
 
     <script src="js/login-timeout.js"></script>
+    <script src="js/sort-table.js"></script>
 </head>
 
 <body>
@@ -80,14 +81,13 @@
 
             <h3 class="mt-5">Assignments</h3>
             <div class="table-responsive">
-                <table class="table table-striped">
+                <table class="table table-striped sortable">
                     <thead>
                         <tr>
                             <th scope="col">Assignment ID</th>
                             <th scope="col">Name</th>
                             <th scope="col">Description</th>
                             <th scope="col">Number of Students Graded</th>
-                            <th scope="col" class="text-end"></th>
                         </tr>
                     </thead>
                     <tbody id="students">

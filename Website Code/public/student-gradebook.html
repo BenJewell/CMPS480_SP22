@@ -9,6 +9,7 @@
     <title>Gradebook</title>
 
     <script src="js/login-timeout.js"></script>
+    <script src="js/sort-table.js"></script>
 
     <!-- Bootstrap core CSS -->
     <link href="CSS/bootstrap.min.css" rel="stylesheet">
@@ -112,10 +113,10 @@
             <h1 class="h2">Grades</h1>
           </div>
           <div id="grades-table">
-            <table class="table table-bordered table-striped">
+            <table class="table table-bordered table-striped sortable">
              <thead class="table-primary">
                 <tr>
-                  <th clas= "w-25" scope="col">Assignment</th>
+                  <th class="w-25" scope="col">Assignment</th>
                   <th class="text-center w-25" scope="col">Grade</th>
                   <th class="text-center w-25" scope="col">Due Date</th>
                   <th class="text-center w-25" scope="col">Missing</th>
@@ -123,25 +124,25 @@
               </thead>
              <tbody>
                <tr>
-                  <th scope="row">Module 1 Quiz</th>
+                  <td scope="row">Module 1 Quiz</th>
                   <td class="text-center">0/30</td>
                   <td class="text-center">January 31, 2022</td>
                   <td class="text-center"><span data-feather="check"></span></td>
                 </tr>
                <tr>
-                <th scope="row">Module 1 Summary</th>
+                <td scope="row">Module 1 Summary</th>
                 <td class="text-center">100/100</td>
                 <td class="text-center">January 31, 2022</td>
                 <td class="text-center"></td>
                </tr>
                 <tr>
-                  <th scope="row">Module 1 Assignment</th>
+                  <td scope="row">Module 1 Assignment</th>
                   <td class="text-center">47/50</td>
                   <td class="text-center">January 31, 2022</td>
                   <td class="text-center"></td>
                </tr>
                <tr>
-                <th scope="row">Module 1 Journal</th>
+                <td scope="row">Module 1 Journal</th>
                 <td class="text-center">10/10</td>
                 <td class="text-center">January 31, 2022</td>
                 <td class="text-center"></td>

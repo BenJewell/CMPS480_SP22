@@ -6,6 +6,7 @@
     <link href="CSS/dashboard.css" rel="stylesheet">
 
     <script src="js/login-timeout.js"></script>
+    <script src="js/sort-table.js"></script>
 </head>
 
 <body>
@@ -78,13 +79,12 @@
 
             <h3 class="mt-5">Students</h3>
             <div class="table-responsive">
-                <table class="table table-striped">
+                <table class="table table-striped sortable">
                     <thead>
                         <tr>
                             <th scope="col">Student ID</th>
                             <th scope="col">Name</th>
                             <th scope="col">Final Grade</th>
-                            <th scope="col" class="text-end"></th>
                         </tr>
                     </thead>
                     <tbody id="students">

@@ -1,3 +1,9 @@
+/* Show arrow indicators on sortable tables at page load */
+table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { 
+  color: grey;
+  content: " \25B4\25BE";
+}
+
 body {
   font-size: .875rem;
 }
