@@ -40,7 +40,6 @@
       <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
       <div class="navbar-nav">
       </div>
     </header>
@@ -51,7 +50,7 @@
           <div class="position-sticky pt-3">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#">
+                <a class="nav-link" aria-current="page" href="student-dashboard.html">
                   <span data-feather="home"></span>
                   Dashboard
                 </a>
@@ -59,42 +58,9 @@
               <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
                 <span>Courses</span>
               </h6>
-              <li class="nav-item">
-                <a class="nav-link active" id="nav-btn1" href="#">
-                  <span data-feather="book-open"></span>
-                  Class 1
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="book"></span>
-                  Class 2
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="book"></span>
-                  Class 3
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="book"></span>
-                  Class 4
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="book"></span>
-                  Class 5
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="book"></span>
-                  Class 5
-                </a>
-              </li>
+              <div id="course-list-side">
+                <!-- courses inserted into side nav bar here-->
+              </div> 
               <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
                 <span>Account</span>
               </h6>
@@ -113,40 +79,17 @@
             <h1 class="h2">Grades</h1>
           </div>
           <div id="grades-table">
-            <table class="table table-bordered table-striped sortable">
+            <table class="table table-bordered">
              <thead class="table-primary">
                 <tr>
-                  <th class="w-25" scope="col">Assignment</th>
+                  <th clas= "w-25" scope="col">Assignment</th>
                   <th class="text-center w-25" scope="col">Grade</th>
-                  <th class="text-center w-25" scope="col">Due Date</th>
+                  <th class="text-center w-25" scope="col">Due Date/Time</th>
                   <th class="text-center w-25" scope="col">Missing</th>
                </tr>
               </thead>
-             <tbody>
-               <tr>
-                  <td scope="row">Module 1 Quiz</th>
-                  <td class="text-center">0/30</td>
-                  <td class="text-center">January 31, 2022</td>
-                  <td class="text-center"><span data-feather="check"></span></td>
-                </tr>
-               <tr>
-                <td scope="row">Module 1 Summary</th>
-                <td class="text-center">100/100</td>
-                <td class="text-center">January 31, 2022</td>
-                <td class="text-center"></td>
-               </tr>
-                <tr>
-                  <td scope="row">Module 1 Assignment</th>
-                  <td class="text-center">47/50</td>
-                  <td class="text-center">January 31, 2022</td>
-                  <td class="text-center"></td>
-               </tr>
-               <tr>
-                <td scope="row">Module 1 Journal</th>
-                <td class="text-center">10/10</td>
-                <td class="text-center">January 31, 2022</td>
-                <td class="text-center"></td>
-               </tr>
+             <tbody id="grades">
+               <!-- API Fills Here-->
              </tbody>
             </table>
           </div>
@@ -156,7 +99,7 @@
              <thead class="table-primary">
                 <tr>
                   <th scope="col">Course Grade:</th>
-                  <th class="text-center w-25" scope="col">82.6%</th>
+                  <th class="text-center w-25" scope="col" id="totalGrade">82.6%</th>
                </tr>
               </thead>
             </table>
@@ -168,8 +111,48 @@
 
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>
     <script src="js/dashboard.js"></script>
-
+    <script src="js/main.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      window.addEventListener("load", async () => {
+        const api = await apiCall("student/courses");
+        // sections inserted
+        document.getElementById("course-list-side").innerHTML = "";
+        document.getElementById("grades").innerHTML = "";
+        document.getElementById("totalGrade").innerHTML = "";
+    
+        for (let course of api) {
+          document.getElementById("course-list-side").innerHTML += `
+    
+                    <li class="nav-item">
+                        <a class="nav-link" id="nav-btn1" href="student-gradebook?id=${course["Course ID"]}">
+                            <span data-feather="book"></span>
+                            ${course.name} (${course["Course Primary Code"]} ${course["Course Secondary Code"]})
+                        </a>
+                    </li>
+            `;
+        }
+        for (let grade of api) {
+          document.getElementById("grades").innerHTML += `
+            <tr>
+              <th scope="row">${Assignments["Assignment Name"]}</th>
+              <td class="text-center">${Grades["points_received"]}/${Assignments["points_possible"]}</td>
+              <td class="text-center">${Grades["date_graded"]}</td>
+              <td class="text-center" id="missingBool">${Grades["missing"]}</td>
+           </tr>
+            `;
+          if(document.getElementById("missingBool").innerHTML === "1"){
+            document.getElementById("missingBool").innerHTML = '<span data-feather="check"></span>';
+            document.getElementById("missingBool").style.backgroundColor = "hsla(0, 100%, 50%, 0.3)";
+            document.getElementById("missingBool").id = "missingIcon";
+          }
+          else{
+            document.getElementById("missingBool").innerHTML = "";
+            document.getElementById("missingBool").id = "missingIcon";
+          }
+        }
+        
+      });
+    </script>
   </body>
 </html>
