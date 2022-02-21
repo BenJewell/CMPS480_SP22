@@ -1,7 +1,6 @@
 const express = require('express');
 const {query} = require("../util/db");
 const router = express.Router();
-const validate = require('express-jsonschema').validate;
 const auth = require("../middleware/auth");
 
 router.get('/courses', auth.verifySessionAndRole("teacher"), function (req, res, next) {
