@@ -144,12 +144,11 @@
           if(document.getElementById("missingBool").innerHTML === "1"){
             document.getElementById("missingBool").innerHTML = '<span data-feather="check"></span>';
             document.getElementById("missingBool").style.backgroundColor = "hsla(0, 100%, 50%, 0.3)";
-            document.getElementById("missingBool").id = "missingIcon";
           }
           else{
             document.getElementById("missingBool").innerHTML = "";
-            document.getElementById("missingBool").id = "missingIcon";
           }
+          document.getElementById("missingBool").id = "missingIcon";
         }
         
       });

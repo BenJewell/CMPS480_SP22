@@ -4,6 +4,7 @@ const logger = require('morgan');
 const usersRouter = require('./routes/users');
 const teacherRouter = require('./routes/teacher');
 const adminRouter = require('./routes/admin');
+const studentRouter = require('./routes/admin');
 const path = require("path");
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/users', usersRouter);
 app.use('/teacher', teacherRouter);
 app.use('/admin', adminRouter);
+app.use('/student', studentRouter)
 
 app.use(function (err, req, res, next) {
   console.log(err);
