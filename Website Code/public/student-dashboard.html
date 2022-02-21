@@ -136,7 +136,7 @@
     <script src="js/main.js" type="text/javascript"></script>
     <script type="text/javascript">
       window.addEventListener("load", async () => {
-        const api = await apiCall("students/courses");
+        const api = await apiCall("student/courses");
         //sections inserted
         document.getElementById("course-list-side").innerHTML = "";
         document.getElementById("overview-table").innerHTML = "";
@@ -153,7 +153,8 @@
                     </li>
             `;
         }
-        for (let grades of api) { // courses
+
+        for (let grades of api) { // courses Query: SELECT * FROM Courses, Grades WHERE student_id = "someNum" 
           document.getElementById("overview-table").innerHTML += `
             <tr>
               <th scope="row">Class 1</th>
@@ -162,6 +163,7 @@
             </tr>
           `;
         }
+
         for (let grades of api) { // recent Query: SELECT * FROM Grades WHERE student_id = "someNum" ORDER BY `Grades ID` DESC LIMIT 5
           document.getElementById("recent-table").innerHTML += `
             <tr>
@@ -171,7 +173,8 @@
             </tr>
           `;
         }
-        for (let grades of api) { // missing
+
+        for (let grades of api) { // missing Query: SELECT `Assignment ID` FROM Grades WHERE student_id = "someNum" AND missing = 1; SELECT `Assignment Name`, `Course ID` FROM Assignments WHERE student_id = "someNum" and 
           document.getElementById("missing-table").innerHTML += `
             <tr>
               <th scope="row">Class 3</th>
