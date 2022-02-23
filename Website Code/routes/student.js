@@ -3,6 +3,7 @@ const {query} = require("../util/db");
 const router = express.Router();
 const auth = require("../middleware/auth");
 
+//Side Nav
 router.get('/courses', auth.verifySessionAndRole("student"), function (req, res, next) {
   query("select `Section ID` from `Section Registrations` where ID = ?", [res.locals.userId], d => {
     let results = [];
@@ -13,21 +14,31 @@ router.get('/courses', auth.verifySessionAndRole("student"), function (req, res,
       return res.send(d);
     });
   });
-}); //side nav
+});
 
-router.get('/course/:id', auth.verifySessionAndRole("student"), function (req, res, next) {
-  query("select * from Sections, Courses where instructor_id = ? and Sections.`Course ID` = ? and Courses.`Course ID` = Sections.`Course ID`", [res.locals.userId, req.params.id], section => {
-    query("select `Section Registrations`.*, `USERS`.ID, USERS.NAME, USERS.LASTNAME from `Section Registrations`, USERS where `Section ID` = ? and USERS.`ID` = `Section Registrations`.`ID`", [section[0]["Section ID"]], d => {
-      return res.send({...section[0], students: d});
-    });
+//Course Grades Table
+router.get('/grades/:id', auth.verifySessionAndRole("student"), function (req, res, next) {
+  query("SELECT Assignments.`Assignment Name`, Grades.points_received, Assignments.points_possible, Assignments.Date, Grades.missing FROM Assignments, Grades WHERE Assignments.`Assignment ID` = Grades.`Assignment ID` AND Assignments.`Section ID` = ? AND Grades.student_id = ?", [req.params.id, res.locals.userId], d => {
+    return res.send(d);
   });
-}); //nav links
+});
 
-router.get('/student/:studentId/:courseId', auth.verifySessionAndRole("student"), function (req, res, next) {
-  query("select * from Grades, Assignments where Assignments.`Section ID` = 1 and Grades.`Assignment ID` = `Assignments`.`Assignment ID`;", [req.params.studentId, req.params.courseId], grades => {
-    query("select USERS.ID, USERS.NAME, USERS.LASTNAME from USERS where USERS.ID = ?", [req.params.studentId], student => {
-      return res.send({grades: grades, student: student[0]});
-    });
+//Overview Table
+router.get('/dashboard/overview', auth.verifySessionAndRole("student"), function (req, res, next) {
+  query("SELECT Courses.`Course ID`, Courses.name, Grades.points_received, Assignments.points_possible FROM Assignments, Grades, Courses WHERE student_id = ? AND Assignments.`Assignment ID` = Grades.`Assignment ID` AND Courses.`Course ID` = Assignments.`Course ID`;", [res.locals.userId], d => {
+    return res.send(d);
+  });
+});
+//Recent Table
+router.get('/dashboard/recent', auth.verifySessionAndRole("student"), function (req, res, next) {
+  query("SELECT Courses.`Course ID`, Courses.name, Assignments.`Assignment Name`, Grades.points_received, Assignments.points_possible, Assignments.Date FROM Assignments, Grades, Courses WHERE student_id = ? AND Assignments.`Assignment ID` = Grades.`Assignment ID` AND Courses.`Course ID` = Assignments.`Course ID` ORDER BY Date DESC LIMIT 5;", [res.locals.userId], d => {
+    return res.send(d);
+  });
+});
+//Missing Table
+router.get('/dashboard/missing', auth.verifySessionAndRole("student"), function (req, res, next) {
+  query("SELECT Courses.`Course ID`, Courses.name, Assignments.`Assignment Name`, Grades.missing FROM Assignments, Grades, Courses WHERE student_id = ? AND Assignments.`Assignment ID` = Grades.`Assignment ID` AND Courses.`Course ID` = Assignments.`Course ID` AND Grades.missing = 1;", [res.locals.userId], d => {
+    return res.send(d);
   });
 });
 

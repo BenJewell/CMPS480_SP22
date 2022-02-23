@@ -136,17 +136,13 @@
     <script src="js/main.js" type="text/javascript"></script>
     <script type="text/javascript">
       window.addEventListener("load", async () => {
-        const api = await apiCall("student/courses");
-        //sections inserted
+        //Side Nav Bar
+        const apiNav = await apiCall("student/courses");
         document.getElementById("course-list-side").innerHTML = "";
-        document.getElementById("overview-table").innerHTML = "";
-        document.getElementById("recent-table").innerHTML = "";
-        document.getElementById("missing-table").innerHTML = "";
-    
-        for (let course of api) {
+        for (let course of apiNav) {
           document.getElementById("course-list-side").innerHTML += `
                     <li class="nav-item">
-                        <a class="nav-link" id="nav-btn1" href="student-gradebook?id=${course["Course ID"]}">
+                        <a class="nav-link" id="nav-btn1" href="student-gradebook.html?id=${course["Course ID"]}">
                             <span data-feather="book"></span>
                             ${course.name} (${course["Course Primary Code"]} ${course["Course Secondary Code"]})
                         </a>
@@ -154,31 +150,40 @@
             `;
         }
 
-        for (let grades of api) { // courses Query: SELECT * FROM Courses, Grades WHERE student_id = "someNum" 
+        //Overview Table
+        const apiOverview = await apiCall("student/dashboard/overview");
+        document.getElementById("overview-table").innerHTML = "";
+        for (let x of apiOverview) {
           document.getElementById("overview-table").innerHTML += `
             <tr>
-              <th scope="row">Class 1</th>
+              <th scope="row">${x["name"]}</th>
               <td class="text-center">82.6%</td>
               <td class="text-center">B</td>
             </tr>
           `;
         }
 
-        for (let grades of api) { // recent Query: SELECT * FROM Grades WHERE student_id = "someNum" ORDER BY `Grades ID` DESC LIMIT 5
+        //Recent Table
+        const apiRecent = await apiCall("student/dashboard/recent");
+        document.getElementById("recent-table").innerHTML = "";
+        for (let x of apiRecent) {
           document.getElementById("recent-table").innerHTML += `
             <tr>
-              <th scope="row">Class 4</th>
-              <td>Module 5 Quiz 1</td>
-              <td class="text-center">84%</td>
+              <th scope="row">${x["name"]}</th>
+              <td>${x["Assignment Name"]}</td>
+              <td class="text-center">${x["points_received"]}/${x["points_possible"]}</td>
             </tr>
           `;
         }
 
-        for (let grades of api) { // missing Query: SELECT `Assignment ID` FROM Grades WHERE student_id = "someNum" AND missing = 1; SELECT `Assignment Name`, `Course ID` FROM Assignments WHERE student_id = "someNum" and 
+        //Missing Table
+        const apiMissing = await apiCall("student/dashboard/missing");
+        document.getElementById("missing-table").innerHTML = "";
+        for (let x of apiMissing) {
           document.getElementById("missing-table").innerHTML += `
             <tr>
-              <th scope="row">Class 3</th>
-              <td>Module 2 Quiz 3</td>
+              <th scope="row">${x["name"]}</th>
+              <td>${x["Assignment Name"]}</td>
             </tr>
           `;
         }
