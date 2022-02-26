@@ -6,37 +6,22 @@
     <meta name="description" content="Good Grades: Student Dashboard">
     <meta name="author" content="Emily Foglia, Bootstrap contributors">
     <meta name="generator" content="Hugo 0.88.1">
-    <title>Student Dashboard</title>
+    <title>Good Grades: Dashboard</title>
 
     <script src="js/login-timeout.js"></script>
     <script src="js/sort-table.js"></script>
 
+    <!-- Feather icons -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
     <!-- Bootstrap core CSS -->
     <link href="CSS/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
-      }
-
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
-    </style>
-
     <!-- Custom styles for this template -->
     <link href="CSS/dashboard.css" rel="stylesheet">
   </head>
   <body>
 
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-      <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Good Grades</a>
+      <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="student-dashboard.html">Good Grades</a>
       <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -59,7 +44,7 @@
                 <span>Courses</span>
               </h6>
               <div id="course-list-side">
-                <!-- courses inserted into side nav bar here-->
+                <!-- API Insertion -->
               </div>
               <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
                 <span>Account</span>
@@ -82,9 +67,9 @@
             <table class="table table-bordered table-striped">
              <thead class="table-primary">
                 <tr>
-                  <th class="w-25" scope="col">Course</th>
-                  <th class="text-center" scope="col">Grade</th>
-                  <th class="text-center" scope="col">Letter Grade</th>
+                  <th scope="col">Course</th>
+                  <th class=" w-25 text-center" scope="col">Grade</th>
+                  <th class="w-25 text-center" scope="col">Letter Grade</th>
                </tr>
               </thead>
              <tbody id="overview-table">
@@ -93,7 +78,7 @@
             </table>
           </div>
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1 class="h2">Recent Grades</h1>
+            <h1 class="h2">Recent Assignments</h1>
           </div>
           <div id="recent-grades-table">
             <table class="table table-bordered table-striped">
@@ -129,60 +114,65 @@
 
       </div>
     </div>
-
     <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
-    <script src="js/dashboard.js"></script>
+    <script src="js/studentFunctions.js"></script>
     <script src="js/main.js" type="text/javascript"></script>
     <script type="text/javascript">
       window.addEventListener("load", async () => {
-        const api = await apiCall("student/courses");
-        //sections inserted
+        //Side Nav Bar
+        var book = feather.icons.book.toSvg();
+        const apiNav = await apiCall("student/courses");
         document.getElementById("course-list-side").innerHTML = "";
-        document.getElementById("overview-table").innerHTML = "";
-        document.getElementById("recent-table").innerHTML = "";
-        document.getElementById("missing-table").innerHTML = "";
-    
-        for (let course of api) {
+        for (let course of apiNav) {
           document.getElementById("course-list-side").innerHTML += `
                     <li class="nav-item">
-                        <a class="nav-link" id="nav-btn1" href="student-gradebook?id=${course["Course ID"]}">
-                            <span data-feather="book"></span>
-                            ${course.name} (${course["Course Primary Code"]} ${course["Course Secondary Code"]})
+                        <a class="nav-link" id="nav-btn1" href="student-gradebook.html?id=${course.course_id}">` +
+                            book +
+                            `${course.name} (${course.primary_code} ${course.secondary_code})
                         </a>
                     </li>
             `;
         }
-
-        for (let grades of api) { // courses Query: SELECT * FROM Courses, Grades WHERE student_id = "someNum" 
+        //Overview Table
+        const apiOverview = await apiCall("student/dashboard/overview");
+        document.getElementById("overview-table").innerHTML = "";
+        for (let x of apiOverview) {
           document.getElementById("overview-table").innerHTML += `
             <tr>
-              <th scope="row">Class 1</th>
-              <td class="text-center">82.6%</td>
-              <td class="text-center">B</td>
+              <th scope="row">${x.course_name}</th>
+              <td class="text-center">` + toPercentage(x.total_grade) + `%</td>
+              <td class="text-center">` + letterGrade(x.total_grade) + `</td>
             </tr>
           `;
         }
 
-        for (let grades of api) { // recent Query: SELECT * FROM Grades WHERE student_id = "someNum" ORDER BY `Grades ID` DESC LIMIT 5
+        //Recent Table
+        const apiRecent = await apiCall("student/dashboard/recent");
+        document.getElementById("recent-table").innerHTML = "";
+        for (let x of apiRecent) {
+          var points = checkNull(x.points_received);
           document.getElementById("recent-table").innerHTML += `
             <tr>
-              <th scope="row">Class 4</th>
-              <td>Module 5 Quiz 1</td>
-              <td class="text-center">84%</td>
+              <th scope="row">${x.course_name}</th>
+              <td>${x.assignment_name}</td>
+              <td class="text-center">${points}/${x.points_possible}</td>
             </tr>
           `;
         }
 
-        for (let grades of api) { // missing Query: SELECT `Assignment ID` FROM Grades WHERE student_id = "someNum" AND missing = 1; SELECT `Assignment Name`, `Course ID` FROM Assignments WHERE student_id = "someNum" and 
+        //Missing Table
+        const apiMissing = await apiCall("student/dashboard/missing");
+        document.getElementById("missing-table").innerHTML = "";
+        for (let x of apiMissing) {
           document.getElementById("missing-table").innerHTML += `
             <tr>
-              <th scope="row">Class 3</th>
-              <td>Module 2 Quiz 3</td>
+              <th scope="row">${x.course_name}</th>
+              <td>${x.assignment_name}</td>
             </tr>
           `;
         }
       });
     </script>
+    <script type="text/javascript">feather.replace({ 'aria-hidden': 'true' })</script>
   </body>
 </html>
