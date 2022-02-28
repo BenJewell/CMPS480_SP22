@@ -121,7 +121,7 @@
         for (let assignment of apiGrades.table) {
           var points = checkNull(assignment.points_received);
           document.getElementById("grades").innerHTML += `
-            <tr id="missingTR">
+            <tr id="missingTR" style="background-color: ${rowColor(points/assignment.points_possible)}">
               <th scope="row">${assignment.name}</th>
               <td class="text-center">${points}/${assignment.points_possible}</td>
               <td class="text-center">${assignment.due_date}</td>
@@ -134,6 +134,7 @@
         //Total Grade
         document.getElementById("totalGrade").innerHTML = toPercentage(apiGrades.total_grade) + '%';
         document.getElementById("letterGrade").innerHTML = letterGrade(apiGrades.total_grade);
+        document.getElementById("letterGrade").style = `background-color: ${rowColor(apiGrades.total_grade)}`
       });
     </script>
     <script type="text/javascript">feather.replace({ 'aria-hidden': 'true' })</script>
