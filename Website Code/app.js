@@ -20,6 +20,7 @@ app.use('/teacher', teacherRouter);
 app.use('/admin', adminRouter);
 app.use('/student', studentRouter)
 
+// Anyone know what this function does?
 app.use(function (err, req, res, next) {
   console.log(err);
   res.status(err.status || 500);
