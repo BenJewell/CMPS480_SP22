@@ -10,8 +10,18 @@ router.get('/courses', auth.verifySessionAndRole("teacher"), function (req, res,
 });
 
 router.get('/course/:id', auth.verifySessionAndRole("teacher"), function (req, res, next) {
+  // It seems res.locals.userId is the user ID that is in use, and req.params.id is the course ID we are getting the student list for. Having trouble reverse enginering this part.
+  console.log("user id: " + res.locals.userId);
+  console.log('id: '  + req.params.id);
+
+  if (req.params.id == false || res.locals.userId == false) {
+    // Prevents hard crash if user ID or course ID requested do not exist.
+    return res.status(500).send("Invalid User or Course ID!") // Can't this this text to appear on the front end, but not a big deal.
+  }
+
   query("select * from Sections, Courses where instructor_id = ? and Sections.course_id = ? and Courses.course_id = Sections.course_id", [res.locals.userId, req.params.id], section => {
-    query("select Section_Registrations.*, Users.user_id, Users.first_name, Users.last_name from Section_Registrations, Users where section_id = ? and Users.user_id = section_registrations.student_id", [section[0]["section_id"]], d => {
+    query("select Section_Registrations.*, Users.user_id, Users.first_name, Users.last_name from Section_Registrations, Users where section_id = ? and Users.user_id = Section_Registrations.student_id",
+    [section[0]["section_id"]], d => {
       return res.send({...section[0], students: d});
     });
   });
