@@ -30,8 +30,12 @@ async function apiCall(path, method = "GET", data = undefined) {
         'X-Session-Key': key
       }
     });
+    if (call.status == 500) { // HTTP level error handeling, if API is up
+      console.error();
+      return alert("Error: \n\n" + "500 Internal Server Error");
+    }
     return await call.json();
-  } catch (error) {
+  } catch (error) { // API error handled, if API is down
     console.error(error);
     return alert("Failed to fetch API: \n\n" + error);
   }
