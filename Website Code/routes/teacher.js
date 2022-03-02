@@ -28,10 +28,16 @@ router.get('/course/:id', auth.verifySessionAndRole("teacher"), function (req, r
 });
 
 router.get('/student/:studentId/:courseId', auth.verifySessionAndRole("teacher"), function (req, res, next) {
-  query("select * from Grades, Assignments where Assignments.section_id = 1 and Grades.assignment_id = Assignments.assignment_id;", [req.params.studentId, req.params.courseId], grades => {
-    query("select Users.user_id, Users.first_name, Users.last_name from Users where Users.id = ?", [req.params.studentId], student => {
-      return res.send({grades: grades, student: student[0]});
+  query("select * from Grades, Assignments where Assignments.section_id = ? and Grades.student_id = ? and Grades.assignment_id = Assignments.assignment_id;", [req.params.courseId, req.params.studentId], grades => {
+    query("select Users.user_id, Users.first_name, Users.last_name from Users where Users.user_id = ?", [req.params.studentId], student => {
+      return res.send({...student[0], grades: grades});
     });
+  });
+});
+
+router.get('/assignments/:id', auth.verifySessionAndRole("teacher"), function (req, res, next) {
+  query("select Assignments.assignment_id, Assignments.name, Assignments.description, Grades.points_received from Assignments, Grades where Grades.assignment_id = Assignments.assignment_id and course_id = ?;", [req.params.courseId], assignments => {
+    return res.send(assignments);
   });
 });
 

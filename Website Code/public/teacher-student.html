@@ -135,13 +135,13 @@
       active: '<span class="badge bg-success">Active</span>',
       inactive: '<span class="badge bg-warning">Not active</span>',
     };
-    document.getElementById("courseTitle").innerHTML = api.student.NAME + " " + api.student.LASTNAME;
-    document.getElementById("title").innerHTML = api.student.NAME + " " + api.student.LASTNAME + " | Grades";
+    document.getElementById("courseTitle").innerHTML = api.first_name + " " + api.last_name;
+    document.getElementById("title").innerHTML = api.first_name + " " + api.last_name + " | Grades";
 
     for (let assignment of api.grades || []) {
       document.getElementById("assignments").innerHTML += `
                    <tr>
-                        <td>${assignment["Assignment Name"]}</td>
+                        <td>${assignment.name}</td>
                         <td>${assignment.active === false ? "-" : assignment.points_received}</td>
                         <td>${assignment.points_possible}</td>
                         <td>${assignment.active === false ? "-" : `${assignment.points_received / assignment.points_possible * 100}%`}</td>

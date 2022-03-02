@@ -92,7 +92,7 @@
                             <th scope="col">Number of Students Graded</th>
                         </tr>
                     </thead>
-                    <tbody id="students">
+                    <tbody id="assignments">
 
                     </tbody>
                 </table>
@@ -106,19 +106,19 @@
 <script type="text/javascript">
 
     window.addEventListener("load", async () => {
-        const api = await apiCall("teacher-view/course");
-        document.getElementById("courseTitle").innerHTML = api.course.name;
-        document.getElementById("students").innerHTML = "";
+        const api = await apiCall(`assignments/${getQueryVariable('courseId')}`);
+       // document.getElementById("courseTitle").innerHTML = api.course.name;
+        document.getElementById("assignments").innerHTML = "";
 
-        for (let student of api.course.students || []) {
-            document.getElementById("students").innerHTML += `
-                    <tr>
-                        <td>#${student.id}</td>
-                        <td>${student.name}</td>
-                        <td>${student.grade}%</td>
-                        <td class="text-end"><a href="teacher-student.html" type="button" class="btn btn-secondary btn-sm">View Grades &rarr;</a></td>
-                    </tr>
-        `;
+        for (let assignment of api || []) {
+            document.getElementById("assignments").innerHTML += `
+                        <tr>
+                            <th scope="col">${assignment.assignment_id}</th>
+                            <th scope="col">${assignment.name}</th>
+                            <th scope="col">${assignment.description}</th>
+                            <th scope="col">${assignment.points_received}</th>
+                        </tr>   
+            `;
         }
     });
 
