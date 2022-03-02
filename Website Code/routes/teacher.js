@@ -36,7 +36,7 @@ router.get('/student/:studentId/:courseId', auth.verifySessionAndRole("teacher")
 });
 
 router.get('/assignments/:id', auth.verifySessionAndRole("teacher"), function (req, res, next) {
-  query("select Assignments.assignment_id, Assignments.name, Assignments.description, Grades.points_received from Assignments, Grades where Grades.assignment_id = Assignments.assignment_id and course_id = ?;", [req.params.courseId], assignments => {
+  query("select Assignments.assignment_id, Assignments.name, Assignments.description, Grades.points_received from Assignments, Grades where Grades.assignment_id = Assignments.assignment_id and course_id = ?;", [req.params.id], assignments => {
     return res.send(assignments);
   });
 });

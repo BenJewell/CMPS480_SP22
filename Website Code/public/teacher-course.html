@@ -63,8 +63,7 @@
                 </span>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group me-1">
-                        <button type="button" class="btn btn-sm btn-outline-secondary"
-                            onclick="window.location.href='teacher-course-assignments.html'"
+                        <button id="assignmentListBtn" type="button" class="btn btn-sm btn-outline-secondary"
                             style="font-size:16pt; margin-top: 10px;">Assignment List</button>
                     </div>
                 </div>
@@ -99,14 +98,14 @@
         document.getElementById("courseTitle").innerHTML = api.name;
         document.getElementById("title").innerHTML = api.name;
         document.getElementById("students").innerHTML = "";
-
+        document.getElementById("assignmentListBtn").setAttribute("onclick", `window.location.href='teacher-course-assignments.html?id=${getQueryVariable('id')}'`);
 
         for (let student of api.students || []) {
             document.getElementById("students").innerHTML += `
                     <tr>
                         <td>#${student.user_id}</td>
                         <td>${student.first_name} ${student.last_name}</td>
-                        <td></td>
+                        <td>FINAL GRADE</td>
                         <td class="text-end"><a href="teacher-student.html?studentId=${student.user_id}&courseId=${getQueryVariable('id')}" type="button" class="btn btn-secondary btn-sm">View Grades &rarr;</a></td>
                     </tr>
             `;
