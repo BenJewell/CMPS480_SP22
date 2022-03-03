@@ -103,7 +103,7 @@
 
         for (let student of api.students || []) {
             document.getElementById("students").innerHTML += `
-                    <tr>
+                    <tr style="background-color: ${rowColor(student.total_grade)}">
                         <td>#${checkNull(student.user_id)}</td>
                         <td>${checkNull(student.first_name)} ${checkNull(student.last_name)}</td>
                         <td>${checkNull(toPercentage(student.total_grade))}%</td>
