@@ -7,6 +7,8 @@
 
     <script src="js/login-timeout.js"></script>
     <script src="js/sort-table.js"></script>
+    <!-- Feather icons -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -38,18 +40,7 @@
                         class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
                         <span>Courses</span>
                     </h6>
-                    <li class="nav-item">
-                        <a class="nav-link" id="nav-btn1" href="teacher-course.html">
-                            <span data-feather="book"></span>
-                            Class 1
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="teacher-course.html">
-                            <span data-feather="book"></span>
-                            Class 2
-                        </a>
-                    </li>
+                    <div id="course-list-side"></div>
 
                     <h6
                         class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
@@ -71,8 +62,7 @@
                 </span>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group me-1">
-                        <button type="button" class="btn btn-sm btn-outline-secondary"
-                            onclick="window.location.href='teacher-course.html'"
+                        <button id="studentListBtn" type="button" class="btn btn-sm btn-outline-secondary"
                             style="font-size:16pt; margin-top: 10px;">Student List</button>
                     </div>
                 </div>
@@ -90,7 +80,7 @@
                             <th scope="col">Number of Students Graded</th>
                         </tr>
                     </thead>
-                    <tbody id="students">
+                    <tbody id="assignments">
 
                     </tbody>
                 </table>
@@ -104,22 +94,36 @@
 <script type="text/javascript">
 
     window.addEventListener("load", async () => {
-        const api = await apiCall("teacher-view/course");
-        document.getElementById("courseTitle").innerHTML = api.course.name;
-        document.getElementById("students").innerHTML = "";
-
-        for (let student of api.course.students || []) {
-            document.getElementById("students").innerHTML += `
-                    <tr>
-                        <td>#${student.id}</td>
-                        <td>${student.name}</td>
-                        <td>${student.grade}%</td>
-                        <td class="text-end"><a href="teacher-student.html" type="button" class="btn btn-secondary btn-sm">View Grades &rarr;</a></td>
-                    </tr>
-        `;
+        const api = await apiCall(`teacher/assignments/${getQueryVariable('id')}`);
+        document.getElementById("studentListBtn").setAttribute("onclick", `window.location.href='teacher-course.html?id=${getQueryVariable('id')}'`);
+       // document.getElementById("courseTitle").innerHTML = api.course.name;
+        document.getElementById("assignments").innerHTML = "";
+        for (let assignment of api || []) {
+            document.getElementById("assignments").innerHTML += `
+                        <tr>
+                            <td scope="col">${assignment.assignment_id}</td>
+                            <td scope="col">${assignment.name}</td>
+                            <td scope="col">${assignment.description}</td>
+                            <td scope="col">${assignment.points_received}</td>
+                        </tr>   
+            `;
         }
+        const api2 = await apiCall("teacher/courses");
+        document.getElementById("course-list-side").innerHTML = "";
+        var book = feather.icons.book.toSvg();
+        for (let course of api2) {
+            document.getElementById("course-list-side").innerHTML += `
+
+                <li class="nav-item">
+                    <a class="nav-link" id="nav-btn1" href="teacher-course.html?id=${course["course_id"]}">` +
+                        book +
+                        `${course.name} (${course["primary_code"]} ${course["secondary_code"]})
+                    </a>
+                </li>
+				`;
+            }
     });
 
 </script>
-
+<script type="text/javascript">feather.replace({ 'aria-hidden': 'true' })</script>
 </html>

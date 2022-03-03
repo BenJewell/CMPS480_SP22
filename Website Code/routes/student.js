@@ -18,7 +18,7 @@ router.get('/courses', auth.verifySessionAndRole("student"), function (req, res,
 
 //Course Grades Table
 router.get('/grades/:id', auth.verifySessionAndRole("student"), function (req, res, next) {
-  query("SELECT Assignments.name, Grades.points_received, Assignments.points_possible, DATE_FORMAT(Assignments.due_date, '%m/%d/%Y %H:%i') AS due_date, Grades.missing FROM Assignments, Grades WHERE Assignments.assignment_id = Grades.assignment_id AND Assignments.section_id = ? AND Grades.student_id = ? ORDER BY due_date DESC;", [req.params.id, res.locals.userId], table => {
+  query("SELECT Assignments.name, Grades.points_received, Assignments.points_possible, DATE_FORMAT(Assignments.due_date, '%m/%d/%Y %H:%i') AS due_date, Grades.missing FROM Assignments, Grades WHERE Assignments.assignment_id = Grades.assignment_id AND Assignments.section_id = ? AND Grades.student_id = ? ORDER BY due_date DESC, name;", [req.params.id, res.locals.userId], table => {
     query("SELECT (SUM(Grades.points_received)/SUM(Assignments.points_possible)) AS total_grade FROM Assignments, Grades WHERE Assignments.assignment_id = Grades.assignment_id AND Assignments.section_id = ? AND Grades.student_id = ? AND Grades.points_received IS NOT NULL", [req.params.id, res.locals.userId], totalGrade => {
       return res.send({...totalGrade[0], table: table});
     });
