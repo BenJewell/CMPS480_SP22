@@ -43,6 +43,13 @@ function toPercentage(num) {
 }
 
 function checkNull(val) {
+    if (val == null) {
+        return "-";
+    }
+    return val;
+}
+
+function checkNullZero(val) {
     if (val == null || val == 0) {
         return "-";
     }

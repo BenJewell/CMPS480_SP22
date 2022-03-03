@@ -106,7 +106,7 @@
                     <tr style="background-color: ${rowColor(student.total_grade)}">
                         <td>#${checkNull(student.user_id)}</td>
                         <td>${checkNull(student.first_name)} ${checkNull(student.last_name)}</td>
-                        <td>${checkNull(toPercentage(student.total_grade))}%</td>
+                        <td>${checkNullZero(toPercentage(student.total_grade))}%</td>
                         <td class="text-end"><a href="teacher-student.html?studentId=${student.user_id}&courseId=${getQueryVariable('id')}" type="button" class="btn btn-secondary btn-sm">View Grades &rarr;</a></td>
                     </tr>
             `;
