@@ -38,11 +38,12 @@ function rowColor(num) {
 }
 
 function toPercentage(num) {
-    return Math.round(num * 10000) / 100;
+    //return Math.round(num * 10000) / 100;
+    return Math.round((num + Number.EPSILON) * 10000) / 100;
 }
 
 function checkNull(val) {
-    if (val == null) {
+    if (val == null || val == 0) {
         return "-";
     }
     return val;
