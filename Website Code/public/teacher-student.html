@@ -13,11 +13,9 @@
 <body>
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
     <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Good Grades</a>
-    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
-            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
-            aria-label="Toggle navigation">
+    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
-    </button>
+      </button>
     <div class="navbar-nav">
     </div>
 </header>
@@ -125,6 +123,7 @@
 </div>
 
 </body>
+<script src="js/tableFunctions.js" type="text/javascript"></script>
 <script src="js/main.js" type="text/javascript"></script>
 <script type="text/javascript">
 
@@ -143,16 +142,17 @@
     var trash = feather.icons["trash-2"].toSvg();
     var edit = feather.icons.edit.toSvg();
     for (let assignment of api.grades) {
+        var graded = checkNull(assignment.points_received);
         document.getElementById("assignments").innerHTML += `
                    <tr>
                         <td>${assignment.name}</td>
-                        <td>${assignment.active === false ? "-" : assignment.points_received}</td>
+                        <td>${graded}</td>
                         <td>${assignment.points_possible}</td>
-                        <td>${assignment.active === false ? "-" : `${assignment.points_received / assignment.points_possible * 100}%`}</td>
-                        <td>${assignment.missing === "1" ? badges.missing : badges.not_missing}</td>
-                        <td>${assignment.active === true ? badges.active : badges.inactive}</td>
-                        <td><a onClick="editBtn()">` + edit + `</a></td>
-                        <td><a onClick="deleteBtn()">` + trash + `</a></td>
+                        <td>${graded === "-" ? "-" : (assignment.points_received / assignment.points_possible * 100) + '%'}</td>
+                        <td>${assignment.missing === 1 ? badges.missing : badges.not_missing}</td>
+                        <td>${assignment.active === 1 ? badges.active : badges.inactive}</td>
+                        <td><a class="editBtn" onClick="editBtn()">` + edit + `</a></td>
+                        <td><a class="deleteBtn" onClick="deleteBtn()">` + trash + `</a></td>
                     </tr>
         `;
     }
@@ -193,7 +193,7 @@
     }
     function deleteBtn(){
         alert("Deletion\nAre you sure?");
-        return false;
+        return cancelEdits();
     }
     function addAssignment(){
         alert("assignment added");
