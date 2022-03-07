@@ -2,6 +2,8 @@ const express = require('express');
 const {query} = require("../util/db");
 const router = express.Router();
 const auth = require("../middleware/auth");
+const validate = require('express-jsonschema').validate;
+
 
 router.get('/courses', auth.verifySessionAndRole("teacher"), function (req, res, next) {
   query("select * from Sections, Courses where instructor_id = ? and Courses.course_id = Sections.course_id", [res.locals.userId], d => {
@@ -20,7 +22,7 @@ router.get('/course/:id', auth.verifySessionAndRole("teacher"), function (req, r
   }
 
   query("select * from Sections, Courses where instructor_id = ? and Sections.course_id = ? and Courses.course_id = Sections.course_id", [res.locals.userId, req.params.id], section => {
-    query("select Section_Registrations.*, Users.user_id, Users.first_name, Users.last_name, (SUM(Grades.points_received)/SUM(Assignments.points_possible)) AS total_grade from Section_Registrations, Users, Assignments, Grades where Assignments.section_id = ? and Section_Registrations.student_id = Grades.student_id and Users.user_id = Section_Registrations.student_id and Assignments.assignment_id = Grades.assignment_id and Grades.points_received IS NOT NULL;", 
+    query("select Section_Registrations.*, Users.user_id, Users.first_name, Users.last_name, (SUM(Grades.points_received)/SUM(Assignments.points_possible)) AS total_grade from Section_Registrations, Users, Assignments, Grades where Assignments.section_id = ? and Section_Registrations.student_id = Grades.student_id and Users.user_id = Section_Registrations.student_id and Assignments.assignment_id = Grades.assignment_id and Grades.points_received IS NOT NULL GROUP BY Grades.student_id;", 
     [section[0]["section_id"]], d => {
       return res.send({...section[0], students: d});
     });
@@ -28,7 +30,7 @@ router.get('/course/:id', auth.verifySessionAndRole("teacher"), function (req, r
 });
 
 router.get('/student/:studentId/:courseId', auth.verifySessionAndRole("teacher"), function (req, res, next) {
-  query("select * from Grades, Assignments where Assignments.section_id = ? and Grades.student_id = ? and Grades.assignment_id = Assignments.assignment_id;", [req.params.courseId, req.params.studentId], grades => {
+  query("select *, DATE_FORMAT(Assignments.due_date, '%m/%d/%Y %H:%i') AS formatted_due_date from Grades, Assignments where Assignments.section_id = ? and Grades.student_id = ? and Grades.assignment_id = Assignments.assignment_id;", [req.params.courseId, req.params.studentId], grades => {
     query("select Users.user_id, Users.first_name, Users.last_name from Users where Users.user_id = ?", [req.params.studentId], student => {
       return res.send({...student[0], grades: grades});
     });
@@ -39,6 +41,65 @@ router.get('/assignments/:id', auth.verifySessionAndRole("teacher"), function (r
   query("select Assignments.assignment_id, Assignments.name, Assignments.description, Grades.points_received from Assignments, Grades where Grades.assignment_id = Assignments.assignment_id and course_id = ?;", [req.params.id], assignments => {
     return res.send(assignments);
   });
+});
+
+router.get('/grades/single/:ids', auth.verifySessionAndRole("teacher"), function (req, res, next) {
+  let idString = String(req.params.ids).substring(11);
+  let IDarry = idString.split("-");
+  let assignmentId = IDarry[0];
+  let studentId = IDarry[1];
+  query("SELECT Assignments.name, Assignments.description, DATE_FORMAT(Assignments.due_date, '%m/%d/%Y %H:%i') AS due_date, Grades.points_received, Assignments.points_possible, Grades.missing, Grades.active FROM Assignments JOIN Grades ON Grades.assignment_id = Assignments.assignment_id WHERE Grades.assignment_id = ? AND student_id = ?;", [assignmentId, studentId], b => {
+    return res.send({...b[0]});
+  });
+});
+
+const gradeSchema = {
+  type: 'object',
+  properties: {
+    ids: {
+      type: 'string',
+      required: true
+    },
+    pointsReceived: {
+      type: ['integer', 'null'],
+      required: true
+    },
+    missingCheck: {
+      type: 'integer',
+      required: true
+    },
+    activeCheck: {
+      type: 'integer',
+      required: true
+    }
+  }
+};
+
+ /*Edit student's grade for one assignment
+ step 1: split ID to get assignment ID and student ID
+ step 2: update grades table with changes
+ step 3: return success
+ */
+router.post('/grades/single-update', validate({body: gradeSchema}), function (req, res, next) {
+  // step 1
+  let idString = String(req.body.ids).substring(11);
+  let IDarry = idString.split("-");
+  let assignmentId = IDarry[0];
+  let studentId = IDarry[1];
+
+  // step 2
+  query("UPDATE Grades SET points_received = ?, missing = ?, active = ? WHERE assignment_id = ? AND student_id = ?",
+      [
+        req.body.pointsReceived,
+        req.body.missingCheck,
+        req.body.activeCheck,
+        assignmentId,
+        studentId
+      ],
+      (data) => {
+        //step 3
+        return res.send({success: true});
+      });
 });
 
 module.exports = router;
