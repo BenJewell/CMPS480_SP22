@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <title>Manage Sections | Admin | Good Grades</title>
+    <title>Manage Users | Admin | Good Grades</title>
 
     <script src="js/login-timeout.js"></script>
 
@@ -57,13 +57,13 @@
             <div class="position-sticky pt-3">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="admin-manage-sections.html">
+                        <a class="nav-link" href="admin-manage-sections.html">
                             <span data-feather="book"></span>
                             Manage Courses
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="admin-manage-users.html">
+                        <a class="nav-link active" aria-current="page" href="admin-manage-users.html">
                             <span data-feather="book"></span>
                             Manage Users
                         </a>
@@ -87,22 +87,18 @@
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div
                     class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Manage Courses</h1>
+                <h1 class="h2">Manage Users</h1>
             </div>
 
-
             <div class="table-responsive">
-                <table class="table table-striped table-sm sortable" id="courseTable" style="width:100%;">
+                <table class="table table-striped table-sm sortable" id="userTable" style="width:100%;">
                     <thead>
                     <tr>
-                        <th scope="col">Course ID</th>
-                        <th scope="col">Course Primary Code</th>
-                        <th scope="col">Course Secondary Code</th>
-                        <th scope="col">Course Name</th>
-                        <th scope="col">Course Description</th>
-                        <th scope="col">Section ID</th>
-                        <th scope="col">Section Code</th>
-                        <th scope="col">Instuctor ID</th>
+                        <th scope="col">User ID</th>
+                        <th scope="col">First Name</th>
+                        <th scope="col">Last Name</th>
+                        <th scope="col">Email Address</th>
+                        <th scope="col">Role</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -122,15 +118,23 @@
     if (user) {
       user = JSON.parse(user);
       key = user.key;
-    }
-    $('#courseTable').DataTable({
+    } else {
+		return document.location = "/";
+	}
+    $('#userTable').DataTable({
       select: true,
       ajax: {
-        url: "./admin/courses",
+        url: "./admin/users",
         beforeSend: function (request) {
           request.setRequestHeader("x-session-key", key);
         }
-      }
+      },
+	  columns: [{
+		render: (data) => {
+			return "<a href='admin-edit-user.html?id=" + data + "'>" + data + "</a>";
+		}
+	  }, null, null, null, null]
+	  
     });
   });
 
