@@ -1,5 +1,5 @@
 const express = require('express');
-const query = require("../util/db");
+const { query } = require("../util/db");
 const router = express.Router();
 const auth = require("../middleware/auth");
 const validate = require('express-jsonschema').validate;
@@ -30,7 +30,7 @@ router.get('/course/:id', auth.verifySessionAndRole("teacher"), function (req, r
 });
 
 router.get('/student/:studentId/:courseId', auth.verifySessionAndRole("teacher"), function (req, res, next) {
-  query("select *, DATE_FORMAT(Assignments.due_date, '%m/%d/%Y %H:%i') AS formatted_due_date from Grades, Assignments where Assignments.section_id = ? and Grades.student_id = ? and Grades.assignment_id = Assignments.assignment_id;", [req.params.courseId, req.params.studentId], grades => {
+  query("select *, DATE_FORMAT(Assignments.due_date, '%m/%d/%y %h:%i %p') AS formatted_due_date from Grades, Assignments where Assignments.section_id = ? and Grades.student_id = ? and Grades.assignment_id = Assignments.assignment_id;", [req.params.courseId, req.params.studentId], grades => {
     query("select Users.user_id, Users.first_name, Users.last_name from Users where Users.user_id = ?", [req.params.studentId], student => {
       return res.send({ ...student[0], grades: grades });
     });
@@ -38,7 +38,25 @@ router.get('/student/:studentId/:courseId', auth.verifySessionAndRole("teacher")
 });
 
 router.get('/assignments/:id', auth.verifySessionAndRole("teacher"), function (req, res, next) {
-  query("select Grades.assignment_id, Assignments.name, Assignments.description, Assignments.due_date, count(Grades.points_received) as assignments_graded, count(Section_Registrations.student_id) as students_count from Grades inner join Assignments on Assignments.assignment_id = Grades.assignment_id inner join Section_Registrations on Section_Registrations.student_id = Grades.student_id where Assignments.section_id = Section_Registrations.section_id group by Assignments.assignment_id order by Assignments.due_date desc;", [req.params.id], assignments => {
+  query(`select 
+      Grades.assignment_id, Assignments.name, Assignments.description, DATE_FORMAT(Assignments.due_date, '%m/%d/%y %h:%i %p') as formatted_due_date, count(Grades.points_received) as assignments_graded, count(Section_Registrations.student_id) as students_count
+    from
+      Grades 
+    inner join
+      Assignments
+    on
+      Assignments.assignment_id = Grades.assignment_id
+    inner join
+      Section_Registrations
+    on
+      Section_Registrations.student_id = Grades.student_id
+    where
+      Assignments.section_id = Section_Registrations.section_id
+    group by
+      Assignments.assignment_id
+    order by
+      Assignments.due_date desc, assignments_graded;`,
+ [req.params.id], assignments => {
     return res.send(assignments);
   });
 });
