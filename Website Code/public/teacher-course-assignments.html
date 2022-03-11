@@ -77,7 +77,8 @@
                             <th scope="col">Assignment ID</th>
                             <th scope="col">Name</th>
                             <th scope="col">Description</th>
-                            <th scope="col">Number of Students Graded</th>
+                            <th scope="col">Due Date</th>
+                            <th scope="col">Students Graded</th>
                         </tr>
                     </thead>
                     <tbody id="assignments">
@@ -105,9 +106,10 @@
                             <td scope="col">${assignment.assignment_id}</td>
                             <td scope="col">${assignment.name}</td>
                             <td scope="col">${assignment.description}</td>
-                            <td scope="col">${checkNull(assignment.points_received)} / {total_students}</td>
+                            <td scope="col">${assignment.due_date}</td>
+                            <td scope="col">${checkNull(assignment.assignments_graded)} / ${assignment.students_count}</td>
                         </tr>   
-            `; // Points possible is used to pass in the # of students graded at SQL level
+            `;
         }
         const api2 = await apiCall("teacher/courses");
         document.getElementById("course-list-side").innerHTML = "";
