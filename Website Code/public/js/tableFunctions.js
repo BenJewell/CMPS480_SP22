@@ -43,17 +43,11 @@ function toPercentage(num) {
 }
 
 function checkNull(val) {
-    if (val == null) {
-        return "-";
-    }
-    return val;
+    return (val == null) ? "-" : val;
 }
 
 function checkNullZero(val) {
-    if (val == null || val == 0) {
-        return "-";
-    }
-    return val;
+    return (val == null || val == 0) ? "-" : val;
 }
 
 function checkMissing(miss) {
