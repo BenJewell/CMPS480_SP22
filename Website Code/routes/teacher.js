@@ -1,5 +1,5 @@
 const express = require('express');
-const query = require("../util/db");
+const {query} = require("../util/db");
 const router = express.Router();
 const auth = require("../middleware/auth");
 const validate = require('express-jsonschema').validate;
