@@ -17,14 +17,6 @@
     <link href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css" rel="stylesheet"/>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 
-
-    <style>
-      table.dataTable tr.dtrg-group td {
-        background-color: #cfe2ff;
-      }
-    </style>
-
-
     <!-- Custom styles for this template -->
     <link href="CSS/dashboard.css" rel="stylesheet">
 </head>
@@ -260,8 +252,8 @@
           sortable: false,
           render: (data, type, row) => {
             return `
-                <a class="btn btn-sm btn-outline-secondary" href="/admin-edit-user.html?id=${row.student_id}">✎</a>
-                <a class="btn btn-sm btn-outline-secondary" href="javascript:deleteStudent(${row.student_id})">&#x2715;</a>
+                <a class="btn btn-sm btn-outline-secondary" href="admin-edit-user.html?id=${row.student_id}">✎</a>
+                <a class="btn btn-sm btn-outline-danger" href="javascript:deleteStudent(${row.student_id})">&#x2715;</a>
             `;
           }
         }

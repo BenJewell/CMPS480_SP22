@@ -16,24 +16,6 @@
     <link href="CSS/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css" rel="stylesheet"/>
 
-
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
-      }
-
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
-    </style>
-
-
     <!-- Custom styles for this template -->
     <link href="CSS/dashboard.css" rel="stylesheet">
 </head>
@@ -47,7 +29,6 @@
             aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
 </header>
 
 
@@ -58,13 +39,13 @@
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <a class="nav-link" href="admin-manage-sections.html">
-                            <span data-feather="book"></span>
+                            <span data-feather="list"></span>
                             Manage Courses
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="admin-manage-users.html">
-                            <span data-feather="book"></span>
+                            <span data-feather="users"></span>
                             Manage Users
                         </a>
                     </li>
@@ -75,10 +56,6 @@
                         </a>
                     </li>
                 </ul>
-
-
-                <!--<h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">-->
-
                 </li>
                 </ul>
             </div>
@@ -88,6 +65,12 @@
             <div
                     class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Manage Users</h1>
+                <div class="right"><a class="btn btn-sm btn-secondary" href="admin-create-user.html">+ Create User</a></div>
+            </div>
+
+
+            <div id="message-users" class="alert" role="alert" style="display: none;">
+                There was an error saving the changes. Please try again later.
             </div>
 
             <div class="table-responsive">
@@ -99,6 +82,7 @@
                         <th scope="col">Last Name</th>
                         <th scope="col">Email Address</th>
                         <th scope="col">Role</th>
+                        <th scope="col">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -111,36 +95,58 @@
 </div>
 
 <script>
+  let deleteUser;
   window.addEventListener('load', () => {
 
-    let key = "";
-    let user = window.localStorage.getItem("user");
-    if (user) {
-      user = JSON.parse(user);
-      key = user.key;
-    } else {
-		return document.location = "/";
-	}
+    feather.replace();
+    let user = getUser("admin");
+
+    function showMessage(section, type, message) {
+      document.getElementById(`message-${section}`).className = `alert alert-${type}`;
+      document.getElementById(`message-${section}`).innerHTML = message;
+      document.getElementById(`message-${section}`).style.display = "block";
+    }
+
+    deleteUser = async function (studentId) {
+      if (confirm("Are you sure you want to delete this user?")) {
+        try {
+          let result = await apiCall(`admin/users/${getQueryVariable('id')}}`, "DELETE");
+          if (result.success === false)
+            return showMessage("users", "danger", result.message || "There was an error");
+          studentTable.ajax.reload();
+          showMessage("users", "success", "This user could not be deleted.");
+        } catch (e) {
+          showMessage("users", "danger", "The user could not be deleted.");
+        }
+      }
+    }
+
     $('#userTable').DataTable({
-      select: true,
       ajax: {
         url: "./admin/users",
         beforeSend: function (request) {
-          request.setRequestHeader("x-session-key", key);
+          request.setRequestHeader("x-session-key", user.key);
         }
       },
-	  columns: [{
-		render: (data) => {
-			return "<a href='admin-edit-user.html?id=" + data + "'>" + data + "</a>";
-		}
-	  }, null, null, null, null]
-	  
+      columns: [null, null, null, null, null,
+        { // create a column at the end for the edit button, disable filtering by this column
+          searchable: false,
+          sortable: false,
+          render: (data, type, row) => {
+            return `
+                <a class="btn btn-sm btn-outline-secondary editBtns" href="admin-edit-user.html?id=${row[0]}">✎</a>
+                <a class="btn btn-sm btn-outline-secondary disabled" href="javascript:deleteUser(${row[0]})">&#x2715;</a>
+            `;
+          }
+        }]
+
     });
   });
 
 </script>
 
 
+<script src="js/main.js"></script>
 <script src="js/bootstrap.bundle.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
