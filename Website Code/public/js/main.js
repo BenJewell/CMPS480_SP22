@@ -13,6 +13,18 @@ function getQueryVariable(variable) {
   return false;
 }
 
+function getUser(role) {
+  let user = window.localStorage.getItem("user");
+  if (user) {
+    user = JSON.parse(user);
+    if (role && user.role !== role)
+      return document.location = "index.html";
+    return user;
+  } else {
+    return document.location = "index.html";
+  }
+}
+
 
 async function apiCall(path, method = "GET", data = undefined) {
   let key = "";
@@ -30,7 +42,7 @@ async function apiCall(path, method = "GET", data = undefined) {
         'X-Session-Key': key
       }
     });
-    if (call.status == 500) { // HTTP level error handeling, if API is up
+    if (call.status === 500) { // HTTP level error handeling, if API is up
      throw("500 Internal Server Error");
     }
     return await call.json();
@@ -38,4 +50,17 @@ async function apiCall(path, method = "GET", data = undefined) {
     console.error(error);
 	throw(error);
   }
+}
+
+// form editing
+function setValue(name, val) {
+  let elem = document.getElementById(name);
+  if (elem) elem.value = val;
+}
+
+function getValue(name) {
+  let elem = document.getElementById(name);
+  if (elem)
+    return elem.value;
+  else return undefined;
 }
