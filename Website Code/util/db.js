@@ -14,19 +14,19 @@ function query(stmt, params, cb) {
   pool.getConnection(function (err, cnx) {
     if (err) {
       console.error('Error connecting to MySQL server', err);
-      return cb(false);
+      return cb(false, err);
     } else {
       cnx.query(stmt, params, function (error, rows) {
         try {
           cnx.release();
         } catch (e) {
           console.error("Error releasing connection");
-          return cb(false);
+          return cb(false, error);
         }
 
         if (error) {
           console.error('Could not execute SQL query', error);
-          return cb(false);
+          return cb(false, error);
         }
 
         return cb(rows);
