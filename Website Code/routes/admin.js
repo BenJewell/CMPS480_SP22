@@ -180,4 +180,61 @@ router.put('/user/:id', auth.verifySessionAndRole("admin"), validate({body: User
   });
 });
 
+const SignUpSchema = {
+  type: 'object',
+  properties: {
+    first_name: {
+      type: 'string',
+      required: true,
+    },
+    last_name: {
+      type: 'string',
+      required: true,
+    },
+    role: {
+      type: 'string',
+      required: true,
+    },
+    email_address: {
+      type: 'string',
+      required: true,
+      format: 'email',
+    },
+    password: {
+      type: 'string',
+      required: true
+    }
+  }
+};
+
+/*
+ /signup
+ step 1: check for existing user under that email address
+ step 2: insert user into users table
+ */
+router.post('/users', validate({body: SignUpSchema}), function (req, res, next) {
+  // step 1
+  query("select user_id from Users where email_address = ?", [
+    req.body.email_address,
+  ], data => {
+    if (data.length !== 0) {
+      // account with email already exists
+      return res.send({success: false, message: "Account already exists with this email address"});
+    }
+    // step 2
+    query("insert into Users values (null, ?, ?, null, ?, ?, sha1(?), sha1(concat(now(), user_id, first_name)))",
+        [
+          req.body.first_name,
+          req.body.last_name,
+          req.body.email_address,
+          req.body.role,
+          req.body.password
+        ],
+        (data) => {
+          return res.send({success: true, id: data.insertId})
+        });
+  });
+});
+
+
 module.exports = router;
