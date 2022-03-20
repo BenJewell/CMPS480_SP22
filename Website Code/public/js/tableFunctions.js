@@ -53,7 +53,7 @@ function checkNullZero(val) {
 function checkMissing(miss) {
     var warning = feather.icons['alert-circle'].toSvg();
     if (miss) {
-        document.getElementById("missingTR").style = "background-color: hsla(0, 100%, 50%, 0.3)";
+        document.getElementById("missingTD").style = "background-color: hsla(0, 100%, 50%, 0.3)";
         document.getElementById("missingTD").innerHTML = warning;
 
     }
