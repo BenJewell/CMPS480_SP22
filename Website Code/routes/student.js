@@ -34,13 +34,13 @@ router.get('/dashboard/overview', auth.verifySessionAndRole("student"), function
 });
 //Recent Table
 router.get('/dashboard/recent', auth.verifySessionAndRole("student"), function (req, res, next) {
-  query("SELECT Courses.course_id, Courses.name AS course_name, Assignments.name AS assignment_name, Grades.points_received, Assignments.points_possible, Assignments.due_date FROM Assignments, Grades, Courses WHERE student_id = ? AND Assignments.assignment_id = Grades.assignment_id AND Courses.course_id = Assignments.course_id ORDER BY due_date DESC LIMIT 5;", [res.locals.userId], d => {
+  query("SELECT Courses.course_id, Courses.name AS course_name, Assignments.name AS assignment_name, Grades.points_received, Assignments.points_possible, Assignments.due_date FROM Assignments, Grades, Courses WHERE student_id = ? AND Assignments.assignment_id = Grades.assignment_id AND Courses.course_id = Assignments.course_id ORDER BY Assignments.due_date DESC LIMIT 5;", [res.locals.userId], d => {
     return res.send(d);
   });
 });
 //Missing Table
 router.get('/dashboard/missing', auth.verifySessionAndRole("student"), function (req, res, next) {
-  query("SELECT Courses.course_id, Courses.name AS course_name, Assignments.name AS assignment_name FROM Assignments, Grades, Courses WHERE student_id = ? AND Assignments.assignment_id = Grades.assignment_id AND Courses.course_id = Assignments.course_id AND Grades.missing = 1 ORDER BY due_date DESC;", [res.locals.userId], d => {
+  query("SELECT Courses.course_id, Courses.name AS course_name, Assignments.name AS assignment_name FROM Assignments, Grades, Courses WHERE student_id = ? AND Assignments.assignment_id = Grades.assignment_id AND Courses.course_id = Assignments.course_id AND Grades.missing = 1 ORDER BY Assignments.due_date DESC;", [res.locals.userId], d => {
     return res.send(d);
   });
 });
