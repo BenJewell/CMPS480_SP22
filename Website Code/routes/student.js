@@ -44,5 +44,11 @@ router.get('/dashboard/missing', auth.verifySessionAndRole("student"), function 
     return res.send(d);
   });
 });
+//Upcoming Table
+router.get('/dashboard/upcoming', auth.verifySessionAndRole("student"), function (req, res, next) {
+  query("SELECT Courses.course_id, Courses.name AS course_name, Assignments.name AS assignment_name FROM Assignments, Grades, Courses WHERE student_id = ? AND Assignments.assignment_id = Grades.assignment_id AND Courses.course_id = Assignments.course_id AND Grades.active = 1 ORDER BY due_date DESC;", [res.locals.userId], d => {
+    return res.send(d);
+  });
+});
 
 module.exports = router;
