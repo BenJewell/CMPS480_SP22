@@ -1,10 +1,10 @@
 {
-  "name": "good-grades-api",
+  "name": "good-grades",
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
-    "start-nm": "nodemon ./bin/www"
+    "start-prod": "node app.js prod",
+    "start-dev": "nodemon app.js dev"
   },
   "dependencies": {
     "body-parser": "^1.19.1",

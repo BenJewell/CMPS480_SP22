@@ -121,9 +121,9 @@
         for (let assignment of apiGrades.table) {
           var points = checkNull(assignment.points_received);
           document.getElementById("grades").innerHTML += `
-            <tr id="missingTR" style="background-color: ${rowColor(points/assignment.points_possible)}">
+            <tr id="missingTR">
               <th scope="row">${assignment.name}</th>
-              <td class="text-center">${points}/${assignment.points_possible}</td>
+              <td class="text-center" style="background-color: ${rowColor(points/assignment.points_possible)}">${points}/${assignment.points_possible}</td>
               <td class="text-center">${assignment.due_date}</td>
               <td class="text-center" id="missingTD"></td>
             </tr>
