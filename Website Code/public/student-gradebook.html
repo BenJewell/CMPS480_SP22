@@ -64,7 +64,7 @@
             <h1 class="h2" id="courseTitle">Grades</h1>
           </div>
           <div id="grades-table">
-            <table class="table table-bordered">
+            <table class="table table-bordered sortable">
              <thead class="table-primary">
                 <tr>
                   <th clas= "w-25" scope="col">Assignment</th>
@@ -122,7 +122,7 @@
           var points = checkNull(assignment.points_received);
           document.getElementById("grades").innerHTML += `
             <tr id="missingTR">
-              <th scope="row">${assignment.name}</th>
+              <td scope="row">${assignment.name}</td>
               <td class="text-center" style="background-color: ${rowColor(points/assignment.points_possible)}">${points}/${assignment.points_possible}</td>
               <td class="text-center">${assignment.due_date}</td>
               <td class="text-center" id="missingTD"></td>
