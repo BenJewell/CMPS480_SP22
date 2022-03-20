@@ -1,5 +1,5 @@
 /* Show arrow indicators on sortable tables at page load */
-table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { 
+table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after {
   color: grey;
   content: " \25B4\25BE";
 }
@@ -103,4 +103,9 @@ body {
 .form-control-dark:focus {
   border-color: transparent;
   box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
+}
+
+
+table.dataTable tr.dtrg-group td {
+  background-color: #cfe2ff;
 }
