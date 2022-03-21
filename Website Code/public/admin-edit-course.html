@@ -276,7 +276,7 @@
       ajax: {
         delay: 250,
         dataType: 'json',
-        url: 'admin/search/student',
+        url: 'admin/search/teacher',
         beforeSend: function (request) {
           request.setRequestHeader("x-session-key", user.key);
         },
@@ -293,7 +293,7 @@
       ajax: {
         delay: 250,
         dataType: 'json',
-        url: 'admin/search/teacher',
+        url: 'admin/search/student',
         beforeSend: function (request) {
           request.setRequestHeader("x-session-key", user.key);
         },
