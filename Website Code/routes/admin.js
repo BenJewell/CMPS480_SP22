@@ -4,6 +4,37 @@ const router = express.Router();
 const auth = require("../middleware/auth");
 const validate = require('express-jsonschema').validate;
 
+// more complex and/or long queries
+// stored here for readability
+const STUDENT_GET_SECTIONS_QUERY = `
+    select
+        s.section_id,
+        s.*,
+        concat(u.first_name, ' ', u.last_name) as instructor_name
+    from
+        Sections s,
+        Section_Registrations sr,
+        Users u
+    where
+        sr.student_id = 5 and u.user_id = s.instructor_id and s.section_id = sr.section_id
+`;
+const STUDENT_GET_GRADES_QUERY = `
+    select Courses.course_id,
+           Courses.name                                                     as course_name,
+           Courses.primary_code,
+           Courses.secondary_code,
+           (sum(Grades.points_received) / sum(Assignments.points_possible)) as total_grade
+    from Assignments,
+         Grades,
+         Courses
+    where student_id = ?
+      and Assignments.assignment_id = Grades.assignment_id
+      and Courses.course_id = Assignments.course_id
+      and Grades.points_received is not null
+      and Grades.active = 1
+    group by Courses.course_id
+`;
+
 router.get('/courses', auth.verifySessionAndRole("admin"), function (req, res, next) {
   query("select Courses.*, Sections.*, CONCAT(Users.first_name, ' ', Users.last_name) as `instructor` from Courses, Sections, Users where Courses.course_id = Sections.course_id and Users.user_id = Sections.instructor_id", [], d => {
     return res.send({data: d});
@@ -142,7 +173,28 @@ router.get('/search/:role', auth.verifySessionAndRole("admin"), function (req, r
 
 router.get('/user/:id', auth.verifySessionAndRole("admin"), function (req, res, next) {
   query("select `user_id`, `first_name`, `last_name`, `email_address`, `role` from Users where user_id = ?", [req.params.id], d => {
-    return res.send(d[0]);
+    if (!d.length) {
+      return res.send({success: false, message: "User not found"});
+    }
+    let user = d[0];
+
+    // if user is a student, fetch their sections + grades
+    if (user.role === "student") {
+      query(STUDENT_GET_SECTIONS_QUERY, [req.params.id], sections => {
+        query(STUDENT_GET_GRADES_QUERY, [req.params.id], grades => {
+          let courses = {};
+          sections.map((data) => courses[data.course_id] = data);
+
+          for (let grade of grades)
+              // skip if no longer enrolled in this course
+            if (courses[grade.course_id] !== undefined)
+              courses[grade.course_id] = {...courses[grade.course_id], ...grade};
+
+          return res.send({...user, courses: Object.values(courses)});
+        });
+      });
+    } else
+      return res.send(user);
   });
 });
 
@@ -222,7 +274,7 @@ router.post('/users', validate({body: SignUpSchema}), function (req, res, next) 
       return res.send({success: false, message: "Account already exists with this email address"});
     }
     // step 2
-    query("insert into Users values (null, ?, ?, null, ?, ?, sha1(?), sha1(concat(now(), user_id, first_name)))",
+    query("insert into Users values (null, ?, ?, null, ?, ?, sha1(?), sha1(concat(now(), user_id, first_name, null)))",
         [
           req.body.first_name,
           req.body.last_name,
