@@ -16,7 +16,7 @@ const STUDENT_GET_SECTIONS_QUERY = `
         Section_Registrations sr,
         Users u
     where
-        sr.student_id = 5 and u.user_id = s.instructor_id and s.section_id = sr.section_id
+        sr.student_id = ? and u.user_id = s.instructor_id and s.section_id = sr.section_id
 `;
 const STUDENT_GET_GRADES_QUERY = `
     select Courses.course_id,
