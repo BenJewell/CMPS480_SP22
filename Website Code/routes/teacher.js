@@ -30,7 +30,7 @@ router.get('/course/:id', auth.verifySessionAndRole("teacher"), function (req, r
 });
 
 router.get('/student/:studentId/:courseId', auth.verifySessionAndRole("teacher"), function (req, res, next) {
-  query("select *, DATE_FORMAT(Assignments.due_date, '%m/%d/%Y %H:%i') AS formatted_due_date from Grades, Assignments where Assignments.section_id = ? and Grades.student_id = ? and Grades.assignment_id = Assignments.assignment_id;", [req.params.courseId, req.params.studentId], grades => {
+  query("select *, DATE_FORMAT(Assignments.due_date, '%m/%d/%y %h:%i %p') AS formatted_due_date from Grades, Assignments where Assignments.section_id = ? and Grades.student_id = ? and Grades.assignment_id = Assignments.assignment_id;", [req.params.courseId, req.params.studentId], grades => {
     query("select Users.user_id, Users.first_name, Users.last_name from Users where Users.user_id = ?", [req.params.studentId], student => {
       return res.send({ ...student[0], grades: grades });
     });
@@ -48,7 +48,7 @@ router.get('/grades/single/:ids', auth.verifySessionAndRole("teacher"), function
   let IDarry = idString.split("-");
   let assignmentId = IDarry[0];
   let studentId = IDarry[1];
-  query("SELECT Assignments.name, Assignments.description, DATE_FORMAT(Assignments.due_date, '%m/%d/%Y %H:%i') AS due_date, Grades.points_received, Assignments.points_possible, Grades.missing, Grades.active FROM Assignments JOIN Grades ON Grades.assignment_id = Assignments.assignment_id WHERE Grades.assignment_id = ? AND student_id = ?;", [assignmentId, studentId], b => {
+  query("SELECT Assignments.name, Assignments.description, DATE_FORMAT(Assignments.due_date, '%m/%d/%y %h:%i %p') AS due_date, Grades.points_received, Assignments.points_possible, Grades.missing, Grades.active FROM Assignments JOIN Grades ON Grades.assignment_id = Assignments.assignment_id WHERE Grades.assignment_id = ? AND student_id = ?;", [assignmentId, studentId], b => {
     return res.send({ ...b[0] });
   });
 });
