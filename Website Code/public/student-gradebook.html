@@ -65,12 +65,14 @@
           </div>
           <div id="grades-table">
             <table class="table table-bordered sortable">
-             <thead class="table-primary">
+             <thead class="table-secondary">
                 <tr>
                   <th clas= "w-25" scope="col">Assignment</th>
-                  <th class="text-center w-25" scope="col">Grade</th>
-                  <th class="text-center w-25" scope="col">Due Date/Time</th>
-                  <th class="text-center w-25" scope="col">Missing</th>
+                  <th class="text-center" scope="col">Grade</th>
+                  <th class="text-center" scope="col">Due Date/Time</th>
+                  <th class="text-center" scope="col">Missing</th>
+                  <th class="text-center" scope="col">Comments</th>
+                  <th class="text-center" scope="col">Flag for Audit</th>
                </tr>
               </thead>
              <tbody id="grades">
@@ -81,7 +83,7 @@
 
           <div id="total-grade-table">
             <table class="table table-bordered table-striped">
-             <thead class="table-primary">
+             <thead class="table-secondary" id=totalGradeHeader>
                 <tr>
                   <th scope="col">Course Grade:</th>
                   <th class="text-center w-25" scope="col" id="totalGrade"></th>
@@ -120,13 +122,16 @@
         document.getElementById("grades").innerHTML = "";
         for (let assignment of apiGrades.table) {
           var points = checkNull(assignment.points_received);
+          var missing = checkMissing(assignment.missing);
           document.getElementById("grades").innerHTML += `
-            <tr id="missingTR">
+            <tr>
               <td scope="row">${assignment.name}</td>
               <td class="text-center" style="background-color: ${rowColor(points/assignment.points_possible)}">${points}/${assignment.points_possible}</td>
               <td class="text-center">${assignment.due_date}</td>
-              <td class="text-center" id="missingTD"></td>
-            </tr>
+              <td class="text-center" style="background-color: ${missing.color}">${missing.icon}</td>
+              <td class="text-center">${checkNull(assignment.instructor_notes)}</td>
+              <td class="text-center"><input class="form-check-input" type="checkbox" value="" ${assignment.flagged_for_audit === 1 ? 'checked' : ''}></td>
+              </tr>
           `;
           checkMissing(assignment.missing);
           }

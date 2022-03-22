@@ -61,15 +61,15 @@
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1 class="h2">Dashboard</h1>
+            <h2 class="h2">Dashboard</h1>
           </div>
           <div id="dashboard-table">
             <table class="table table-bordered table-striped">
              <thead class="table-primary">
                 <tr>
                   <th scope="col">Course</th>
-                  <th class=" w-25 text-center" scope="col">Grade</th>
-                  <th class="w-25 text-center" scope="col">Letter Grade</th>
+                  <th class=" w-25 text-center filter" scope="col">Grade</th>
+                  <th class="w-25 text-center filter" scope="col">Letter Grade</th>
                </tr>
               </thead>
              <tbody id="overview-table">
@@ -78,11 +78,11 @@
             </table>
           </div>
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1 class="h2">Recent Assignments</h1>
+            <h3 class="h3">Recently Graded</h1>
           </div>
           <div id="recent-grades-table">
             <table class="table table-bordered table-striped">
-              <thead class="table-primary">
+              <thead class="table-warning">
                 <tr>
                   <th class="w-25" scope="col">Course</th>
                   <th scope="col">Assignment</th>
@@ -95,33 +95,34 @@
             </table>
           </div>
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1 class="h2">Missing Assignments</h1>
+            <h3 class="h3">Due Soon</h1>
+          </div>
+          <div id="recent-grades-table">
+            <table class="table table-bordered table-striped">
+              <thead class="table-info">
+                <tr>
+                  <th class="w-25" scope="col">Course</th>
+                  <th scope="col">Assignment</th>
+                  <th class="text-center w-25" scope="col">Grade</th>
+                </tr>
+              </thead>
+              <tbody id="upcoming-table">
+                <!-- API Insertion -->
+             </tbody>
+            </table>
+          </div>
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h3 class="h3">Missing</h1>
           </div>
           <div id="missing-assignment-table">
             <table class="table table-bordered table-striped">
-              <thead class="table-primary">
+              <thead class="table-success">
                 <tr>
                   <th class="w-25" scope="col">Course</th>
                   <th scope="col">Assignment</th>
                 </tr>
               </thead>
               <tbody id="missing-table">
-                     <!-- API Insertion -->
-             </tbody>
-            </table>
-          </div>
-          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1 class="h2">Upcoming Assignments</h1>
-          </div>
-          <div id="upcoming-assignment-table">
-            <table class="table table-bordered table-striped">
-              <thead class="table-primary">
-                <tr>
-                  <th class="w-25" scope="col">Course</th>
-                  <th scope="col">Assignment</th>
-                </tr>
-              </thead>
-              <tbody id="upcoming-table">
                 <!-- API Insertion -->
              </tbody>
             </table>

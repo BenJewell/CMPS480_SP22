@@ -38,7 +38,6 @@ function rowColor(num) {
 }
 
 function toPercentage(num) {
-    //return Math.round(num * 10000) / 100;
     return Math.round((num + Number.EPSILON) * 10000) / 100;
 }
 
@@ -51,12 +50,6 @@ function checkNullZero(val) {
 }
 
 function checkMissing(miss) {
-    var warning = feather.icons['alert-circle'].toSvg();
-    if (miss) {
-        document.getElementById("missingTD").style = "background-color: hsla(0, 100%, 50%, 0.3)";
-        document.getElementById("missingTD").innerHTML = warning;
-
-    }
-    document.getElementById("missingTR").id = "TR";
-    document.getElementById("missingTD").id = "TD";
+    if (miss === 0) return {color: "", icon: ""};
+    return {color: "hsla(0, 100%, 50%, 0.3)", icon: feather.icons['alert-circle'].toSvg()};
 }
