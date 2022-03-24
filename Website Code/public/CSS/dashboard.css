@@ -38,6 +38,12 @@ body {
   }
 }
 
+@media print {
+  .noprint {
+     display:none;
+  }
+}
+
 .sidebar-sticky {
   position: relative;
   top: 0;
