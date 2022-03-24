@@ -8,6 +8,7 @@
     <meta name="generator" content="Hugo 0.88.1">
     <title id="title">Good Grades: Gradebook</title>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/login-timeout.js"></script>
     <script src="js/sort-table.js"></script>
 
@@ -31,7 +32,7 @@
 
     <div class="container-fluid">
       <div class="row">
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <nav id="sidebarMenu navbar-collapse"" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
           <div class="position-sticky pt-3">
             <ul class="nav flex-column">
               <li class="nav-item">
@@ -45,7 +46,28 @@
               </h6>
               <div id="course-list-side">
                 <!-- API Insertion -->
-              </div> 
+              </div>
+              <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                <span>Utilities</span>
+              </h6>
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="student-messaging.html">
+                  <span data-feather="mail"></span>
+                  Messages
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="student-calendar.html">
+                  <span data-feather="calendar"></span>
+                  Calendar
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="student-grade-scale.html">
+                  <span data-feather="bar-chart"></span>
+                  Grade Scale
+                </a>
+              </li>
               <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
                 <span>Account</span>
               </h6>
@@ -60,19 +82,29 @@
         </nav>
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 border-bottom">
             <h1 class="h2" id="courseTitle">Grades</h1>
+            <form class="form-inline d-flex justify-content-end">
+              <button type="button" class="btn btn-primary mb-2 px-2 py-1 mx-1"><span data-feather="help-circle"></span> What if...</button>
+              <button type="button" class="btn btn-primary mb-2 px-2 py-1 mx-1"><span data-feather="check-circle"></span> Attendance</button>
+              <button type="button" class="btn btn-primary mb-2 px-2 py-1 mx-1"><span data-feather="user"></span> Instructor</button>
+            </form>
           </div>
-          <div id="grades-table">
-            <table class="table table-bordered sortable">
-             <thead class="table-secondary">
+          
+          <div class="justify-content-start align-items-center pt-1 pb-2">
+            <input class="form-control my-2 col-auto" type="text" id="input" onkeyup="search()" placeholder="Search for an assignment">
+          </div>
+          <div>
+            <table class="table table-bordered sortable" id="grades-table">
+             <thead class="table-primary">
                 <tr>
-                  <th clas= "w-25" scope="col">Assignment</th>
-                  <th class="text-center" scope="col">Grade</th>
-                  <th class="text-center" scope="col">Due Date/Time</th>
-                  <th class="text-center" scope="col">Missing</th>
-                  <th class="text-center" scope="col">Comments</th>
-                  <th class="text-center" scope="col">Flag for Audit</th>
+                  <th class="align-middle" scope="col">Category</th>
+                  <th class="align-middle" scope="col">Assignment</th>
+                  <th class="align-middle text-center" scope="col">Points <button class="btn btn-outline-dark float p-1">%</button></th>
+                  <th class="align-middle text-center" scope="col">Due Date/Time</th>
+                  <th class="align-middle text-center" scope="col">Missing</th>
+                  <th class="align-middle text-center sorttable_nosort" scope="col">Comments</th>
+                  <th class="align-middle text-center sorttable_nosort" scope="col">Flag for Audit</th>
                </tr>
               </thead>
              <tbody id="grades">
@@ -80,7 +112,6 @@
              </tbody>
             </table>
           </div>
-
           <div id="total-grade-table">
             <table class="table table-bordered table-striped">
              <thead class="table-secondary" id=totalGradeHeader>
@@ -124,14 +155,15 @@
           var points = checkNull(assignment.points_received);
           var missing = checkMissing(assignment.missing);
           document.getElementById("grades").innerHTML += `
-            <tr>
+            <tr class=${assignment.assignment_category}>
+              <td scope="row">${assignment.assignment_category}</td>
               <td scope="row">${assignment.name}</td>
-              <td class="text-center" style="background-color: ${rowColor(points/assignment.points_possible)}">${points}/${assignment.points_possible}</td>
+              <td class="text-center points" style="background-color: ${rowColor(points/assignment.points_possible)}">${points}/${assignment.points_possible}</td>
               <td class="text-center">${assignment.due_date}</td>
               <td class="text-center" style="background-color: ${missing.color}">${missing.icon}</td>
               <td class="text-center">${checkNull(assignment.instructor_notes)}</td>
               <td class="text-center"><input class="form-check-input" type="checkbox" value="" ${assignment.flagged_for_audit === 1 ? 'checked' : ''}></td>
-              </tr>
+            </tr>
           `;
           checkMissing(assignment.missing);
           }
@@ -141,6 +173,35 @@
         document.getElementById("letterGrade").innerHTML = letterGrade(apiGrades.total_grade);
         document.getElementById("letterGrade").style = `background-color: ${rowColor(apiGrades.total_grade)}`
       });
+      function pointsToggle(){
+        var cols = document.getElementsByClassName("points");
+        for(let val in cols){
+          txt = val.innerText;
+          if(txt.includes("-")){
+            val.innerText="-";
+          }
+        }
+      }
+      function search(){
+        var input = document.getElementById("input");
+        var filter = input.value.toUpperCase();
+        var table = document.getElementById("grades-table");
+        var tr = table.getElementsByTagName("tr");
+        var td, txtValue;
+        // Loop through all table rows, and hide those who don't match the search query
+        for (var i = 0; i < tr.length; i++) {
+          td = tr[i].getElementsByTagName("td")[0];
+          if (td) {
+            if(td.classList.contains("category")){ continue; };
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }
+        }
+      }
     </script>
     <script type="text/javascript">feather.replace({ 'aria-hidden': 'true' })</script>
   </body>
