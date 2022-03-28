@@ -1,208 +1,436 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Good Grades: Student Gradebook">
-    <meta name="author" content="Emily Foglia, Bootstrap contributors">
-    <meta name="generator" content="Hugo 0.88.1">
-    <title id="title">Good Grades: Gradebook</title>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="js/login-timeout.js"></script>
-    <script src="js/sort-table.js"></script>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Good Grades: Student Gradebook">
+  <meta name="author" content="Emily Foglia">
+  <title id="title">Good Grades: Gradebook</title>
 
-    <!-- Feather icons -->
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
-    <!-- Bootstrap core CSS -->
-    <link href="CSS/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom styles for this template -->
-    <link href="CSS/dashboard.css" rel="stylesheet">
-  </head>
-  <body>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="js/login-timeout.js"></script>
+  <script src="js/sort-table.js"></script>
 
-    <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-      <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="student-dashboard.html">Good Grades</a>
-      <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="navbar-nav">
-      </div>
-    </header>
+  <!-- Feather icons -->
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"
+    integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE"
+    crossorigin="anonymous"></script>
+  <!-- Bootstrap core CSS -->
+  <link href="CSS/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom styles for this template -->
+  <link href="CSS/dashboard.css" rel="stylesheet">
+</head>
 
-    <div class="container-fluid">
-      <div class="row">
-        <nav id="sidebarMenu navbar-collapse"" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-          <div class="position-sticky pt-3">
-            <ul class="nav flex-column">
-              <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="student-dashboard.html">
-                  <span data-feather="home"></span>
-                  Dashboard
-                </a>
-              </li>
-              <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                <span>Courses</span>
-              </h6>
-              <div id="course-list-side">
-                <!-- API Insertion -->
-              </div>
-              <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                <span>Utilities</span>
-              </h6>
-              <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="student-messaging.html">
-                  <span data-feather="mail"></span>
-                  Messages
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="student-calendar.html">
-                  <span data-feather="calendar"></span>
-                  Calendar
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="student-grade-scale.html">
-                  <span data-feather="bar-chart"></span>
-                  Grade Scale
-                </a>
-              </li>
-              <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                <span>Account</span>
-              </h6>
-              <li class="nav-item">
-                <a class="nav-link" href="logout.html">
-                  <span data-feather="log-out"></span>
-                  Log Out
-                </a>
-              </li>
-            </ul>
-          </div>
-        </nav>
+<body>
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 border-bottom">
-            <h1 class="h2" id="courseTitle">Grades</h1>
-            <form class="form-inline d-flex justify-content-end">
-              <button type="button" class="btn btn-primary mb-2 px-2 py-1 mx-1"><span data-feather="help-circle"></span> What if...</button>
-              <button type="button" class="btn btn-primary mb-2 px-2 py-1 mx-1"><span data-feather="check-circle"></span> Attendance</button>
-              <button type="button" class="btn btn-primary mb-2 px-2 py-1 mx-1"><span data-feather="user"></span> Instructor</button>
+  <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="student-dashboard.html">Good Grades</a>
+    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
+      data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-nav">
+    </div>
+  </header>
+
+  <div class="container-fluid">
+    <div class="row">
+      <nav id="sidebarMenu navbar-collapse" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <div class="position-sticky pt-3">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="student-dashboard.html">
+                <span data-feather="home"></span>
+                Dashboard
+              </a>
+            </li>
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+              <span>Courses</span>
+            </h6>
+            <div id="course-list-side">
+              <!-- API Insertion -->
+            </div>
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+              <span>Utilities</span>
+            </h6>
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="student-messaging.html">
+                <span data-feather="mail"></span>
+                Messages
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="student-calendar.html">
+                <span data-feather="calendar"></span>
+                Calendar
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="student-grade-scale.html">
+                <span data-feather="bar-chart"></span>
+                Grade Scale
+              </a>
+            </li>
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+              <span>Account</span>
+            </h6>
+            <li class="nav-item">
+              <a class="nav-link" href="logout.html">
+                <span data-feather="log-out"></span>
+                Log Out
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 border-bottom">
+          <h1 class="h2" id="courseTitle">Course Name</h1>
+          <form class="form-inline d-flex justify-content-end">
+            <button onClick="toggleView(this.id);" id="gradesBtn" type="button"
+              class="toggleBtns btn btn-outline-primary mb-2 px-2 py-1 mx-1 active"><span
+                data-feather="bar-chart-2"></span> Grades</button>
+            <button onClick="toggleView(this.id);" id="whatIfBtn" type="button"
+              class="toggleBtns btn btn-outline-primary mb-2 px-2 py-1 mx-1"><span data-feather="clipboard"></span>
+              What if...</button>
+            <button onClick="toggleView(this.id);" id="attendanceBtn" type="button"
+              class="toggleBtns btn btn-outline-primary mb-2 px-2 py-1 mx-1"><span data-feather="check-circle"></span>
+              Attendance</button>
+            <button onClick="toggleView(this.id);" id="instructorBtn" type="button"
+              class="toggleBtns btn btn-outline-primary mb-2 px-2 py-1 mx-1"><span data-feather="user"></span>
+              Instructor</button>
+          </form>
+        </div>
+        <div id="gradebook">
+          <div class="justify-content-start align-items-center pt-1 pb-2">
+            <form class="form-inline d-flex justify-content-start">
+              <input class="form-control my-2" type="text" id="input" onkeyup="search()"
+                placeholder="Search for an assignment">
+              <button id="gradesToggle" type="button" class="btn btn-primary my-2 px-2 py-1 mx-1 text-nowrap">Show
+                Percentage</button>
             </form>
           </div>
-          
-          <div class="justify-content-start align-items-center pt-1 pb-2">
-            <input class="form-control my-2 col-auto" type="text" id="input" onkeyup="search()" placeholder="Search for an assignment">
-          </div>
-          <div>
+          <div id="full-grades-table">
             <table class="table table-bordered sortable" id="grades-table">
-             <thead class="table-primary">
+              <thead class="table-primary">
                 <tr>
                   <th class="align-middle" scope="col">Category</th>
                   <th class="align-middle" scope="col">Assignment</th>
-                  <th class="align-middle text-center" scope="col">Points <button class="btn btn-outline-dark float p-1">%</button></th>
+                  <th class="align-middle text-center points" scope="col">Points</th>
+                  <th class="align-middle text-center percentage" style="display:none;" scope="col">Percentage</th>
                   <th class="align-middle text-center" scope="col">Due Date/Time</th>
                   <th class="align-middle text-center" scope="col">Missing</th>
                   <th class="align-middle text-center sorttable_nosort" scope="col">Comments</th>
                   <th class="align-middle text-center sorttable_nosort" scope="col">Flag for Audit</th>
-               </tr>
+                </tr>
               </thead>
-             <tbody id="grades">
-               <!-- API Insertion -->
-             </tbody>
+              <tbody id="grades">
+                <!-- API Insertion -->
+              </tbody>
             </table>
           </div>
           <div id="total-grade-table">
             <table class="table table-bordered table-striped">
-             <thead class="table-secondary" id=totalGradeHeader>
+              <thead class="table-secondary" id=totalGradeHeader>
                 <tr>
                   <th scope="col">Course Grade:</th>
                   <th class="text-center w-25" scope="col" id="totalGrade"></th>
                   <th class="text-center w-25" scope="col" id="letterGrade"></th>
-               </tr>
+                </tr>
               </thead>
             </table>
           </div>
-        </main>
+        </div>
+        <div id="what-if" style="display: none;" class="pb-2 flex-column">
+          <div class="justify-content-start align-items-center pt-1 pb-2">
+            <form class="form-inline d-flex justify-content-end">
+              <button type="button" class="btn btn-primary my-2 px-2 py-1 mx-1 text-nowrap" data-bs-toggle="modal"
+                data-bs-target="#instructions_modal"><span data-feather="help-circle"></span> Show
+                Instructions</button>
+              <button id="whatif-reset" type="button" class="btn btn-primary my-2 px-2 py-1 mx-1 text-nowrap"><span
+                  data-feather="refresh-cw"></span> Reset</button>
+            </form>
+          </div>
+          <!-- Modal -->
+          <div class="modal fade" id="instructions_modal" tabindex="-1" role="dialog"
+            aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Instructions</h5>
+                </div>
+                <div class="modal-body">
+                  An empty text field counts as 0 points earned.<br>
+                  Type a dash (-) to remove the assignment from the calculated total.<br><br>
+                  A red background indicates a missing assignment.<br>
+                  A blue background indicates an ungraded assignment.
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex-column">
+            <table class="table table-bordered sortable" id="whatif-table">
+              <thead class="table-primary">
+                <tr>
+                  <th class="align-middle" scope="col">Category</th>
+                  <th class="align-middle" scope="col">Assignment</th>
+                  <th class="align-middle text-center sorttable_nosort" scope="col">Points Earned</th>
+                  <th class="align-middle text-center" scope="col">Points Possible</th>
+                  <th class="align-middle text-center" scope="col">Due Date/Time</th>
+                </tr>
+              </thead>
+              <tbody id="whatif-assignments">
+                <!-- API Insertion -->
+              </tbody>
+            </table>
+          </div>
+          <table class="table table-bordered table-striped">
+            <thead class="table-secondary">
+              <tr>
+                <th scope="col">Course Grade:</th>
+                <th class="text-center w-25" scope="col" id="whatif-totalGrade"></th>
+                <th class="text-center w-25" scope="col" id="whatif-letterGrade"></th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <div id="attendance" style="display: none;">
+          <p>Attendance system viewed here</p>
+        </div>
+        <div id="instructor" style="display: none;" class="pt-3 pb-2 flex-column">
+          <table class="table table-bordered" id="instructor-table">
+            <thead class="table-primary">
+              <tr>
+                <th class="align-middle" colspan="2">
+                  <h1 class="h4" id="instructor_name">Instructor Name</h1>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="align-middle w-25" scope="col">Email:</th>
+                <td class="align-middle" scope="col" id="instructor_email">email@address.com</th>
+              </tr>
+              <tr>
+                <td class="align-middle w-25" scope="col">Phone Number:</th>
+                <td class="align-middle" scope="col" id="instructor_phone_number">(000) 000-0000</th>
+              </tr>
+            </tbody>
+          </table>
+          <div class="flex-column">
+            <form class="form-inline d-flex justify-content-start">
+              <button id="gradesBtn" type="button" class="toggleBtns btn btn-primary mb-2 px-2 py-1 mx-1"
+                onclick="location.href='/student-messaging.html'"><span data-feather="send"></span> Send
+                Message</button>
+            </form>
+          </div>
+        </div>
+      </main>
 
-      </div>
     </div>
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/tableFunctions.js"></script>
-    <script src="js/main.js" type="text/javascript"></script>
-    <script type="text/javascript">
-      window.addEventListener("load", async () => {
-        //Side Nav Bar
-        var book = feather.icons.book.toSvg();
-        const apiNav = await apiCall("student/courses");
-        document.getElementById("course-list-side").innerHTML = "";
-        for (let course of apiNav) {
-          document.getElementById("course-list-side").innerHTML += `
+  </div>
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/tableFunctions.js"></script>
+  <script src="js/main.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    window.addEventListener("load", async () => {
+      //Side Nav Bar
+      var book = feather.icons.book.toSvg();
+      const apiNav = await apiCall("student/courses");
+      document.getElementById("course-list-side").innerHTML = "";
+      for (let course of apiNav) {
+        document.getElementById("course-list-side").innerHTML += `
                     <li class="nav-item">
                         <a class="nav-link" id="nav-btn1" href="student-gradebook.html?id=${course.course_id}">` +
-                            book +
-                            `${course.name} (${course.primary_code} ${course.secondary_code})
+          book +
+          `${course.name} (${course.primary_code} ${course.secondary_code})
                         </a>
                     </li>
             `;
-        }
+      }
 
-        //Grades Table
-        var warning = feather.icons['alert-circle'].toSvg();
-        const apiGrades = await apiCall(`student/grades/${getQueryVariable('id')}`);
-        document.getElementById("grades").innerHTML = "";
-        for (let assignment of apiGrades.table) {
-          var points = checkNull(assignment.points_received);
-          var missing = checkMissing(assignment.missing);
-          document.getElementById("grades").innerHTML += `
-            <tr class=${assignment.assignment_category}>
+      //Grades Table
+      var warning = feather.icons['alert-circle'].toSvg();
+      var scores = [];
+      const apiGrades = await apiCall(`student/grades/${getQueryVariable('id')}`);
+      document.getElementById("courseTitle").innerHTML = apiGrades.name.name;
+      for (let assignment of apiGrades.table) {
+        var points = checkNull(assignment.points_received);
+        var missing = checkMissing(assignment.missing);
+        scores[assignment.grades_id] = points;
+        document.getElementById("grades").innerHTML += `
+            <tr>
               <td scope="row">${assignment.assignment_category}</td>
               <td scope="row">${assignment.name}</td>
-              <td class="text-center points" style="background-color: ${rowColor(points/assignment.points_possible)}">${points}/${assignment.points_possible}</td>
+              <td class="text-center points" style="background-color: ${rowColor(points / assignment.points_possible)}">${points}/${assignment.points_possible}</td>
+              <td class="text-center percentage" style="display: none; background-color: ${rowColor(points / assignment.points_possible)}">${(points === "-" ? "-" : toPercentage(assignment.points_received / assignment.points_possible))}%</td>
               <td class="text-center">${assignment.due_date}</td>
               <td class="text-center" style="background-color: ${missing.color}">${missing.icon}</td>
               <td class="text-center">${checkNull(assignment.instructor_notes)}</td>
-              <td class="text-center"><input class="form-check-input" type="checkbox" value="" ${assignment.flagged_for_audit === 1 ? 'checked' : ''}></td>
+              <td class="text-center"><input id="audit_${assignment.grades_id} class="auditCheckBoxes form-check-input" type="checkbox" value="" ${assignment.flagged_for_audit === 1 ? 'checked' : ''}></td>
             </tr>
           `;
-          checkMissing(assignment.missing);
-          }
-
-        //Total Grade
-        document.getElementById("totalGrade").innerHTML = toPercentage(apiGrades.total_grade) + '%';
-        document.getElementById("letterGrade").innerHTML = letterGrade(apiGrades.total_grade);
-        document.getElementById("letterGrade").style = `background-color: ${rowColor(apiGrades.total_grade)}`
-      });
-      function pointsToggle(){
-        var cols = document.getElementsByClassName("points");
-        for(let val in cols){
-          txt = val.innerText;
-          if(txt.includes("-")){
-            val.innerText="-";
-          }
-        }
+        //What-if Table
+        document.getElementById("whatif-assignments").innerHTML += `
+            <tr>
+              <td scope="row">${assignment.assignment_category}</td>
+              <td scope="row">${assignment.name}</td>
+              <td class="text-center w-25" style="background-color: ${(points === "-" ? "hsla(180, 100%, 60%, 0.6)" : missing.color)}"><input type="text" class="form-control w-100 inputPoints"  id="input_${assignment.grades_id}"  value=${points}></td>
+              <td class="text-center pointsPossible" id="possible_${assignment.grades_id}" style="background-color: ${(points === "-" ? "hsla(180, 100%, 60%, 0.6)" : missing.color)}">${assignment.points_possible}</td>
+              <td class="text-center">${assignment.due_date}</td>
+            </tr>
+          `;
       }
-      function search(){
-        var input = document.getElementById("input");
-        var filter = input.value.toUpperCase();
-        var table = document.getElementById("grades-table");
-        var tr = table.getElementsByTagName("tr");
-        var td, txtValue;
-        // Loop through all table rows, and hide those who don't match the search query
-        for (var i = 0; i < tr.length; i++) {
-          td = tr[i].getElementsByTagName("td")[0];
-          if (td) {
-            if(td.classList.contains("category")){ continue; };
-            txtValue = td.textContent || td.innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-              tr[i].style.display = "";
-            } else {
-              tr[i].style.display = "none";
+
+      //Total Grade
+      document.getElementById("totalGrade").innerHTML = toPercentage(apiGrades.total_grade) + '%';
+      document.getElementById("letterGrade").innerHTML = letterGrade(apiGrades.total_grade);
+      document.getElementById("letterGrade").style = `background-color: ${rowColor(apiGrades.total_grade)}`
+
+      //What-If Grade
+      document.getElementById("whatif-totalGrade").innerHTML = toPercentage(apiGrades.total_grade) + '%';
+      document.getElementById("whatif-letterGrade").innerHTML = letterGrade(apiGrades.total_grade);
+      document.getElementById("whatif-letterGrade").style = `background-color: ${rowColor(apiGrades.total_grade)}`
+
+      //Teacher Info
+      for (let info of apiGrades.teacher) {
+        document.getElementById("instructor_name").innerHTML = info.first_name + " " + info.last_name;
+        document.getElementById("instructor_email").innerHTML = info.email_address;
+        document.getElementById("instructor_phone_number").innerHTML = info.phone_number;
+      }
+      // Assign text fields function on key up/down
+      var inputFields = document.getElementsByClassName("inputPoints");
+      for (let x of inputFields) {
+        x.onkeyup = whatIfGrade;
+        x.onkeydown = whatIfGrade;
+      }
+      // Create points possible array
+      var addPoints = document.getElementsByClassName("pointsPossible");
+      var pointsPossible = [];
+      for (let x of addPoints) {
+        pointsPossible[x.id.replace("possible_", "")] = parseInt(x.innerText);
+      }
+      // Calculate what-if grade on keyup
+      function whatIfGrade() {
+        var earned = 0;
+        var included = [];
+        for (let x of inputFields) {
+          var grades_id = x.id.replace("input_", "");
+          var inputVal = x.value;
+          if (inputVal === "-") { //exclude this assignment
+            continue;
+          } else if (inputVal === "" || inputVal === null) { //include at score 0
+            included.push(grades_id);
+          } else { //include at entered score
+            included.push(grades_id);
+            var value = parseInt(x.value);
+            if (value != NaN) {
+              earned += value;
             }
           }
         }
+        var total = 0;
+        var grade;
+        for (var i = 0; i < included.length; i++) {
+          total += pointsPossible[included[i]];
+        }
+        (total != 0) ? grade = earned / total : grade = total;
+        document.getElementById("whatif-totalGrade").innerHTML = toPercentage(grade) + '%';
+        document.getElementById("whatif-letterGrade").innerHTML = letterGrade(grade);
+        document.getElementById("whatif-letterGrade").style = `background-color: ${rowColor(grade)}`
       }
-    </script>
-    <script type="text/javascript">feather.replace({ 'aria-hidden': 'true' })</script>
-  </body>
+      // Restore database values on what-if page
+      function whatIfReset() {
+        var inputFields = document.getElementsByClassName("inputPoints");
+        for (let x of inputFields) {
+          x.value = scores[x.id.replace("input_", "")];
+        }
+        whatIfGrade();
+      }
+      document.getElementById("whatif-reset").onclick = whatIfReset;
+
+    });
+
+    // Search for an assignment by name
+    function search() {
+      var input = document.getElementById("input");
+      var filter = input.value.toUpperCase();
+      var table = document.getElementById("grades-table");
+      var tr = table.getElementsByTagName("tr");
+      var td, txtValue;
+      // Loop through assignment names
+      for (var i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[1];
+        if (td) {
+          if (td.classList.contains("category")) { continue; };
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+    
+    // Toggle between grades, what-if, attendance, and teacher info
+    function toggleView(id) {
+      document.getElementById("what-if").style.display = "none";
+      document.getElementById("instructor").style.display = "none";
+      document.getElementById("gradebook").style.display = "none";
+      document.getElementById("attendance").style.display = "none";
+      document.getElementById("whatIfBtn").classList.remove("active");
+      document.getElementById("instructorBtn").classList.remove("active");
+      document.getElementById("gradesBtn").classList.remove("active");
+      document.getElementById("attendanceBtn").classList.remove("active");
+      switch (id) {
+        case 'whatIfBtn':
+          document.getElementById("what-if").style.display = "flex";
+          break;
+        case 'instructorBtn':
+          document.getElementById("instructor").style.display = "flex";
+          break;
+        case 'gradesBtn':
+          document.getElementById("gradebook").style.display = "inline";
+          break;
+        case 'attendanceBtn':
+          document.getElementById("attendance").style.display = "inline";
+          break;
+      }
+      document.getElementById(id).classList.add("active");
+    }
+    
+    //Toggle between points and percentage
+    function gradesToggle() {
+      var points = document.getElementsByClassName("points");
+      var percentage = document.getElementsByClassName("percentage");
+      if (document.getElementById("gradesToggle").innerText === "Show Percentage") {
+        for (let x of points) {
+          x.style.display = "none";
+        }
+        for (let x of percentage) {
+          x.style.display = "table-cell"
+        }
+        document.getElementById("gradesToggle").innerText = "Show Points";
+      } else {
+        for (let x of points) {
+          x.style.display = "table-cell";
+        }
+        for (let x of percentage) {
+          x.style.display = "none";
+        }
+        document.getElementById("gradesToggle").innerText = "Show Percentage";
+      }
+    }
+    document.getElementById("gradesToggle").onclick = gradesToggle;
+
+  </script>
+  <script type="text/javascript">feather.replace({ 'aria-hidden': 'true' })</script>
+</body>
+
 </html>
