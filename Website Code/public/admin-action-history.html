@@ -80,9 +80,6 @@
                         <thead>
                             <tr>
                                 <th scope="col">User ID</th>
-                                <th scope="col">First Name</th>
-                                <th scope="col">Last Name</th>
-                                <th scope="col">Date/Time</th>
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
@@ -98,15 +95,12 @@
 
     window.addEventListener("load", async () => {
         const api = await apiCall(`admin/actions/`);
-        document.getElementById("assignments").innerHTML = "";
-        for (let action of api || []) {
-            document.getElementById("assignments").innerHTML += `
+        document.getElementById("actions").innerHTML = "";
+        for (let action of api) {
+            document.getElementById("actions").innerHTML += `
                 <tr>
-                    <td scope="col">${actions.user_id}</td>
-                    <td scope="col">${actions.first_name}</td>
-                    <td scope="col">${actions.last_name}</td>
-                    <td scope="col">${actions.date}</td>
-                    <td scope="col">${actions.description}</td>
+                    <td scope="col">${action.user_id}</td>
+                    <td scope="col">${action.first_name} ${action.last_name} (${action.user_id}) ${action.action_type} ${action.action_table} named ${action.action_target} on ${action.formatted_date}</td>
                 </tr> `;
         }
     });
@@ -120,8 +114,6 @@
     });
 </script>
 
-
-<script src="js/main.js"></script>
 <script src="js/bootstrap.bundle.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
