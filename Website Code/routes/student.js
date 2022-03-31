@@ -1,5 +1,5 @@
 const express = require('express');
-const {query} = require("../util/db");
+const {query, log_action} = require("../util/db");
 const router = express.Router();
 const auth = require("../middleware/auth");
 const validate = require('express-jsonschema').validate;
@@ -110,6 +110,8 @@ router.post('/audit', validate({ body: auditSchema }), function (req, res, next)
       res.locals.userId
     ],
     (data) => {
+      // This will need tested/fixed after messages and audit implementation is done.
+      log_action(res.locals.userId, `requested audit of ${req.body.grades_id}`, req.params.id, "Grades")
       return res.send({ success: true });
     });
 });

@@ -1,5 +1,5 @@
 const express = require('express');
-const {query} = require("../util/db");
+const {query, log_action} = require("../util/db");
 const router = express.Router();
 const auth = require("../middleware/auth");
 const validate = require('express-jsonschema').validate;
@@ -13,8 +13,8 @@ router.get('/courses', auth.verifySessionAndRole("teacher"), function (req, res,
 
 router.get('/course/:id', auth.verifySessionAndRole("teacher"), function (req, res, next) {
   // It seems res.locals.userId is the user ID that is in use, and req.params.id is the course ID we are getting the student list for. Having trouble reverse enginering this part.
-  console.log("user id: " + res.locals.userId);
-  console.log('id: ' + req.params.id);
+  //console.log("user id: " + res.locals.userId);
+  //console.log('id: ' + req.params.id);
 
   if (req.params.id == false || res.locals.userId == false) {
     // Prevents hard crash if user ID or course ID requested do not exist.
@@ -98,6 +98,7 @@ router.post('/grades/single-update', validate({ body: gradeSchema }), function (
     ],
     (data) => {
       //step 3
+      log_action(res.locals.userId, `added/updated grade id ${req.body.grades_id} to`, req.params.id, "Grades")
       return res.send({ success: true });
     });
 });

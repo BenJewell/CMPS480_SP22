@@ -64,3 +64,12 @@ function getValue(name) {
     return elem.value;
   else return undefined;
 }
+
+// Audit Grades
+function requestAudit(grade) {
+  if (grade.checked) {
+    alert ("hi");
+  } else {
+    alert ("bye");
+  }
+}

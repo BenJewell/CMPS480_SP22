@@ -1,5 +1,5 @@
 const express = require('express');
-const {query} = require("../util/db");
+const {query, log_action} = require("../util/db");
 const router = express.Router();
 const validate = require('express-jsonschema').validate;
 
@@ -24,10 +24,12 @@ router.post('/login', validate({body: LoginSchema}), function (req, res, next) {
     req.body.password
   ], data => {
     if (!data || !data.length) {
+      log_action(res.locals.userId, `failed to login to the system ${req.body.student_id}`, req.params.id, "Users")
       return res.send({success: false});
     }
     query("update `Users` set `session_key` = ? where `user_id` = ?", [data[0].key, data[0].id], () => {
     });
+    log_action(res.locals.userId, `logged into the system succesfully ${req.body.student_id}`, req.params.id, "Users")
     return res.send({success: true, ...data[0]});
   });
 });

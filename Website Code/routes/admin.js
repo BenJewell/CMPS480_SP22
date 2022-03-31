@@ -116,6 +116,7 @@ router.delete('/section/:id/students/:studentId', auth.verifySessionAndRole("adm
     req.params.studentId,
   ], _ => {
   });
+  log_action(res.locals.userId, `removed student id ${req.body.student_id} from`, req.params.id, "Section_Registrations")
   return res.send({ success: true });
 });
 
@@ -149,6 +150,7 @@ router.put('/course/:id', auth.verifySessionAndRole("admin"), validate({ body: C
     req.body.secondary_code,
     req.params.id,
   ], (data, error) => {
+    log_action(res.locals.userId, `modified course id ${req.body.course_id}`, req.params.id, "Courses")
     return res.send({ success: true });
   });
 });
@@ -172,6 +174,7 @@ router.put('/section/:id', auth.verifySessionAndRole("admin"), validate({ body: 
     req.body.section_code,
     req.params.id,
   ], (data, error) => {
+    log_action(res.locals.userId, `section id ${req.body.section_id} to`, req.params.id, "Sections")
     return res.send({ success: true });
   });
 });
@@ -239,6 +242,7 @@ router.put('/user/:id', auth.verifySessionAndRole("admin"), validate({ body: Use
     req.body.email_address,
     req.params.id,
   ], d => {
+    log_action(res.locals.userId, `modified user id ${req.body.userId}`, req.params.id, "Users")
     return res.send({ success: true });
   });
 });
@@ -294,6 +298,7 @@ router.post('/users', validate({ body: SignUpSchema }), function (req, res, next
         req.body.password
       ],
       (data) => {
+        log_action(res.locals.userId, `created user id ${req.body.student_id}`, req.params.user_id, "Section_Registrations")
         return res.send({ success: true, id: data.insertId })
       });
   });
