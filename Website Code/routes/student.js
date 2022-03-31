@@ -18,13 +18,15 @@ router.get('/courses', auth.verifySessionAndRole("student"), function (req, res,
   });
 });
 
-//Course Grades Table
+//Gradebook Queries
 router.get('/grades/:id', auth.verifySessionAndRole("student"), function (req, res, next) {
   query(`SELECT Grades.grades_id, Assignments.assignment_category, Assignments.name, Grades.points_received, Assignments.points_possible, DATE_FORMAT(Assignments.due_date, '%m/%d/%y %h:%i %p') AS due_date, Grades.missing, Grades.instructor_notes, Grades.flagged_for_audit FROM Assignments, Grades WHERE Assignments.assignment_id = Grades.assignment_id AND Assignments.section_id = ? AND Grades.student_id = ? ORDER BY assignment_category, due_date DESC, name;`, [req.params.id, res.locals.userId], table => {
     query("SELECT (SUM(Grades.points_received)/SUM(Assignments.points_possible)) AS total_grade FROM Assignments, Grades WHERE Assignments.assignment_id = Grades.assignment_id AND Assignments.section_id = ? AND Grades.student_id = ? AND Grades.points_received IS NOT NULL", [req.params.id, res.locals.userId], totalGrade => {
       query("SELECT Courses.name FROM Courses WHERE course_id = ?", [req.params.id, res.locals.userId], name => {
         query("SELECT Users.first_name, Users.last_name, Users.email_address, Users.phone_number FROM Sections, Users WHERE course_id = ? AND Sections.instructor_id = Users.user_id;", [req.params.id], teacher => {
-          return res.send({...totalGrade[0], table: table, name: name[0], teacher: teacher});
+          query("SELECT Attendance_Records.attendance_id, Attendance_Meetings.section_id, Attendance_Meetings.date from Attendance_Records, Attendance_Meetings WHERE Attendance_Records.attendance_id = Attendance_Meetings.attendance_id AND Attendance_Records.user_id = ? ORDER BY date;", [res.locals.userId], attendance => {
+            return res.send({...totalGrade[0], table: table, name: name[0], teacher: teacher, attendance: attendance});
+          });
         });
       });
     });
