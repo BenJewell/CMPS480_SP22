@@ -96,6 +96,7 @@
                 <div class="d-flex flex-column h-auto p-3 pb-3 text-white text-shadow-1">
                     <h4 class="pt-2 mt-2 display-8 lh-1 fw-bold">${course.name}</h4>
                     <small class="text-shadow-1" style="opacity:0.80;">${course["primary_code"]} ${course["secondary_code"]} ${course["section_code"]}</small>
+                    <small class="text-shadow-1" style="opacity:0.80; float:right;">${course["num_students"]} Students ${course["pending"]} Pending Grades</small>
                     <div>
                         <a href="teacher-course.html?id=${course["course_id"]}" type="button" class="btn btn-primary" style="float:right;">View Course
                             &rarr;</a>
