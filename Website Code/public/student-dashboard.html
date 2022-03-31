@@ -139,7 +139,7 @@
               <tr>
                 <th class="align-middle w-25" scope="col">Course</th>
                 <th class="align-middle" scope="col">Assignment</th>
-                <th class="align-middle text-center w-25" scope="col">Grade</th>
+                <th class="align-middle text-center w-25" scope="col">Due Date</th>
               </tr>
             </thead>
             <tbody id="upcoming-table">
@@ -160,6 +160,7 @@
               <tr>
                 <th class="align-middle w-25" scope="col">Course</th>
                 <th class="align-middle" scope="col">Assignment</th>
+                <th class="align-middle text-center w-25" scope="col">Due Date</th>
               </tr>
             </thead>
             <tbody id="missing-table">
@@ -229,7 +230,7 @@
         document.getElementById("upcoming-table").innerHTML += `
             <tr class="row-upcoming_${x.course_id}">
               <th scope="row">${x.course_name}</th>
-              <td>${x.assignment_name}</td>
+              <td class="text-center">${x.due_date}</td>
             </tr>
           `;
         if (document.getElementById("upcoming_" + x.course_id) === null) {
@@ -246,6 +247,7 @@
             <tr class="row-missing_${x.course_id}">
               <th scope="row">${x.course_name}</th>
               <td>${x.assignment_name}</td>
+              <td class="text-center">${x.due_date}</td>
             </tr>
           `;
         if (document.getElementById("missing_" + x.course_id) === null) {

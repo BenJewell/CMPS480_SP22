@@ -53,7 +53,7 @@ router.get('/dashboard/recent', auth.verifySessionAndRole("student"), function (
 });
 //Missing Table
 router.get('/dashboard/missing', auth.verifySessionAndRole("student"), function (req, res, next) {
-  query(`SELECT Courses.course_id, Courses.name AS course_name, Assignments.name AS assignment_name 
+  query(`SELECT Courses.course_id, Courses.name AS course_name, Assignments.name AS assignment_name, DATE_FORMAT(Assignments.due_date, '%m/%d/%y %h:%i %p') AS due_date 
             FROM Assignments, Grades, Sections, Courses 
             WHERE student_id = ? AND Assignments.assignment_id = Grades.assignment_id AND Sections.section_id = Assignments.section_id 
             AND Courses.course_id = Sections.course_id AND Grades.missing = 1 
@@ -63,7 +63,7 @@ router.get('/dashboard/missing', auth.verifySessionAndRole("student"), function 
 });
 //Upcoming Table
 router.get('/dashboard/upcoming', auth.verifySessionAndRole("student"), function (req, res, next) {
-  query(`SELECT Courses.course_id, Courses.name AS course_name, Assignments.name AS assignment_name, Assignments.due_date 
+  query(`SELECT Courses.course_id, Courses.name AS course_name, Assignments.name AS assignment_name, DATE_FORMAT(Assignments.due_date, '%m/%d/%y %h:%i %p') AS due_date 
             FROM Assignments, Grades, Sections, Courses 
             WHERE student_id = ? AND Assignments.assignment_id = Grades.assignment_id AND Sections.section_id = Assignments.section_id 
             AND Courses.course_id = Sections.course_id AND Grades.active = 1 AND Assignments.due_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY) 
