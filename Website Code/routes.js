@@ -5,6 +5,7 @@ const usersRouter = require('./routes/users');
 const teacherRouter = require('./routes/teacher');
 const adminRouter = require('./routes/admin');
 const studentRouter = require('./routes/student');
+const inboxRouter = require('./routes/inbox');
 const path = require("path");
 
 const app = express();
@@ -19,6 +20,7 @@ app.use('/users', usersRouter);
 app.use('/teacher', teacherRouter);
 app.use('/admin', adminRouter);
 app.use('/student', studentRouter)
+app.use('/inbox', inboxRouter)
 
 // Anyone know what this function does?
 app.use(function (err, req, res, next) {
