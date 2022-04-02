@@ -44,7 +44,7 @@ const ROLE_NAVIGATION = {
         for (let course of apiNav) {
           document.getElementById("course-list-side").innerHTML += `
                     <li class="nav-item">
-                        <a class="nav-link" id="nav-btn1" href="student-gradebook.html?id=${course.course_id}">` +
+                        <a class="nav-link" href="student-gradebook.html?id=${course.course_id}">` +
               book +
               `${course.name} (${course.primary_code} ${course.secondary_code})
                         </a>
@@ -84,7 +84,7 @@ const ROLE_NAVIGATION = {
         for (let course of api) {
           document.getElementById("course-list-side").innerHTML += `
                 <li class="nav-item">
-                    <a class="nav-link" id="nav-btn1" href="teacher-course.html?id=${course["course_id"]}">` +
+                    <a class="nav-link" href="teacher-course.html?id=${course["section_id"]}">` +
               book +
               `${course.name} (${course["primary_code"]} ${course["secondary_code"]})
                     </a>

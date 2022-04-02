@@ -206,7 +206,7 @@
           </table>
           <div class="flex-column">
             <form class="form-inline d-flex justify-content-start">
-              <button id="gradesBtn" type="button" class="toggleBtns btn btn-primary mb-2 px-2 py-1 mx-1"
+              <button type="button" class="toggleBtns btn btn-primary mb-2 px-2 py-1 mx-1"
                 onclick="location.href='/messages.html'"><span data-feather="send"></span> Send
                 Message</button>
             </form>
@@ -263,7 +263,6 @@
       var inputFields = document.getElementsByClassName("inputPoints");
       for (let x of inputFields) {
         x.onkeyup = whatIfGrade;
-        x.onkeydown = whatIfGrade;
       }
       // For What-If: Create points possible array & get total course points
       var addPoints = document.getElementsByClassName("pointsPossible");
@@ -287,7 +286,7 @@
           } else { //include at entered score
             included.push(grades_id);
             var value = parseInt(x.value);
-            if (value != NaN) {
+            if (!isNaN(value)) {
               earned += value;
             }
           }
@@ -320,7 +319,6 @@
       var attendance = [];
       for(let present of apiGrades.records){
         attendance.push(present.attendance_id);
-        console.log(present.attendance_id);
       }
       var presentIcon = feather.icons['check'].toSvg();
       var absentIcon = feather.icons['x'].toSvg();
@@ -345,10 +343,8 @@
         document.getElementById("instructor_email").innerHTML = info.email_address;
         document.getElementById("instructor_phone_number").innerHTML = info.phone_number;
       }
-
-
+      //Assign reset button onclick
       document.getElementById("whatif-reset").onclick = whatIfReset;
-
     });
 
     // Search for an assignment by name
@@ -362,7 +358,6 @@
       for (var i = 0; i < tr.length; i++) {
         td = tr[i].getElementsByTagName("td")[1];
         if (td) {
-          if (td.classList.contains("category")) { continue; };
           txtValue = td.textContent || td.innerText;
           if (txtValue.toUpperCase().indexOf(filter) > -1) {
             tr[i].style.display = "";
@@ -422,6 +417,7 @@
         document.getElementById("gradesToggle").innerText = "Show Percentage";
       }
     }
+    //Assign toggle button onclick
     document.getElementById("gradesToggle").onclick = gradesToggle;
 
   </script>

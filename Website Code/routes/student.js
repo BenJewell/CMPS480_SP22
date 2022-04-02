@@ -19,7 +19,7 @@ router.get('/grades/:id', auth.verifySessionAndRole("student"), function (req, r
       query("SELECT Courses.name FROM Courses WHERE course_id = ?", [req.params.id, res.locals.userId], name => {
         query("SELECT Users.first_name, Users.last_name, Users.email_address, Users.phone_number FROM Sections, Users WHERE course_id = ? AND Sections.instructor_id = Users.user_id;", [req.params.id], teacher => {
           query("SELECT attendance_id, DATE_FORMAT(date, '%m/%d/%y') as date FROM Attendance_Meetings WHERE section_id = ? ORDER BY date;", [req.params.id], meetings => {
-            query("SELECT Attendance_Records.attendance_id FROM Attendance_Records, Attendance_Meetings WHERE Attendance_Records.attendance_id = Attendance_Meetings.attendance_id AND section_id = ? AND user_id = ?;", [res.locals.userId, req.params.id], records => {
+            query("SELECT Attendance_Records.attendance_id FROM Attendance_Records, Attendance_Meetings WHERE Attendance_Records.attendance_id = Attendance_Meetings.attendance_id AND section_id = ? AND user_id = ?;", [req.params.id, res.locals.userId], records => {
               return res.send({ ...totalGrade[0], table: table, name: name[0], teacher: teacher, meetings: meetings, records: records});
             });
           });
