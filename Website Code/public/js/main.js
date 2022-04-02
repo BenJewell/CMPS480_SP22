@@ -37,6 +37,19 @@ const ROLE_NAVIGATION = {
     },
     { // add id div to create an empty div for dynamic content
       id: "course-list-side"
+    },
+    {
+      label: "Utilities",
+    },
+    {
+      label: "Calendar",
+      href: "student-calendar.html",
+      icon: "calendar"
+    },
+    {
+      label: "Grade Scale",
+      href: "student-grade-scale.html",
+      icon: "bar-chart"
     }
   ],
   teacher: [
