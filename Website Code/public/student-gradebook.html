@@ -163,9 +163,12 @@
                 </div>
                 <div class="modal-body">
                   An empty text field counts as 0 points earned.<br>
-                  Type a dash (-) to remove the assignment from the calculated total.<br><br>
+                  Type a dash (-) to exclude the assignment from the calculated total.<br><br>
                   A red background indicates a missing assignment.<br>
-                  A blue background indicates an ungraded assignment.
+                  A blue background indicates an ungraded assignment.<br><br>
+                  Points Earned: Sum of all numbers in the 'Points Earned' column.<br>
+                  Points Used: Sum of the points possible for included assignments.<br>
+                  Course Points: Sum of all numbers in the 'Points Possible' column.
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -195,6 +198,18 @@
                 <th scope="col">Course Grade:</th>
                 <th class="text-center w-25" scope="col" id="whatif-totalGrade"></th>
                 <th class="text-center w-25" scope="col" id="whatif-letterGrade"></th>
+              </tr>
+            </thead>
+          </table>
+          <table class="table table-bordered table-striped">
+            <thead class="table-secondary">
+              <tr>
+                <th scope="col">Points Earned:</th>
+                <td class="text-center w-25" scope="col" id="whatif-pointsEarned"></th>
+                <th scope="col">Points Used:</th>
+                <td class="text-center w-25" scope="col" id="whatif-pointsUsed"></th>
+                <th scope="col">Course Points:</th>
+                <td class="text-center w-25" scope="col" id="whatif-pointsAvailable"></th>
               </tr>
             </thead>
           </table>
@@ -292,28 +307,19 @@
       document.getElementById("letterGrade").innerHTML = letterGrade(apiGrades.total_grade);
       document.getElementById("letterGrade").style = `background-color: ${rowColor(apiGrades.total_grade)}`
 
-      //What-If Grade
-      document.getElementById("whatif-totalGrade").innerHTML = toPercentage(apiGrades.total_grade) + '%';
-      document.getElementById("whatif-letterGrade").innerHTML = letterGrade(apiGrades.total_grade);
-      document.getElementById("whatif-letterGrade").style = `background-color: ${rowColor(apiGrades.total_grade)}`
-
-      //Teacher Info
-      for (let info of apiGrades.teacher) {
-        document.getElementById("instructor_name").innerHTML = info.first_name + " " + info.last_name;
-        document.getElementById("instructor_email").innerHTML = info.email_address;
-        document.getElementById("instructor_phone_number").innerHTML = info.phone_number;
-      }
       // Assign text fields function on key up/down
       var inputFields = document.getElementsByClassName("inputPoints");
       for (let x of inputFields) {
         x.onkeyup = whatIfGrade;
         x.onkeydown = whatIfGrade;
       }
-      // Create points possible array
+      // For What-If: Create points possible array & get total course points
       var addPoints = document.getElementsByClassName("pointsPossible");
       var pointsPossible = [];
+      var totalPoints = 0;
       for (let x of addPoints) {
         pointsPossible[x.id.replace("possible_", "")] = parseInt(x.innerText);
+        totalPoints += parseInt(x.innerText);
       }
       // Calculate what-if grade on keyup
       function whatIfGrade() {
@@ -343,6 +349,8 @@
         document.getElementById("whatif-totalGrade").innerHTML = toPercentage(grade) + '%';
         document.getElementById("whatif-letterGrade").innerHTML = letterGrade(grade);
         document.getElementById("whatif-letterGrade").style = `background-color: ${rowColor(grade)}`
+        document.getElementById("whatif-pointsEarned").innerHTML = earned;
+        document.getElementById("whatif-pointsUsed").innerHTML = total;
       }
       // Restore database values on what-if page
       function whatIfReset() {
@@ -352,6 +360,18 @@
         }
         whatIfGrade();
       }
+      //What-If Grade default values
+      whatIfGrade();
+      document.getElementById("whatif-pointsAvailable").innerHTML = totalPoints;
+
+      //Teacher Info
+      for (let info of apiGrades.teacher) {
+        document.getElementById("instructor_name").innerHTML = info.first_name + " " + info.last_name;
+        document.getElementById("instructor_email").innerHTML = info.email_address;
+        document.getElementById("instructor_phone_number").innerHTML = info.phone_number;
+      }
+
+
       document.getElementById("whatif-reset").onclick = whatIfReset;
 
     });
@@ -377,7 +397,7 @@
         }
       }
     }
-    
+
     // Toggle between grades, what-if, attendance, and teacher info
     function toggleView(id) {
       document.getElementById("what-if").style.display = "none";
@@ -404,7 +424,7 @@
       }
       document.getElementById(id).classList.add("active");
     }
-    
+
     //Toggle between points and percentage
     function gradesToggle() {
       var points = document.getElementsByClassName("points");
