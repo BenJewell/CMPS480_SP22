@@ -78,18 +78,8 @@
   window.addEventListener("load", async () => {
     const api = await apiCall("teacher/courses");
     document.getElementById("courses").innerHTML = "";
-    document.getElementById("course-list-side").innerHTML = "";
     var book = feather.icons.book.toSvg();
     for (let course of api) {
-      document.getElementById("course-list-side").innerHTML += `
-
-                <li class="nav-item">
-                    <a class="nav-link" id="nav-btn1" href="teacher-course.html?id=${course["course_id"]}">` +
-                        book +
-                        `${course.name} (${course["primary_code"]} ${course["secondary_code"]})
-                    </a>
-                </li>
-				`;
       document.getElementById("courses").innerHTML += `
         <div class="col">
             <div class="card card-cover h-auto overflow-hidden text-white bg-chalk rounded-5 shadow-lg">
