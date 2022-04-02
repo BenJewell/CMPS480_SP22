@@ -9,17 +9,19 @@
   <meta name="generator" content="Hugo 0.88.1">
   <title>Good Grades: Dashboard</title>
 
-  <script src="js/login-timeout.js"></script>
-  <script src="js/sort-table.js"></script>
-
   <!-- Feather icons -->
   <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"
     integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE"
     crossorigin="anonymous"></script>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- Bootstrap core CSS -->
   <link href="CSS/bootstrap.min.css" rel="stylesheet">
-  <!-- Custom styles for this template -->
+  <!-- Custom styles -->
   <link href="CSS/dashboard.css" rel="stylesheet">
+  
+  <script src="js/login-timeout.js"></script>
+  <script src="js/sort-table.js"></script>
 </head>
 
 <body>
@@ -143,7 +145,7 @@
       for (let course of apiNav) {
         document.getElementById("course-list-side").innerHTML += `
                     <li class="nav-item">
-                        <a class="nav-link" id="nav-btn1" href="student-gradebook.html?id=${course.course_id}">` +
+                        <a class="nav-link" id="nav-btn1" href="student-gradebook.html?id=${course.section_id}">` +
           book +
           `${course.name} (${course.primary_code} ${course.secondary_code})
                         </a>
