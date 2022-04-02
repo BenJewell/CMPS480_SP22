@@ -105,23 +105,9 @@
                             <td scope="col">${assignment.description}</td>
                             <td scope="col">${assignment.formatted_due_date}</td>
                             <td scope="col">${checkNull(assignment.assignments_graded)} / ${assignment.students_count}</td>
-                        </tr>   
+                        </tr>
             `;
         }
-        const api2 = await apiCall("teacher/courses");
-        document.getElementById("course-list-side").innerHTML = "";
-        var book = feather.icons.book.toSvg();
-        for (let course of api2) {
-            document.getElementById("course-list-side").innerHTML += `
-
-                <li class="nav-item">
-                    <a class="nav-link" id="nav-btn1" href="teacher-course.html?id=${course["course_id"]}">` +
-                        book +
-                        `${course.name} (${course["primary_code"]} ${course["secondary_code"]})
-                    </a>
-                </li>
-				`;
-            }
     });
 
 </script>

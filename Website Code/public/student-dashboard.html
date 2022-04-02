@@ -183,20 +183,6 @@
   <script src="js/main.js" type="text/javascript"></script>
   <script type="text/javascript">
     window.addEventListener("load", async () => {
-      //Side Nav Bar
-      var book = feather.icons.book.toSvg();
-      const apiNav = await apiCall("student/courses");
-      document.getElementById("course-list-side").innerHTML = "";
-      for (let course of apiNav) {
-        document.getElementById("course-list-side").innerHTML += `
-                    <li class="nav-item">
-                        <a class="nav-link" id="nav-btn1" href="student-gradebook.html?id=${course.course_id}">` +
-          book +
-          `${course.name} (${course.primary_code} ${course.secondary_code})
-                        </a>
-                    </li>
-            `;
-      }
 
       //Overview Table
       const apiOverview = await apiCall("student/dashboard/overview");

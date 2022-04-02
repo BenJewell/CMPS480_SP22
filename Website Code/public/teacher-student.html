@@ -146,7 +146,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     const api = await apiCall(`teacher/student/${getQueryVariable('studentId')}/${getQueryVariable('courseId')}`);
     document.getElementById("assignmentListBtn").setAttribute("onclick", `window.location.href='teacher-course.html?id=${getQueryVariable('courseId')}'`);
     document.getElementById("studentName").innerHTML = api.first_name + " " + api.last_name;
-    
+
     let badges = {
       missing: '<span class="badge bg-danger">Missing</span>',
       not_missing: '<span class="badge bg-success">Not missing</span>',
@@ -169,19 +169,6 @@ window.addEventListener("DOMContentLoaded", async () => {
                         <td><button class="btn btn-outline-secondary editBtns" id="editbutton_${assignment.assignment_id}-${assignment.student_id}">✎</button></td>
                     </tr>
         `;
-    }
-    const api2 = await apiCall("teacher/courses");
-    document.getElementById("course-list-side").innerHTML = "";
-    var book = feather.icons.book.toSvg();
-    for (let course of api2) {
-      document.getElementById("course-list-side").innerHTML += `
-                <li class="nav-item">
-                    <a class="nav-link" href="teacher-course.html?id=${course["course_id"]}">` +
-                        book +
-                        `${course.name} (${course["primary_code"]} ${course["secondary_code"]})
-                    </a>
-                </li>
-			`;
     }
 
     //Fill edit fields and show them
@@ -230,7 +217,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         let pointsReceived = document.getElementById("pointsReceived").value;
         if(isNaN(parseInt(pointsReceived)) || pointsReceived === ""){
             pointsReceived = null;
-        } else { 
+        } else {
             pointsReceived = parseInt(pointsReceived);
         }
         let missingCheck = document.getElementById("missingCheck").checked ? 1 : 0;
