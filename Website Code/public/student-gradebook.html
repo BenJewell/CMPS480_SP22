@@ -214,8 +214,21 @@
             </thead>
           </table>
         </div>
-        <div id="attendance" style="display: none;">
-          <p>Attendance system viewed here</p>
+        <div id="attendance" style="display: none;" class="pt-3 pb-2 flex-column">
+          <table class="table table-bordered pt-3" id="attendance-table">
+            <thead class="table-primary">
+              <tr>
+                <th class="align-middle text-center" colspan="2">Attendance Records</th>
+              </tr>
+              <tr>
+                <th class="align-middle text-center">Date</th>
+                <th class="align-middle text-center">Present</th>
+              </tr>
+            </thead>
+            <tbody id="attendance-records">
+              <!-- API Insertion -->
+            </tbody>
+          </table>
         </div>
         <div id="instructor" style="display: none;" class="pt-3 pb-2 flex-column">
           <table class="table table-bordered" id="instructor-table">
@@ -364,6 +377,28 @@
       whatIfGrade();
       document.getElementById("whatif-pointsAvailable").innerHTML = totalPoints;
 
+      //Attendance Records
+      var attendance = [];
+      for(let present of apiGrades.records){
+        attendance.push(present.attendance_id);
+      }
+      var presentIcon = feather.icons['check'].toSvg();
+      var absentIcon = feather.icons['x'].toSvg();
+      document.getElementById("attendance-records").innerHTML = "";
+      for (let record of apiGrades.meetings) {
+        document.getElementById("attendance-records").innerHTML += `
+            <tr>
+              <td class="text-center w-50" scope="row">${record.date}</td>
+              <td class="text-center w-50" scope="row">${(attendance.includes(record.attendance_id) ? presentIcon : absentIcon)}</td>
+            </tr>
+          `;
+      }
+      document.getElementById("attendance-records").innerHTML += `
+            <tr>
+              <th class="text-center w-50" scope="row">Total:</td>
+              <td class="text-center w-50" scope="row">${attendance.length} / ${apiGrades.meetings.length}</td>
+            </tr>
+          `;
       //Teacher Info
       for (let info of apiGrades.teacher) {
         document.getElementById("instructor_name").innerHTML = info.first_name + " " + info.last_name;
@@ -419,7 +454,7 @@
           document.getElementById("gradebook").style.display = "inline";
           break;
         case 'attendanceBtn':
-          document.getElementById("attendance").style.display = "inline";
+          document.getElementById("attendance").style.display = "flex";
           break;
       }
       document.getElementById(id).classList.add("active");
