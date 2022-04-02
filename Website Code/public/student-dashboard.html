@@ -107,7 +107,10 @@
 
         <div
           class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h3 class="h3">Recently Graded</h1>
+          <div class="justify-content-start flex-md-nowrap d-inline-flex align-items-baseline">
+            <h3 class="h3">Recently Graded</h1>
+            <p class="px-2 pt-2">Last 7 days</p>
+          </div>
             <div id="recent-buttons" class="justify-content-end">
               <!-- API Buttons Insertion -->
             </div>
@@ -128,7 +131,10 @@
         </div>
         <div
           class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h3 class="h3">Due Soon</h1>
+            <div class="justify-content-start flex-md-nowrap d-inline-flex align-items-baseline">
+              <h3 class="h3">Due Soon</h1>
+              <p class="px-2 pt-2">Next 7 days</p>
+            </div>
             <div id="upcoming-buttons" class="justify-content-end">
               <!-- API Buttons Insertion -->
             </div>
@@ -139,7 +145,7 @@
               <tr>
                 <th class="align-middle w-25" scope="col">Course</th>
                 <th class="align-middle" scope="col">Assignment</th>
-                <th class="align-middle text-center w-25" scope="col">Grade</th>
+                <th class="align-middle text-center w-25" scope="col">Due Date</th>
               </tr>
             </thead>
             <tbody id="upcoming-table">
@@ -160,6 +166,7 @@
               <tr>
                 <th class="align-middle w-25" scope="col">Course</th>
                 <th class="align-middle" scope="col">Assignment</th>
+                <th class="align-middle text-center w-25" scope="col">Due Date</th>
               </tr>
             </thead>
             <tbody id="missing-table">
@@ -229,7 +236,7 @@
         document.getElementById("upcoming-table").innerHTML += `
             <tr class="row-upcoming_${x.course_id}">
               <th scope="row">${x.course_name}</th>
-              <td>${x.assignment_name}</td>
+              <td class="text-center">${x.due_date}</td>
             </tr>
           `;
         if (document.getElementById("upcoming_" + x.course_id) === null) {
@@ -246,6 +253,7 @@
             <tr class="row-missing_${x.course_id}">
               <th scope="row">${x.course_name}</th>
               <td>${x.assignment_name}</td>
+              <td class="text-center">${x.due_date}</td>
             </tr>
           `;
         if (document.getElementById("missing_" + x.course_id) === null) {
