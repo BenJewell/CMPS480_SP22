@@ -83,7 +83,6 @@ const ROLE_NAVIGATION = {
         let book = feather.icons.book.toSvg();
         for (let course of api) {
           document.getElementById("course-list-side").innerHTML += `
-
                 <li class="nav-item">
                     <a class="nav-link" id="nav-btn1" href="teacher-course.html?id=${course["course_id"]}">` +
               book +

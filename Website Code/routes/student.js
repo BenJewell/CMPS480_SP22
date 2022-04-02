@@ -7,14 +7,8 @@ const validate = require('express-jsonschema').validate;
 
 //Side Nav
 router.get('/courses', auth.verifySessionAndRole("student"), function (req, res, next) {
-  query("SELECT section_id FROM Section_Registrations WHERE student_id = ?", [res.locals.userId], d => {
-    let results = [];
-    for (let data of d) {
-      results.push(Object.values(data));
-    }
-    query("SELECT * FROM Sections, Courses WHERE section_id IN ? AND Courses.course_id = Sections.course_id ORDER BY Courses.name", [results], d => {
+  query("SELECT * FROM Sections, Courses WHERE section_id IN (SELECT section_id FROM Section_Registrations WHERE student_id = ?) AND Courses.course_id = Sections.course_id ORDER BY Courses.name;", [res.locals.userId], d => {
       return res.send(d);
-    });
   });
 });
 
@@ -25,7 +19,7 @@ router.get('/grades/:id', auth.verifySessionAndRole("student"), function (req, r
       query("SELECT Courses.name FROM Courses WHERE course_id = ?", [req.params.id, res.locals.userId], name => {
         query("SELECT Users.first_name, Users.last_name, Users.email_address, Users.phone_number FROM Sections, Users WHERE course_id = ? AND Sections.instructor_id = Users.user_id;", [req.params.id], teacher => {
           query("SELECT attendance_id, DATE_FORMAT(date, '%m/%d/%y') as date FROM Attendance_Meetings WHERE section_id = ? ORDER BY date;", [req.params.id], meetings => {
-            query("SELECT attendance_id FROM Attendance_Records WHERE user_id = ?;", [res.locals.userId], records => {
+            query("SELECT Attendance_Records.attendance_id FROM Attendance_Records, Attendance_Meetings WHERE Attendance_Records.attendance_id = Attendance_Meetings.attendance_id AND section_id = ? AND user_id = ?;", [res.locals.userId, req.params.id], records => {
               return res.send({ ...totalGrade[0], table: table, name: name[0], teacher: teacher, meetings: meetings, records: records});
             });
           });
@@ -85,9 +79,7 @@ router.get('/grades/:id', auth.verifySessionAndRole("student"), function (req, r
           AND Assignments.due_date > now() 
           ORDER BY Assignments.due_date
   `, [res.locals.userId], table => {
-      query("SELECT Courses.course_id, name AS course_name FROM Sections, Courses, Section_Registrations WHERE student_id = ? AND Sections.section_id = Section_Registrations.section_id AND Courses.course_id = Sections.course_id ", [res.locals.userId], courses => {
-        return res.send({ courses: courses, table: table });
-      });
+      return res.send(table);
     });
   });
 

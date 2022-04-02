@@ -8,18 +8,19 @@
   <meta name="author" content="Emily Foglia">
   <title id="title">Good Grades: Gradebook</title>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="js/login-timeout.js"></script>
-  <script src="js/sort-table.js"></script>
-
   <!-- Feather icons -->
   <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"
     integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE"
     crossorigin="anonymous"></script>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- Bootstrap core CSS -->
   <link href="CSS/bootstrap.min.css" rel="stylesheet">
-  <!-- Custom styles for this template -->
+  <!-- Custom styles -->
   <link href="CSS/dashboard.css" rel="stylesheet">
+
+  <script src="js/login-timeout.js"></script>
+  <script src="js/sort-table.js"></script>
 </head>
 
 <body>
@@ -36,54 +37,7 @@
 
   <div class="container-fluid">
     <div class="row">
-      <nav id="sidebarMenu" class="navbar-collapse col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-        <div class="position-sticky pt-3">
-          <ul class="nav flex-column">
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="student-dashboard.html">
-                <span data-feather="home"></span>
-                Dashboard
-              </a>
-            </li>
-            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-              <span>Courses</span>
-            </h6>
-            <div id="course-list-side">
-              <!-- API Insertion -->
-            </div>
-            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-              <span>Utilities</span>
-            </h6>
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="student-messaging.html">
-                <span data-feather="mail"></span>
-                Messages
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="student-calendar.html">
-                <span data-feather="calendar"></span>
-                Calendar
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="student-grade-scale.html">
-                <span data-feather="bar-chart"></span>
-                Grade Scale
-              </a>
-            </li>
-            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-              <span>Account</span>
-            </h6>
-            <li class="nav-item">
-              <a class="nav-link" href="logout.html">
-                <span data-feather="log-out"></span>
-                Log Out
-              </a>
-            </li>
-          </ul>
-        </div>
-      </nav>
+      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"></nav>
 
       <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 border-bottom">
@@ -218,7 +172,7 @@
           <table class="table table-bordered pt-3" id="attendance-table">
             <thead class="table-primary">
               <tr>
-                <th class="align-middle text-center" colspan="2">Attendance Records</th>
+                <th class="align-middle text-center" colspan="2"><h1 class="h4">Attendance Records</h1></th>
               </tr>
               <tr>
                 <th class="align-middle text-center">Date</th>
@@ -253,7 +207,7 @@
           <div class="flex-column">
             <form class="form-inline d-flex justify-content-start">
               <button id="gradesBtn" type="button" class="toggleBtns btn btn-primary mb-2 px-2 py-1 mx-1"
-                onclick="location.href='/student-messaging.html'"><span data-feather="send"></span> Send
+                onclick="location.href='/messages.html'"><span data-feather="send"></span> Send
                 Message</button>
             </form>
           </div>
@@ -267,7 +221,6 @@
   <script src="js/main.js" type="text/javascript"></script>
   <script type="text/javascript">
     window.addEventListener("load", async () => {
-
       //Grades Table
       var warning = feather.icons['alert-circle'].toSvg();
       var scores = [];
@@ -367,6 +320,7 @@
       var attendance = [];
       for(let present of apiGrades.records){
         attendance.push(present.attendance_id);
+        console.log(present.attendance_id);
       }
       var presentIcon = feather.icons['check'].toSvg();
       var absentIcon = feather.icons['x'].toSvg();
