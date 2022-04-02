@@ -18,12 +18,12 @@ const fs = require('fs');
 
 var server, port
 
-if (process.argv[2] == "prod") {
+if (process.argv[2] === "prod") {
   console.log("Running in PRODUCTION mode")
   port = "443"
   var https_options = {
-    key: fs.readFileSync("ssl/privkey.pem"),
-    cert: fs.readFileSync("ssl/fullchain.crt"),
+    key: fs.readFileSync("config/ssl/privkey.pem"),
+    cert: fs.readFileSync("config/ssl/fullchain.crt"),
   }
   server = https.createServer(https_options, app);
 

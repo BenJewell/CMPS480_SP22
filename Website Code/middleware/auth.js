@@ -10,3 +10,15 @@ exports.verifySessionAndRole = function (role) {
     });
   }
 };
+
+// verify session without verifying role
+exports.verifySession = function () {
+  return function (req, res, next) {
+    query("select `user_id` from `Users` where `session_key` = ?", [req.headers["x-session-key"]], data => {
+      if (!data || !data.length)
+        return res.status(401).send({success: false, error: "Not authorized"});
+      res.locals.userId = data[0].user_id;
+      return next();
+    });
+  }
+}
