@@ -43,27 +43,25 @@
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 border-bottom">
           <h1 class="h2" id="courseTitle">Course Name</h1>
           <form class="form-inline d-flex justify-content-end">
-            <button onClick="toggleView(this.id);" id="gradesBtn" type="button"
-              class="toggleBtns btn btn-outline-primary mb-2 px-2 py-1 mx-1 active"><span
+            <button id="gradesBtn" type="button" class="btn btn-outline-primary mb-2 px-2 py-1 mx-1 active"><span
                 data-feather="bar-chart-2"></span> Grades</button>
-            <button onClick="toggleView(this.id);" id="whatIfBtn" type="button"
-              class="toggleBtns btn btn-outline-primary mb-2 px-2 py-1 mx-1"><span data-feather="clipboard"></span>
+            <button id="whatIfBtn" type="button" class="btn btn-outline-primary mb-2 px-2 py-1 mx-1"><span
+                data-feather="clipboard"></span>
               What if...</button>
-            <button onClick="toggleView(this.id);" id="attendanceBtn" type="button"
-              class="toggleBtns btn btn-outline-primary mb-2 px-2 py-1 mx-1"><span data-feather="check-circle"></span>
+            <button id="attendanceBtn" type="button" class="btn btn-outline-primary mb-2 px-2 py-1 mx-1"><span
+                data-feather="check-circle"></span>
               Attendance</button>
-            <button onClick="toggleView(this.id);" id="instructorBtn" type="button"
-              class="toggleBtns btn btn-outline-primary mb-2 px-2 py-1 mx-1"><span data-feather="user"></span>
+            <button id="instructorBtn" type="button" class="btn btn-outline-primary mb-2 px-2 py-1 mx-1"><span
+                data-feather="user"></span>
               Instructor</button>
           </form>
         </div>
         <div id="gradebook">
           <div class="justify-content-start align-items-center pt-1 pb-2">
             <form class="form-inline d-flex justify-content-start">
-              <input class="form-control my-2" type="text" id="input" onkeyup="search()"
-                placeholder="Search for an assignment">
-              <button id="gradesToggle" type="button" class="btn btn-primary my-2 px-2 py-1 mx-1 text-nowrap">Show
-                Percentage</button>
+              <input class="form-control my-2" type="text" id="input" placeholder="Search for an assignment">
+              <button id="gradesToggle" type="button" class="btn btn-primary my-2 px-2 py-1 mx-1 text-nowrap">
+                Show Percentage</button>
             </form>
           </div>
           <div id="full-grades-table">
@@ -90,8 +88,12 @@
               <thead class="table-secondary" id=totalGradeHeader>
                 <tr>
                   <th scope="col">Course Grade:</th>
-                  <th class="text-center w-25" scope="col" id="totalGrade"></th>
-                  <th class="text-center w-25" scope="col" id="letterGrade"></th>
+                  <th class="text-center w-25" scope="col" id="totalGrade">
+                    <!-- API Insertion -->
+                  </th>
+                  <th class="text-center w-25" scope="col" id="letterGrade">
+                    <!-- API Insertion -->
+                  </th>
                 </tr>
               </thead>
             </table>
@@ -101,19 +103,19 @@
           <div class="justify-content-start align-items-center pt-1 pb-2">
             <form class="form-inline d-flex justify-content-end">
               <button type="button" class="btn btn-primary my-2 px-2 py-1 mx-1 text-nowrap" data-bs-toggle="modal"
-                data-bs-target="#instructions_modal"><span data-feather="help-circle"></span> Show
-                Instructions</button>
+                data-bs-target="#instructions_modal"><span data-feather="help-circle"></span> Show Instructions
+              </button>
               <button id="whatif-reset" type="button" class="btn btn-primary my-2 px-2 py-1 mx-1 text-nowrap"><span
                   data-feather="refresh-cw"></span> Reset</button>
             </form>
           </div>
           <!-- Modal -->
           <div class="modal fade" id="instructions_modal" tabindex="-1" role="dialog"
-            aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            aria-labelledby="Instructions panel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLongTitle">Instructions</h5>
+                  <h5 class="modal-title">Instructions</h5>
                 </div>
                 <div class="modal-body">
                   An empty text field counts as 0 points earned.<br>
@@ -150,8 +152,12 @@
             <thead class="table-secondary">
               <tr>
                 <th scope="col">Course Grade:</th>
-                <th class="text-center w-25" scope="col" id="whatif-totalGrade"></th>
-                <th class="text-center w-25" scope="col" id="whatif-letterGrade"></th>
+                <th class="text-center w-25" scope="col" id="whatif-totalGrade">
+                  <!-- API Insertion -->
+                </th>
+                <th class="text-center w-25" scope="col" id="whatif-letterGrade">
+                  <!-- API Insertion -->
+                </th>
               </tr>
             </thead>
           </table>
@@ -159,11 +165,17 @@
             <thead class="table-secondary">
               <tr>
                 <th scope="col">Points Earned:</th>
-                <td class="text-center w-25" scope="col" id="whatif-pointsEarned"></th>
+                <td class="text-center w-25" scope="col" id="whatif-pointsEarned">
+                  <!-- API Insertion -->
+                </td>
                 <th scope="col">Points Used:</th>
-                <td class="text-center w-25" scope="col" id="whatif-pointsUsed"></th>
+                <td class="text-center w-25" scope="col" id="whatif-pointsUsed">
+                  <!-- API Insertion -->
+                </td>
                 <th scope="col">Course Points:</th>
-                <td class="text-center w-25" scope="col" id="whatif-pointsAvailable"></th>
+                <td class="text-center w-25" scope="col" id="whatif-pointsAvailable">
+                  <!-- API Insertion -->
+                </td>
               </tr>
             </thead>
           </table>
@@ -172,7 +184,9 @@
           <table class="table table-bordered pt-3" id="attendance-table">
             <thead class="table-primary">
               <tr>
-                <th class="align-middle text-center" colspan="2"><h1 class="h4">Attendance Records</h1></th>
+                <th class="align-middle text-center" colspan="2">
+                  <h1 class="h4">Attendance Records</h1>
+                </th>
               </tr>
               <tr>
                 <th class="align-middle text-center">Date</th>
@@ -189,26 +203,32 @@
             <thead class="table-primary">
               <tr>
                 <th class="align-middle" colspan="2">
-                  <h1 class="h4" id="instructor_name">Instructor Name</h1>
+                  <h1 class="h4" id="instructor_name">
+                    <!-- API Insertion -->
+                  </h1>
                 </th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td class="align-middle w-25" scope="col">Email:</th>
-                <td class="align-middle" scope="col" id="instructor_email">email@address.com</th>
+                <td class="align-middle w-25" scope="col">Email:</td>
+                <td class="align-middle" scope="col" id="instructor_email">
+                  <!-- API Insertion -->
+                </td>
               </tr>
               <tr>
-                <td class="align-middle w-25" scope="col">Phone Number:</th>
-                <td class="align-middle" scope="col" id="instructor_phone_number">(000) 000-0000</th>
+                <td class="align-middle w-25" scope="col">Phone Number:</td>
+                <td class="align-middle" scope="col" id="instructor_phone_number">
+                  <!-- API Insertion -->
+                </td>
               </tr>
             </tbody>
           </table>
           <div class="flex-column">
             <form class="form-inline d-flex justify-content-start">
-              <button id="gradesBtn" type="button" class="toggleBtns btn btn-primary mb-2 px-2 py-1 mx-1"
-                onclick="location.href='/messages.html'"><span data-feather="send"></span> Send
-                Message</button>
+              <button id="msgBtn" type="button" class="btn btn-primary mb-2 px-2 py-1 mx-1">
+                <span data-feather="send"></span> Send Message
+              </button>
             </form>
           </div>
         </div>
@@ -237,7 +257,7 @@
               <td class="text-center points" style="background-color: ${rowColor(points / assignment.points_possible)}">${points}/${assignment.points_possible}</td>
               <td class="text-center percentage" style="display: none; background-color: ${rowColor(points / assignment.points_possible)}">${(points === "-" ? "-" : toPercentage(assignment.points_received / assignment.points_possible))}%</td>
               <td class="text-center">${assignment.due_date}</td>
-              <td class="text-center" style="background-color: ${missing.color}">${missing.icon}</td>
+              <td class="text-center" style="background-color: ${missing.color}">${missing.icon ? (missing.icon + '<p style="display: none;">1</p>') : '<p style="display: none;">0</p>'}</td>
               <td class="text-center">${checkNull(assignment.instructor_notes)}</td>
               <td class="text-center"><input id="audit_${assignment.grades_id} class="auditCheckBoxes form-check-input" type="checkbox" value="" ${assignment.flagged_for_audit === 1 ? 'checked' : ''}></td>
             </tr>
@@ -247,24 +267,17 @@
             <tr>
               <td scope="row">${assignment.assignment_category}</td>
               <td scope="row">${assignment.name}</td>
-              <td class="text-center w-25" style="background-color: ${(points === "-" ? "hsla(180, 100%, 60%, 0.6)" : missing.color)}"><input type="text" class="form-control w-100 inputPoints"  id="input_${assignment.grades_id}"  value=${points}></td>
+              <td class="text-center w-25" style="background-color: ${(points === "-" ? "hsla(180, 100%, 60%, 0.6)" : missing.color)}"><input type="text" class="form-control w-100 inputPoints"  id="input_${assignment.grades_id}" value=${points}></td>
               <td class="text-center pointsPossible" id="possible_${assignment.grades_id}" style="background-color: ${(points === "-" ? "hsla(180, 100%, 60%, 0.6)" : missing.color)}">${assignment.points_possible}</td>
               <td class="text-center">${assignment.due_date}</td>
             </tr>
           `;
       }
-
       //Total Grade
       document.getElementById("totalGrade").innerHTML = toPercentage(apiGrades.total_grade) + '%';
       document.getElementById("letterGrade").innerHTML = letterGrade(apiGrades.total_grade);
       document.getElementById("letterGrade").style = `background-color: ${rowColor(apiGrades.total_grade)}`
 
-      // Assign text fields function on key up/down
-      var inputFields = document.getElementsByClassName("inputPoints");
-      for (let x of inputFields) {
-        x.onkeyup = whatIfGrade;
-        x.onkeydown = whatIfGrade;
-      }
       // For What-If: Create points possible array & get total course points
       var addPoints = document.getElementsByClassName("pointsPossible");
       var pointsPossible = [];
@@ -287,7 +300,7 @@
           } else { //include at entered score
             included.push(grades_id);
             var value = parseInt(x.value);
-            if (value != NaN) {
+            if (!isNaN(value)) {
               earned += value;
             }
           }
@@ -304,6 +317,11 @@
         document.getElementById("whatif-pointsEarned").innerHTML = earned;
         document.getElementById("whatif-pointsUsed").innerHTML = total;
       }
+      // For What-If: Assign text fields function on key up
+      var inputFields = document.getElementsByClassName("inputPoints");
+      for (let x of inputFields) {
+        x.onkeyup = whatIfGrade;
+      }
       // Restore database values on what-if page
       function whatIfReset() {
         var inputFields = document.getElementsByClassName("inputPoints");
@@ -312,24 +330,27 @@
         }
         whatIfGrade();
       }
+      //Assign reset button onclick
+      document.getElementById("whatif-reset").onclick = whatIfReset;
+
       //What-If Grade default values
       whatIfGrade();
       document.getElementById("whatif-pointsAvailable").innerHTML = totalPoints;
 
       //Attendance Records
       var attendance = [];
-      for(let present of apiGrades.records){
+      for (let present of apiGrades.records) {
         attendance.push(present.attendance_id);
-        console.log(present.attendance_id);
       }
       var presentIcon = feather.icons['check'].toSvg();
       var absentIcon = feather.icons['x'].toSvg();
       document.getElementById("attendance-records").innerHTML = "";
       for (let record of apiGrades.meetings) {
         document.getElementById("attendance-records").innerHTML += `
-            <tr>
+            <tr style="background-color: ${(attendance.includes(record.attendance_id) ? "hsla(160, 100%, 50%, 0.3)" : "hsla(0, 100%, 50%, 0.3)")}">
               <td class="text-center w-50" scope="row">${record.date}</td>
-              <td class="text-center w-50" scope="row">${(attendance.includes(record.attendance_id) ? presentIcon : absentIcon)}</td>
+              <td class="text-center w-50" scope="row">
+                ${(attendance.includes(record.attendance_id) ? presentIcon : absentIcon)}</td>
             </tr>
           `;
       }
@@ -339,6 +360,7 @@
               <td class="text-center w-50" scope="row">${attendance.length} / ${apiGrades.meetings.length}</td>
             </tr>
           `;
+
       //Teacher Info
       for (let info of apiGrades.teacher) {
         document.getElementById("instructor_name").innerHTML = info.first_name + " " + info.last_name;
@@ -346,10 +368,10 @@
         document.getElementById("instructor_phone_number").innerHTML = info.phone_number;
       }
 
-
-      document.getElementById("whatif-reset").onclick = whatIfReset;
-
     });
+
+    //On-click for send message button
+    document.getElementById("msgBtn").setAttribute("onclick", "() => location.href='/messages.html'");
 
     // Search for an assignment by name
     function search() {
@@ -362,7 +384,6 @@
       for (var i = 0; i < tr.length; i++) {
         td = tr[i].getElementsByTagName("td")[1];
         if (td) {
-          if (td.classList.contains("category")) { continue; };
           txtValue = td.textContent || td.innerText;
           if (txtValue.toUpperCase().indexOf(filter) > -1) {
             tr[i].style.display = "";
@@ -372,6 +393,7 @@
         }
       }
     }
+    document.getElementById("input").setAttribute("onkeyup", "search()");
 
     // Toggle between grades, what-if, attendance, and teacher info
     function toggleView(id) {
@@ -399,6 +421,12 @@
       }
       document.getElementById(id).classList.add("active");
     }
+    //Set onclick for all toggle buttons
+    document.getElementById("whatIfBtn").setAttribute("onClick", "toggleView(this.id)");
+    document.getElementById("instructorBtn").setAttribute("onClick", "toggleView(this.id)");
+    document.getElementById("gradesBtn").setAttribute("onClick", "toggleView(this.id)");
+    document.getElementById("attendanceBtn").setAttribute("onClick", "toggleView(this.id)");
+
 
     //Toggle between points and percentage
     function gradesToggle() {
@@ -422,6 +450,7 @@
         document.getElementById("gradesToggle").innerText = "Show Percentage";
       }
     }
+    //Assign toggle button onclick
     document.getElementById("gradesToggle").onclick = gradesToggle;
 
   </script>

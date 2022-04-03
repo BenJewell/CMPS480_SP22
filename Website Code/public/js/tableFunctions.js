@@ -42,14 +42,14 @@ function toPercentage(num) {
 }
 
 function checkNull(val) {
-    return (val == null) ? "-" : val;
+    return (val === null) ? "-" : val;
 }
 
 function checkNullZero(val) {
-    return (val == null || val == 0) ? "-" : val;
+    return (val === null || val == 0) ? "-" : val;
 }
 
 function checkMissing(miss) {
-    if (miss === 0) return {color: "", icon: ""};
+    if (!miss) return {color: "", icon: ""};
     return {color: "hsla(0, 100%, 50%, 0.3)", icon: feather.icons['alert-circle'].toSvg()};
 }
