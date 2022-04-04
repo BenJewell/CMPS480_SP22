@@ -214,7 +214,7 @@ async function initInbox() {
     }
 
     if (subject.length < 1 || text.length < 1) {
-      return alert("Please enter a valid message.");
+      return alert("Please enter a valid subject and message.");
     }
 
     await apiCall(`inbox/messages`, "POST", {

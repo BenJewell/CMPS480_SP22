@@ -107,20 +107,23 @@
                   <h5 class="modal-title" id="exampleModalLongTitle">Request Audit</h5>
                 </div>
                 <div class="modal-body">
-                  If you belive this assignment has beeng graded incorrectly, you can request your instrctor to review
+                  If you believe this assignment has beeng graded incorrectly, you can request your instrctor to review
                   it.<br>
                   Enter your reasoning below to start a message thread:<br><br>
 
-                  To: {instructor_name}<br>
-                  Subject: Requesting review of {assignment_name}<br>
+                  To: <div id=instructorName></div><br>
+                  Subject: Requesting review of <div id=assignmentName></div><br>
                   Message:<br>
                   <textarea id="auditMessage" cols="60" rows="7"></textarea><br>
-                  
+
                   Need to get submit button blue and load in assignment and instructor name d. Make cursor align left.
+                  Fix placeholders. Link to smssagings ystem.
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="Submit to messages system and check box on the front end ">Submit</button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                    id="submit-audit">Submit</button>
+                    audit_${assignment.grades_id}
                 </div>
               </div>
             </div>
@@ -287,7 +290,7 @@
               <td class="text-center">${assignment.due_date}</td>
               <td class="text-center" style="background-color: ${missing.color}">${missing.icon ? (missing.icon + '<p style="display: none;">1</p>') : '<p style="display: none;">0</p>'}</td>
               <td class="text-center">${checkNull(assignment.instructor_notes)}</td>
-              <td class="text-center"><input id="audit_${assignment.grades_id}" class="auditCheckBoxes form-check-input" type="checkbox" value="${assignment.flagged_for_audit === 1 ? 'checked' : ''}" data-bs-toggle="modal" data-bs-target="#audit_modal" onclick="return false;" onkeydown="return false;"></td>
+              <td class="text-center"><input id="audit_${assignment.grades_id}-${assignment.name}" class="auditCheckBoxes form-check-input" type="checkbox" value="${assignment.flagged_for_audit === 1 ? 'checked' : ''}" data-bs-toggle="modal" data-bs-target="#audit_modal" onclick="return false;" onkeydown="return false;"></td>
             </tr>
           `;
         //What-if Table
@@ -480,6 +483,21 @@
     }
     //Assign toggle button onclick
     document.getElementById("gradesToggle").onclick = gradesToggle;
+
+    //Send messages for the audit functionality
+    //submit-audit
+    function auditCheck(gradesID, assignmentName, instructorName){
+      document.getElementById("assignmentName").innerHTML = assignmentName;
+      document.getElementById("instructorName").innerHTML = instructorName;
+      document.getElementById("submit-audit").addEventListener("click", submitAudit(gradesID));
+    }
+    async function submitAudit(gradesID){
+      await apiCall(`inbox/messages`, "POST", {
+      recipient_id: userId,
+      subject: "Flagged for audit",
+      message: "",
+      });
+    }
 
   </script>
   <script type="text/javascript">feather.replace({ 'aria-hidden': 'true' })</script>
