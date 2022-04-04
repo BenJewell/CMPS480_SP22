@@ -183,6 +183,15 @@ function getValue(name) {
   else return undefined;
 }
 
+// Audit Grades
+function requestAudit(grade) {
+  if (grade.checked) {
+    alert ("hi");
+  } else {
+    alert ("bye");
+  }
+}
+
 const LABEL_CLASSES =
     "sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted";
 

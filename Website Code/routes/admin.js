@@ -1,5 +1,5 @@
 const express = require('express');
-const { query } = require("../util/db");
+const { query, log_action } = require("../util/db");
 const router = express.Router();
 const auth = require("../middleware/auth");
 const validate = require('express-jsonschema').validate;
@@ -40,36 +40,6 @@ const STUDENT_GET_GRADES_QUERY = `
 router.get('/actions', auth.verifySessionAndRole("admin"), function (req, res, next) {
   query("select Users.first_name, Users.last_name, Actions_Log.*, DATE_FORMAT(Actions_Log.date, '%m/%d/%y %h:%i %p') AS formatted_date from Actions_Log, Users WHERE Actions_Log.user_id = Users.user_id;", [], d => {
     return res.send(d);
-  });
-});
-
-const actionLogSchema = {
-  type: 'object',
-  properties: {
-    action_table: {
-      type: 'string',
-      required: true,
-    },
-    action_type: {
-      type: 'string',
-      required: true,
-    }
-  }
-};
-router.post('/actions/post/:id', auth.verifySessionAndRole("admin"), validate({ body: actionLogSchema }), function (req, res, next) {
-  query("insert into Actions_Log values (null, ?, Now(), ?, ?, ?)", [
-    res.locals.userId,
-    req.body.action_type,
-    req.params.id,
-    req.body.action_table
-  ], (data, error) => {
-    console.log(error);
-    if (!data) {
-      console.log("hit");
-      return res.send({ success: false, message: "Unable to write to log." })
-    }
-    console.log("hit2");
-    return res.send({ success: true });
   });
 });
 // End actions log
@@ -135,6 +105,7 @@ router.post('/section/:id/students', auth.verifySessionAndRole("admin"), validat
     if (!data && error.code === "ER_DUP_ENTRY") {
       return res.send({ success: false, message: "Student is already enrolled in course section." })
     }
+    log_action(res.locals.userId, `added student id ${req.body.student_id} to`, req.params.id, "Section_Registrations")
     return res.send({ success: true });
   });
 });
@@ -145,6 +116,7 @@ router.delete('/section/:id/students/:studentId', auth.verifySessionAndRole("adm
     req.params.studentId,
   ], _ => {
   });
+  log_action(res.locals.userId, `removed student id ${req.body.student_id} from`, req.params.id, "Section_Registrations")
   return res.send({ success: true });
 });
 
@@ -178,6 +150,7 @@ router.put('/course/:id', auth.verifySessionAndRole("admin"), validate({ body: C
     req.body.secondary_code,
     req.params.id,
   ], (data, error) => {
+    log_action(res.locals.userId, `modified course id ${req.body.course_id}`, req.params.id, "Courses")
     return res.send({ success: true });
   });
 });
@@ -201,6 +174,7 @@ router.put('/section/:id', auth.verifySessionAndRole("admin"), validate({ body: 
     req.body.section_code,
     req.params.id,
   ], (data, error) => {
+    log_action(res.locals.userId, `section id ${req.body.section_id} to`, req.params.id, "Sections")
     return res.send({ success: true });
   });
 });
@@ -268,6 +242,7 @@ router.put('/user/:id', auth.verifySessionAndRole("admin"), validate({ body: Use
     req.body.email_address,
     req.params.id,
   ], d => {
+    log_action(res.locals.userId, `modified user id ${req.body.userId}`, req.params.id, "Users")
     return res.send({ success: true });
   });
 });
@@ -323,6 +298,7 @@ router.post('/users', validate({ body: SignUpSchema }), function (req, res, next
         req.body.password
       ],
       (data) => {
+        log_action(res.locals.userId, `created user id ${req.body.student_id}`, req.params.user_id, "Section_Registrations")
         return res.send({ success: true, id: data.insertId })
       });
   });

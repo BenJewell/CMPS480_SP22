@@ -9,6 +9,19 @@ const pool = mysql.createPool({
   debug: false
 });
 
+function log_action(performer, action_type, action_target, action_table) {
+  query("insert into Actions_Log values (null, ?, Now(), ?, ?, ?)", [
+    performer,
+    action_type,
+    action_target,
+    action_table
+  ], (data, error) => {
+    console.log(error);
+    if (error) {
+      console.log(error)
+    }
+  });
+}
 
 function query(stmt, params, cb) {
   pool.getConnection(function (err, cnx) {
@@ -35,4 +48,4 @@ function query(stmt, params, cb) {
   });
 }
 
-module.exports = {query};
+module.exports = {query, log_action};

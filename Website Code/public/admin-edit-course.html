@@ -377,7 +377,6 @@
           section_code: getValue("section_section_code")
         });
         showMessage("course", "success", "The course section has been updated.");
-        await apiCall(`admin/actions/post/${getQueryVariable('id')}`, "POST", {action_table: "Sections", action_type: "updated"});
       } catch (e) {
         showMessage("course", "danger", "The course section could not be updated. Please ensure all fields are valid and try again.");
       }

@@ -98,7 +98,35 @@
               </thead>
             </table>
           </div>
+
+          <div class="modal fade" id="audit_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Request Audit</h5>
+                </div>
+                <div class="modal-body">
+                  If you belive this assignment has beeng graded incorrectly, you can request your instrctor to review
+                  it.<br>
+                  Enter your reasoning below to start a message thread:<br><br>
+
+                  To: {instructor_name}<br>
+                  Subject: Requesting review of {assignment_name}<br>
+                  Message:<br>
+                  <textarea id="auditMessage" cols="60" rows="7"></textarea><br>
+                  
+                  Need to get submit button blue and load in assignment and instructor name d. Make cursor align left.
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="Submit to messages system and check box on the front end ">Submit</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
         <div id="what-if" style="display: none;" class="pb-2 flex-column">
           <div class="justify-content-start align-items-center pt-1 pb-2">
             <form class="form-inline d-flex justify-content-end">
@@ -259,7 +287,7 @@
               <td class="text-center">${assignment.due_date}</td>
               <td class="text-center" style="background-color: ${missing.color}">${missing.icon ? (missing.icon + '<p style="display: none;">1</p>') : '<p style="display: none;">0</p>'}</td>
               <td class="text-center">${checkNull(assignment.instructor_notes)}</td>
-              <td class="text-center"><input id="audit_${assignment.grades_id} class="auditCheckBoxes form-check-input" type="checkbox" value="" ${assignment.flagged_for_audit === 1 ? 'checked' : ''}></td>
+              <td class="text-center"><input id="audit_${assignment.grades_id}" class="auditCheckBoxes form-check-input" type="checkbox" value="${assignment.flagged_for_audit === 1 ? 'checked' : ''}" data-bs-toggle="modal" data-bs-target="#audit_modal" onclick="return false;" onkeydown="return false;"></td>
             </tr>
           `;
         //What-if Table
