@@ -36,7 +36,36 @@ const ROLE_NAVIGATION = {
       label: "Courses",
     },
     { // add id div to create an empty div for dynamic content
-      id: "course-list-side"
+      id: "course-list-side",
+      func: async _ => {
+        let book = feather.icons.book.toSvg();
+        const apiNav = await apiCall("student/courses");
+        document.getElementById("course-list-side").innerHTML = "";
+        for (let course of apiNav) {
+          document.getElementById("course-list-side").innerHTML += `
+                    <li class="nav-item">
+                        <a class="nav-link" href="student-gradebook.html?id=${course.course_id}">` +
+              book +
+              `${course.name} (${course.primary_code} ${course.secondary_code})
+                        </a>
+                    </li>
+            `;
+        }
+      }
+    },
+
+    {
+      label: "Utilities",
+    },
+    {
+      label: "Calendar",
+      icon: "calendar",
+      href: "student-calendar.html"
+    },
+    {
+      label: "Grade Scale",
+      icon: "bar-chart",
+      href: "student-grade-scale.html"
     }
   ],
   teacher: [
@@ -47,7 +76,22 @@ const ROLE_NAVIGATION = {
     },
     {label: "Courses"},
     {
-      id: "course-list-side"
+      id: "course-list-side",
+      func: async _ => {
+        const api = await apiCall("teacher/courses");
+        document.getElementById("course-list-side").innerHTML = "";
+        let book = feather.icons.book.toSvg();
+        for (let course of api) {
+          document.getElementById("course-list-side").innerHTML += `
+                <li class="nav-item">
+                    <a class="nav-link" href="teacher-course.html?id=${course["section_id"]}">` +
+              book +
+              `${course.name} (${course["primary_code"]} ${course["secondary_code"]})
+                    </a>
+                </li>
+				`;
+        }
+      }
     }
   ],
   admin: [
@@ -164,6 +208,9 @@ function buildNavigation() {
     // this item is just a blank div for dynamic content
     if (navItem.id !== undefined) {
       nav.innerHTML += `<div id="${navItem.id}"></div>`;
+      if (navItem.func !== undefined) {
+        navItem.func();
+      }
     } else if (navItem.href === undefined) { // just a label
       nav.innerHTML += `<h6 class="${LABEL_CLASSES}"><span>${navItem.label}</span></h6>`;
     } else { // full nav item

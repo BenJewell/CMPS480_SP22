@@ -9,17 +9,19 @@
   <meta name="generator" content="Hugo 0.88.1">
   <title>Good Grades: Dashboard</title>
 
-  <script src="js/login-timeout.js"></script>
-  <script src="js/sort-table.js"></script>
-
   <!-- Feather icons -->
   <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"
     integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE"
     crossorigin="anonymous"></script>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- Bootstrap core CSS -->
   <link href="CSS/bootstrap.min.css" rel="stylesheet">
-  <!-- Custom styles for this template -->
+  <!-- Custom styles -->
   <link href="CSS/dashboard.css" rel="stylesheet">
+  
+  <script src="js/login-timeout.js"></script>
+  <script src="js/sort-table.js"></script>
 </head>
 
 <body>
@@ -36,54 +38,7 @@
 
   <div class="container-fluid">
     <div class="row">
-      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-        <div class="position-sticky pt-3">
-          <ul class="nav flex-column">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="student-dashboard.html">
-                <span data-feather="home"></span>
-                Dashboard
-              </a>
-            </li>
-            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-              <span>Courses</span>
-            </h6>
-            <div id="course-list-side">
-              <!-- API Insertion -->
-            </div>
-            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-              <span>Utilities</span>
-            </h6>
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="student-messaging.html">
-                <span data-feather="mail"></span>
-                Messages
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="student-calendar.html">
-                <span data-feather="calendar"></span>
-                Calendar
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="student-grade-scale.html">
-                <span data-feather="bar-chart"></span>
-                Grade Scale
-              </a>
-            </li>
-            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-              <span>Account</span>
-            </h6>
-            <li class="nav-item">
-              <a class="nav-link" href="logout.html">
-                <span data-feather="log-out"></span>
-                Log Out
-              </a>
-            </li>
-          </ul>
-        </div>
-      </nav>
+      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"></nav>
 
       <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
         <div
@@ -105,9 +60,11 @@
           </table>
         </div>
 
-        <div
-          class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h3 class="h3">Recently Graded</h1>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <div class="justify-content-start flex-md-nowrap d-inline-flex align-items-baseline">
+            <h3 class="h3">Recently Graded</h1>
+            <p class="px-2 pt-2">Last 7 days</p>
+          </div>
             <div id="recent-buttons" class="justify-content-end">
               <!-- API Buttons Insertion -->
             </div>
@@ -126,9 +83,11 @@
             </tbody>
           </table>
         </div>
-        <div
-          class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h3 class="h3">Due Soon</h1>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <div class="justify-content-start flex-md-nowrap d-inline-flex align-items-baseline">
+              <h3 class="h3">Due Soon</h1>
+              <p class="px-2 pt-2">Next 7 days</p>
+            </div>
             <div id="upcoming-buttons" class="justify-content-end">
               <!-- API Buttons Insertion -->
             </div>
@@ -139,7 +98,7 @@
               <tr>
                 <th class="align-middle w-25" scope="col">Course</th>
                 <th class="align-middle" scope="col">Assignment</th>
-                <th class="align-middle text-center w-25" scope="col">Grade</th>
+                <th class="align-middle text-center w-25" scope="col">Due Date</th>
               </tr>
             </thead>
             <tbody id="upcoming-table">
@@ -147,8 +106,7 @@
             </tbody>
           </table>
         </div>
-        <div
-          class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h3 class="h3">Missing</h1>
             <div id="missing-buttons" class="justify-content-end">
               <!-- API Buttons Insertion -->
@@ -160,6 +118,7 @@
               <tr>
                 <th class="align-middle w-25" scope="col">Course</th>
                 <th class="align-middle" scope="col">Assignment</th>
+                <th class="align-middle text-center w-25" scope="col">Due Date</th>
               </tr>
             </thead>
             <tbody id="missing-table">
@@ -176,21 +135,6 @@
   <script src="js/main.js" type="text/javascript"></script>
   <script type="text/javascript">
     window.addEventListener("load", async () => {
-      //Side Nav Bar
-      var book = feather.icons.book.toSvg();
-      const apiNav = await apiCall("student/courses");
-      document.getElementById("course-list-side").innerHTML = "";
-      for (let course of apiNav) {
-        document.getElementById("course-list-side").innerHTML += `
-                    <li class="nav-item">
-                        <a class="nav-link" id="nav-btn1" href="student-gradebook.html?id=${course.course_id}">` +
-          book +
-          `${course.name} (${course.primary_code} ${course.secondary_code})
-                        </a>
-                    </li>
-            `;
-      }
-
       //Overview Table
       const apiOverview = await apiCall("student/dashboard/overview");
       document.getElementById("overview-table").innerHTML = "";
@@ -229,7 +173,7 @@
         document.getElementById("upcoming-table").innerHTML += `
             <tr class="row-upcoming_${x.course_id}">
               <th scope="row">${x.course_name}</th>
-              <td>${x.assignment_name}</td>
+              <td class="text-center">${x.due_date}</td>
             </tr>
           `;
         if (document.getElementById("upcoming_" + x.course_id) === null) {
@@ -246,6 +190,7 @@
             <tr class="row-missing_${x.course_id}">
               <th scope="row">${x.course_name}</th>
               <td>${x.assignment_name}</td>
+              <td class="text-center">${x.due_date}</td>
             </tr>
           `;
         if (document.getElementById("missing_" + x.course_id) === null) {
