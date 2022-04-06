@@ -1,5 +1,5 @@
 const express = require('express');
-const { query, log_action } = require("../util/db");
+const {query, log_action} = require("../util/db");
 const router = express.Router();
 const auth = require("../middleware/auth");
 const validate = require('express-jsonschema').validate;
@@ -14,7 +14,21 @@ router.get('/courses', auth.verifySessionAndRole("student"), function (req, res,
 
 //Gradebook Queries
 router.get('/grades/:id', auth.verifySessionAndRole("student"), function (req, res, next) {
-  query(`SELECT Grades.grades_id, Assignments.assignment_category, Assignments.name, Grades.points_received, Assignments.points_possible, DATE_FORMAT(Assignments.due_date, '%m/%d/%y %h:%i %p') AS due_date, Grades.missing, Grades.instructor_notes, Grades.flagged_for_audit FROM Assignments, Grades WHERE Assignments.assignment_id = Grades.assignment_id AND Assignments.section_id = ? AND Grades.student_id = ? ORDER BY assignment_category, due_date DESC, name;`, [req.params.id, res.locals.userId], table => {
+  query(`SELECT Grades.grades_id,
+                Assignments.assignment_category,
+                Assignments.name,
+                Grades.points_received,
+                Assignments.points_possible,
+                DATE_FORMAT(Assignments.due_date, '%m/%d/%y %h:%i %p') AS due_date,
+                Grades.missing,
+                Grades.instructor_notes,
+                Grades.flagged_for_audit
+         FROM Assignments,
+              Grades
+         WHERE Assignments.assignment_id = Grades.assignment_id
+           AND Assignments.section_id = ?
+           AND Grades.student_id = ?
+         ORDER BY assignment_category, due_date DESC, name;`, [req.params.id, res.locals.userId], table => {
     query("SELECT (SUM(Grades.points_received)/SUM(Assignments.points_possible)) AS total_grade FROM Assignments, Grades WHERE Assignments.assignment_id = Grades.assignment_id AND Assignments.section_id = ? AND Grades.student_id = ? AND Grades.points_received IS NOT NULL", [req.params.id, res.locals.userId], totalGrade => {
       query("SELECT Courses.name FROM Courses WHERE course_id = ?", [req.params.id, res.locals.userId], name => {
         query("SELECT Users.first_name, Users.last_name, Users.email_address, Users.phone_number FROM Sections, Users WHERE course_id = ? AND Sections.instructor_id = Users.user_id;", [req.params.id], teacher => {
@@ -47,6 +61,7 @@ router.get('/dashboard/recent', auth.verifySessionAndRole("student"), function (
             WHERE student_id = ? AND Assignments.assignment_id = Grades.assignment_id AND Sections.section_id = Assignments.section_id 
             AND Courses.course_id = Sections.course_id AND Grades.date_graded > (now() - interval 1 week) 
             ORDER BY Grades.date_graded DESC;`, [res.locals.userId], d => {
+
     return res.send(d);
   });
 });
@@ -85,7 +100,7 @@ router.get('/calendar', auth.verifySessionAndRole("student"), function (req, res
   });
 });
 
-const AuditSchema = {
+    const AuditSchema = {
   type: 'object',
   properties: {
     grades_id: {
