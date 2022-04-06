@@ -162,7 +162,7 @@
           `;
         if (document.getElementById("recent_" + x.course_id) === null) {
           document.getElementById("recent-buttons").innerHTML +=
-            `<button id="recent_${x.course_id}" type="button" class="btn btn-primary mb-2 px-2 py-1 mx-1">${x.course_name}</button>`;
+            `<button id="recent_${x.course_id}" type="button" class="toggleBtns btn btn-primary mb-2 px-2 py-1 mx-1">${x.course_name}</button>`;
         }
       }
 
@@ -173,12 +173,13 @@
         document.getElementById("upcoming-table").innerHTML += `
             <tr class="row-upcoming_${x.course_id}">
               <th scope="row">${x.course_name}</th>
+              <td scope="row">${x.assignment_name}</th>
               <td class="text-center">${x.due_date}</td>
             </tr>
           `;
         if (document.getElementById("upcoming_" + x.course_id) === null) {
           document.getElementById("upcoming-buttons").innerHTML +=
-            `<button id="upcoming_${x.course_id}" type="button" class="btn btn-primary mb-2 px-2 py-1 mx-1">${x.course_name}</button>`;
+            `<button id="upcoming_${x.course_id}" type="button" class="toggleBtns btn btn-primary mb-2 px-2 py-1 mx-1">${x.course_name}</button>`;
         }
       }
 

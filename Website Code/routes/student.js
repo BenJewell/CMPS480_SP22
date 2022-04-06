@@ -35,6 +35,7 @@ router.get('/dashboard/overview', auth.verifySessionAndRole("student"), function
             FROM Assignments, Grades, Sections, Courses 
             WHERE student_id = ? AND Assignments.assignment_id = Grades.assignment_id AND Sections.section_id = Assignments.section_id 
             AND Sections.course_id = Courses.course_id AND Grades.points_received IS NOT NULL 
+            GROUP BY course_id 
             ORDER BY course_name;`, [res.locals.userId], d => {
     return res.send(d);
   });
