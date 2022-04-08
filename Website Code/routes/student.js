@@ -1,5 +1,5 @@
 const express = require('express');
-const { query, log_action } = require("../util/db");
+const {query, log_action} = require("../util/db");
 const router = express.Router();
 const auth = require("../middleware/auth");
 const validate = require('express-jsonschema').validate;
@@ -14,7 +14,21 @@ router.get('/courses', auth.verifySessionAndRole("student"), function (req, res,
 
 //Gradebook Queries
 router.get('/grades/:id', auth.verifySessionAndRole("student"), function (req, res, next) {
-  query(`SELECT Grades.grades_id, Assignments.assignment_category, Assignments.name, Grades.points_received, Assignments.points_possible, DATE_FORMAT(Assignments.due_date, '%m/%d/%y %h:%i %p') AS due_date, Grades.missing, Grades.instructor_notes, Grades.flagged_for_audit FROM Assignments, Grades WHERE Assignments.assignment_id = Grades.assignment_id AND Assignments.section_id = ? AND Grades.student_id = ? ORDER BY assignment_category, due_date DESC, name;`, [req.params.id, res.locals.userId], table => {
+  query(`SELECT Grades.grades_id,
+                Assignments.assignment_category,
+                Assignments.name,
+                Grades.points_received,
+                Assignments.points_possible,
+                DATE_FORMAT(Assignments.due_date, '%m/%d/%y %h:%i %p') AS due_date,
+                Grades.missing,
+                Grades.instructor_notes,
+                Grades.flagged_for_audit
+         FROM Assignments,
+              Grades
+         WHERE Assignments.assignment_id = Grades.assignment_id
+           AND Assignments.section_id = ?
+           AND Grades.student_id = ?
+         ORDER BY assignment_category, due_date DESC, name;`, [req.params.id, res.locals.userId], table => {
     query("SELECT (SUM(Grades.points_received)/SUM(Assignments.points_possible)) AS total_grade FROM Assignments, Grades WHERE Assignments.assignment_id = Grades.assignment_id AND Assignments.section_id = ? AND Grades.student_id = ? AND Grades.points_received IS NOT NULL", [req.params.id, res.locals.userId], totalGrade => {
       query("SELECT Courses.name FROM Courses WHERE course_id = ?", [req.params.id, res.locals.userId], name => {
         query("SELECT Users.first_name, Users.last_name, Users.email_address, Users.phone_number FROM Sections, Users WHERE course_id = ? AND Sections.instructor_id = Users.user_id;", [req.params.id], teacher => {
@@ -34,6 +48,7 @@ router.get('/dashboard/overview', auth.verifySessionAndRole("student"), function
             FROM Assignments, Grades, Sections, Courses 
             WHERE student_id = ? AND Assignments.assignment_id = Grades.assignment_id AND Sections.section_id = Assignments.section_id 
             AND Sections.course_id = Courses.course_id AND Grades.points_received IS NOT NULL 
+            GROUP BY course_id 
             ORDER BY course_name;`, [res.locals.userId], d => {
     return res.send(d);
   });
@@ -83,31 +98,38 @@ router.get('/calendar', auth.verifySessionAndRole("student"), function (req, res
   });
 });
 
-//Flagged for audit
-const auditSchema = {
+    const AuditSchema = {
   type: 'object',
   properties: {
-    flagged_for_audit: {
-      type: 'integer',
-      required: true
-    },
     grades_id: {
       type: 'integer',
-      required: true
+      required: true,
+    },
+    subject: {
+      type: 'string',
+      required: true,
+    },
+    message: {
+      type: 'string',
+      required: true,
     }
   }
 };
-router.post('/audit', validate({ body: auditSchema }), function (req, res, next) {
-  query("UPDATE Grades SET flagged_for_audit = ? WHERE grades_id = ? AND student_id = ?;",
+
+router.post('/audit', validate({ body: AuditSchema }), auth.verifySessionAndRole("student"), function (req, res, next) {
+  query("UPDATE Grades SET flagged_for_audit = 1 WHERE grades_id = ? AND student_id = ?;",
     [
-      req.body.flagged_for_audit,
       req.body.grades_id,
       res.locals.userId
     ],
     (data) => {
-      // This will need tested/fixed after messages and audit implementation is done.
-      log_action(res.locals.userId, `requested audit of ${req.body.grades_id}`, req.params.id, "Grades")
-      return res.send({ success: true });
+      query("insert into Messages (sender_id, recipient_id, date, updated_at, subject, message, sender_is_read) values (?, (SELECT Sections.instructor_id FROM Grades, Assignments, Sections WHERE grades_id = ? AND Grades.assignment_id = Assignments.assignment_id AND Assignments.section_id = Sections.section_id), NOW(), NOW(), ?, ?, 0)", [
+        res.locals.userId, req.body.grades_id, req.body.subject, req.body.message
+      ], message => {
+        // This will need tested/fixed after messages and audit implementation is done. { success: true }
+        //log_action(res.locals.userId, `requested audit of ${req.body.grades_id}`, req.params.id, "Grades")
+        return res.send({ success: true, id: message.insertId });
+      });
     });
 });
 

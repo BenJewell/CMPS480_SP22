@@ -99,37 +99,54 @@
             </table>
           </div>
 
-          <div class="modal fade" id="audit_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-            aria-hidden="true">
+
+
+
+
+
+
+          <div class="modal fade" id="audit_modal" tabindex="-1" role="dialog"
+            aria-labelledby="Audit message for instructor" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLongTitle">Request Audit</h5>
+                  <h5 class="modal-title">Request Audit</h5>
                 </div>
                 <div class="modal-body">
-                  If you believe this assignment has beeng graded incorrectly, you can request your instrctor to review
+                  If you believe this assignment has been graded incorrectly, you can request your instructor to review
                   it.<br>
                   Enter your reasoning below to start a message thread:<br><br>
-
-                  To: <div id=instructorName></div><br>
-                  Subject: Requesting review of <div id=assignmentName></div><br>
+                  To: <b><span id=instructorName>Instructor</span></b><br>
+                  Subject: Requesting review of "<b><span id=assignmentName>Assignment Name</span></b>"<br>
                   Message:<br>
                   <textarea id="auditMessage" cols="60" rows="7"></textarea><br>
-
-                  Need to get submit button blue and load in assignment and instructor name d. Make cursor align left.
-                  Fix placeholders. Link to smssagings ystem.
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                    id="submit-audit">Submit</button>
-                    audit_${assignment.grades_id}
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="auditCancel">Cancel</button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="auditSubmit">Submit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal fade" id="checked_audit_modal" tabindex="-1" role="dialog"
+            aria-labelledby="Message for audit already requested" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Audit already requested!</h5>
+                </div>
+                <div class="modal-body">
+                  An audit was already requested for this assignment.<br>
+                  Audit requests cannot be cancelled.<br>
+                  Send your instructor a message to cancel the request or add new information.
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="auditClose">Close</button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
         <div id="what-if" style="display: none;" class="pb-2 flex-column">
           <div class="justify-content-start align-items-center pt-1 pb-2">
             <form class="form-inline d-flex justify-content-end">
@@ -196,15 +213,15 @@
             <thead class="table-secondary">
               <tr>
                 <th scope="col">Points Earned:</th>
-                <td class="text-center w-25" scope="col" id="whatif-pointsEarned">
+                <td class="text-center align-middle w-25" scope="col" id="whatif-pointsEarned">
                   <!-- API Insertion -->
                 </td>
                 <th scope="col">Points Used:</th>
-                <td class="text-center w-25" scope="col" id="whatif-pointsUsed">
+                <td class="text-center align-middle w-25" scope="col" id="whatif-pointsUsed">
                   <!-- API Insertion -->
                 </td>
                 <th scope="col">Course Points:</th>
-                <td class="text-center w-25" scope="col" id="whatif-pointsAvailable">
+                <td class="text-center align-middle w-25" scope="col" id="whatif-pointsAvailable">
                   <!-- API Insertion -->
                 </td>
               </tr>
@@ -290,7 +307,10 @@
               <td class="text-center">${assignment.due_date}</td>
               <td class="text-center" style="background-color: ${missing.color}">${missing.icon ? (missing.icon + '<p style="display: none;">1</p>') : '<p style="display: none;">0</p>'}</td>
               <td class="text-center">${checkNull(assignment.instructor_notes)}</td>
-              <td class="text-center"><input id="audit_${assignment.grades_id}-${assignment.name}" class="auditCheckBoxes form-check-input" type="checkbox" value="${assignment.flagged_for_audit === 1 ? 'checked' : ''}" data-bs-toggle="modal" data-bs-target="#audit_modal" onclick="return false;" onkeydown="return false;"></td>
+              <td class="text-center"><input onClick="auditCheck(this)" id="audit_${assignment.grades_id}" class="auditCheckBoxes form-check-input" type="checkbox" value="" 
+                ${assignment.flagged_for_audit === 1 ? 'checked' : ''} data-bs-toggle="modal" 
+                data-bs-target="${assignment.flagged_for_audit === 1 ? "#checked_audit_modal" : "#audit_modal"}">
+              </td>
             </tr>
           `;
         //What-if Table
@@ -397,9 +417,42 @@
         document.getElementById("instructor_name").innerHTML = info.first_name + " " + info.last_name;
         document.getElementById("instructor_email").innerHTML = info.email_address;
         document.getElementById("instructor_phone_number").innerHTML = info.phone_number;
+        //For audit modal
+        document.getElementById("instructorName").innerHTML = info.first_name + " " + info.last_name;
       }
 
     });
+
+      //Audit checkbox onclick function
+      function auditCheck(box) {
+        //If box is already checked, leave checked and skip
+        if(!box.checked){
+          box.checked = true;
+          return true;
+        }
+        //Set unique text in modal
+        let assignmentName = box.parentNode.parentNode.childNodes[3].innerText;
+        document.getElementById("assignmentName").innerHTML = assignmentName;
+        //Set cancel button to not check the box
+        document.getElementById("auditCancel").onclick = () => {box.checked = false};
+        //Set submit button: change modal target, submitAudit call, empty text field
+        document.getElementById("auditSubmit").onclick = () => {
+          box.setAttribute("data-bs-target", "#checked_audit_modal");
+          let grades_id = parseInt(box.id.replace("audit_", ""));
+          let subject = "Audit Requested for '"+ assignmentName + "'";
+          let message = document.getElementById("auditMessage").value;
+          submitAudit(grades_id, subject, message);
+          document.getElementById("auditMessage").value = "";
+        };
+      }
+      // update audit in DB, send message
+      async function submitAudit(gradesID, subject, message) {
+        let x = await apiCall(`student/audit`, "POST", {
+          grades_id: gradesID,
+          subject: subject,
+          message: message
+        });
+      }
 
     //On-click for send message button
     document.getElementById("msgBtn").setAttribute("onclick", "() => location.href='/messages.html'");
