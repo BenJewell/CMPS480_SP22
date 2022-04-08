@@ -1,5 +1,5 @@
 const express = require('express');
-const {query, log_action} = require("../util/db");
+const { query, log_action } = require("../util/db");
 const router = express.Router();
 const auth = require("../middleware/auth");
 const validate = require('express-jsonschema').validate;
@@ -100,7 +100,7 @@ router.get('/calendar', auth.verifySessionAndRole("student"), function (req, res
   });
 });
 
-    const AuditSchema = {
+const AuditSchema = {
   type: 'object',
   properties: {
     grades_id: {
@@ -129,10 +129,36 @@ router.post('/audit', validate({ body: AuditSchema }), auth.verifySessionAndRole
         res.locals.userId, req.body.grades_id, req.body.subject, req.body.message
       ], message => {
         // This will need tested/fixed after messages and audit implementation is done. { success: true }
-        //log_action(res.locals.userId, `requested audit of ${req.body.grades_id}`, req.params.id, "Grades")
+        log_action(res.locals.userId, `requested audit of ${req.body.grades_id}`, req.params.id, "Grades")
         return res.send({ success: true, id: message.insertId });
       });
     });
+});
+
+const MessageSchema = {
+  type: 'object',
+  properties: {
+    section_id: {
+      type: 'integer',
+      required: true,
+    },
+    subject: {
+      type: 'string',
+      required: true,
+    },
+    message: {
+      type: 'string',
+      required: true,
+    }
+  }
+};
+
+router.post('/message', validate({ body: MessageSchema }), auth.verifySessionAndRole("student"), function (req, res, next) {
+  query("insert into Messages (sender_id, recipient_id, date, updated_at, subject, message, sender_is_read) values (?, (SELECT instructor_id FROM Sections WHERE section_id = ?), NOW(), NOW(), ?, ?, 1)", [
+    res.locals.userId, req.body.section_id, req.body.subject, req.body.message
+  ], message => {
+    return res.send({ success: true, id: message.insertId });
+  });
 });
 
 

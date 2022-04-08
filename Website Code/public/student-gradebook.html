@@ -110,7 +110,7 @@
                   If you believe this assignment has been graded incorrectly, you can request your instructor to review
                   it.<br>
                   Enter your reasoning below to start a message thread:<br><br>
-                  To: <b><span id=instructorName>Instructor</span></b><br>
+                  To: <b><span id=instructorNameAudit>Instructor</span></b><br>
                   Subject: Requesting review of "<b><span id=assignmentName>Assignment Name</span></b>"<br>
                   Message:<br>
                   <textarea id="auditMessage" cols="60" rows="7"></textarea><br>
@@ -270,32 +270,30 @@
           </table>
           <div class="flex-column">
             <form class="form-inline d-flex justify-content-start">
-              <button id="msgBtn" type="button" class="btn btn-primary mb-2 px-2 py-1 mx-1">
+              <button type="button" class="btn btn-primary my-2 px-2 py-1 mx-1 text-nowrap" data-bs-toggle="modal"
+                data-bs-target="#message_modal">
                 <span data-feather="send"></span> Send Message
               </button>
             </form>
           </div>
 
-          <button type="button" class="btn btn-primary my-2 px-2 py-1 mx-1 text-nowrap" data-bs-toggle="modal"
-          data-bs-target="#instructions_modal"><span data-feather="help-circle"></span> Show Instructions
-
-          <div class="modal fade" id="audit_modal" tabindex="-1" role="dialog"
-            aria-labelledby="Audit message for instructor" aria-hidden="true">
+          <div class="modal fade" id="message_modal" tabindex="-1" role="dialog"
+            aria-labelledby="Send message to instructor" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title">Send Message</h5>
                 </div>
                 <div class="modal-body">
-                  Subject:
+                  To: <b><span id=instructorNameMessage>Instructor</span></b><br>
+                  Subject:<br>
                   <textarea id="teacherSubject" cols="60" rows="2"></textarea><br>
                   Message:<br>
                   <textarea id="teacherMessage" cols="60" rows="7"></textarea><br>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                    id="auditCancel">Cancel</button>
-                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="auditSubmit">Submit</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="messageCancel">Cancel</button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="messageSend">Send</button>
                 </div>
               </div>
             </div>
@@ -441,7 +439,9 @@
         document.getElementById("instructor_email").innerHTML = info.email_address;
         document.getElementById("instructor_phone_number").innerHTML = info.phone_number;
         //For audit modal
-        document.getElementById("instructorName").innerHTML = info.first_name + " " + info.last_name;
+        document.getElementById("instructorNameAudit").innerHTML = info.first_name + " " + info.last_name;
+        //For teacher modal
+        document.getElementById("instructorNameMessage").innerHTML = info.first_name + " " + info.last_name;
       }
 
     });
@@ -476,17 +476,21 @@
         message: message
       });
     }
-    // send message to professor
-    async function msgTeacher(user_id, subject, message) {
-      let x = await apiCall(`student/audit`, "POST", {
-        user_id: user_id,
-        subject: subject,
-        message: message
+
+    //Teacher message modal: set cancel button to clear fields
+    document.getElementById("messageCancel").onclick = () => {
+      document.getElementById("teacherSubject").value = "";
+      document.getElementById("teacherMessage").value = "";
+    };
+    
+    //Teacher message modal: send message
+    document.getElementById("messageSend").onclick = async _ => {
+      await apiCall(`student/message`, "POST", {
+        section_id: parseInt(getQueryVariable('id')),
+        subject: document.getElementById("teacherSubject").value,
+        message: document.getElementById("teacherMessage").value
       });
     }
-
-    //On-click for send message button
-    document.getElementById("msgBtn").setAttribute("onclick", "msgTeacher(user_id, subject, message)");
 
     // Search for an assignment by name
     function search() {
