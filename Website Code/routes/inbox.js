@@ -151,4 +151,12 @@ router.get('/search', auth.verifySession(), function (req, res, next) {
   });
 });
 
+router.get('/unread', auth.verifySession(), function (req, res, next) {
+  query(`SELECT COUNT(sender_is_read) as unread FROM Messages WHERE sender_id = ? AND sender_is_read = 0 AND parent_message_id IS NULL`, [res.locals.userId], sender => {
+    query(`SELECT COUNT(recipient_is_read) as unread FROM Messages WHERE recipient_id = ? AND recipient_is_read = 0 AND parent_message_id IS NULL;`, [res.locals.userId], receiver => {
+      return res.send({sender: sender, receiver: receiver});
+    });
+  });
+});
+
 module.exports = router;

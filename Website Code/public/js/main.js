@@ -11,9 +11,19 @@ const ROLE_NAVIGATION = {
       label: "Account"
     },
     {
-      label: "Messages",
-      icon: "mail",
-      href: "messages.html"
+      id: "messagesNav",
+        func: async _ => {
+          let mail = feather.icons.mail.toSvg();
+          const apiUnread = await apiCall("inbox/unread");
+          let unread = apiUnread.receiver[0].unread + apiUnread.sender[0].unread;
+          document.getElementById("messagesNav").innerHTML = `
+                        <li class="nav-item">
+                            <a class="nav-link" href="messages.html">` +
+                              mail +
+                              `Messages<b>${unread > 0 ? " (" + unread + ")" : ""}</b>
+                            </a>
+                        </li>`;
+        }
     },
     {
       label: "Log Out",
