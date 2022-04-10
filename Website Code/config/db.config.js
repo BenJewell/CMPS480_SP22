@@ -3,10 +3,10 @@
 //Ask madie about any questions!
 
 module.exports = {
-    HOST: "localhost",
-    USER: "root",
-    PASSWORD: "123456",
-    DB: "testdb",
+    HOST: "167.88.242.60", // will check on this asap
+    USER: "goodgrades",
+    PASSWORD: "goodgrades",
+    DB: "goodgrades",
     dialect: "mysql",
     pool: {
       max: 5,
