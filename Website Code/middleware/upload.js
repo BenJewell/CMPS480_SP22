@@ -14,10 +14,10 @@ const excelFilter = (req, file, cb) => {
   }
 };
 var storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (req, file, cb) => { // destination determines folder to store the uploaded files
     cb(null, __basedir + "/resources/static/assets/uploads/"); //"/resources/static/assets/uploads/" likely to become "Excel/GoodGradesCreateUser.xlsx"
   },
-  filename: (req, file, cb) => {
+  filename: (req, file, cb) => { //filename determines the name of the file inside the destination folder
     console.log(file.originalname);
     cb(null, `${Date.now()}-bezkoder-${file.originalname}`); //bezkoder to admin/role
   },

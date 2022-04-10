@@ -7,8 +7,8 @@
 //look into changing file name when you change tutorial name
 const express = require("express");
 const router = express.Router();
-const excelController = require("../controllers/tutorials/excel.controller");
-const upload = require("../middleware/upload");
+const excelController = require("../controllers/tutorials/excel.controller");//using controller 
+const upload = require("../middleware/upload"); //using middlewear upload
 let routes = (app) => {
   router.post("/upload", upload.single("file"), excelController.upload);
   router.get("/tutorials", excelController.getTutorials);

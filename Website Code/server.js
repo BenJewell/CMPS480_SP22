@@ -4,8 +4,8 @@
 
 const express = require("express");
 const app = express();
-const db = require("./models");
-const initRoutes = require("./routes/tutorial.routes");
+const db = require("./models"); //models 
+const initRoutes = require("./routes/tutorial.routes"); //routes
 global.__basedir = __dirname + "/..";
 app.use(express.urlencoded({ extended: true }));
 initRoutes(app);
