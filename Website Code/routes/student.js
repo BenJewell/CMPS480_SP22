@@ -42,7 +42,6 @@ router.get('/grades/:id', auth.verifySessionAndRole("student"), function (req, r
     });
   });
 });
-
 //Overview Table
 router.get('/dashboard/overview', auth.verifySessionAndRole("student"), function (req, res, next) {
   query(`SELECT Courses.course_id, Courses.name AS course_name, (SUM(Grades.points_received)/SUM(Assignments.points_possible)) AS total_grade 
@@ -61,7 +60,6 @@ router.get('/dashboard/recent', auth.verifySessionAndRole("student"), function (
             WHERE student_id = ? AND Assignments.assignment_id = Grades.assignment_id AND Sections.section_id = Assignments.section_id 
             AND Courses.course_id = Sections.course_id AND Grades.date_graded > (now() - interval 1 week) 
             ORDER BY Grades.date_graded DESC;`, [res.locals.userId], d => {
-
     return res.send(d);
   });
 });

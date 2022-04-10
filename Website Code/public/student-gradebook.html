@@ -146,18 +146,6 @@
               </div>
             </div>
           </div>
-
-
-
-
-
-
-
-
-
-
-
-
         </div>
         <div id="what-if" style="display: none;" class="pb-2 flex-column">
           <div class="justify-content-start align-items-center pt-1 pb-2">
@@ -548,6 +536,21 @@
     }
     //Assign toggle button onclick
     document.getElementById("gradesToggle").onclick = gradesToggle;
+
+    //Send messages for the audit functionality
+    //submit-audit
+    function auditCheck(gradesID, assignmentName, instructorName){
+      document.getElementById("assignmentName").innerHTML = assignmentName;
+      document.getElementById("instructorName").innerHTML = instructorName;
+      document.getElementById("submit-audit").addEventListener("click", submitAudit(gradesID));
+    }
+    async function submitAudit(gradesID){
+      await apiCall(`inbox/messages`, "POST", {
+      recipient_id: userId,
+      subject: "Flagged for audit",
+      message: "",
+      });
+    }
 
   </script>
   <script type="text/javascript">feather.replace({ 'aria-hidden': 'true' })</script>
