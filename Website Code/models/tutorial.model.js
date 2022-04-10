@@ -2,8 +2,8 @@
 //see https://www.bezkoder.com/node-js-upload-excel-file-database/
 //Ask madie about any questions!
 
-module.exports = (sequelize, Sequelize) => {
-    const Tutorial = sequelize.define("tutorial", {
+export default (sequelize, Sequelize) => {
+    const Tutorial = sequelize.define("tutorial", {  //"tutorial" refers to the "tutorials" table in the MySQL db in the example. this will change to "goodgrades"
       title: {
         type: Sequelize.STRING
       },
@@ -14,5 +14,5 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.BOOLEAN
       }
     });
-    return Tutorial;
+    return Tutorial; //consider renaming "Tutorial"
   };

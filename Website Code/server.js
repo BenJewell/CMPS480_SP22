@@ -10,6 +10,7 @@ global.__basedir = __dirname + "/..";
 app.use(express.urlencoded({ extended: true }));
 initRoutes(app);
 db.sequelize.sync();
+//drop and re-sync database
 // db.sequelize.sync({ force: true }).then(() => {
 //   console.log("Drop and re-sync db.");
 // });

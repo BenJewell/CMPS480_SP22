@@ -3,16 +3,20 @@
 //see https://www.bezkoder.com/node-js-upload-excel-file-database/
 //Ask madie about any questions!
 
-const db = require("../../models");
-const Tutorial = db.tutorials;
+const db = require("/models");
+const Tutorial = db.tutorials; //double check if you renamed tutorials
 const readXlsxFile = require("read-excel-file/node");
+//upload function
+//check file upload from req.file 
+//then uses read-excel-file to read excel file in uploads folder
+//the data which is returned as rows will be changed to tutorials array.
 const upload = async (req, res) => {
   try {
-    if (req.file == undefined) {
+    if (req.file == undefined) { 
       return res.status(400).send("Please upload an excel file!");
     }
     let path =
-      __basedir + "/resources/static/assets/uploads/" + req.file.filename;
+      __basedir + "/resources/static/assets/uploads/" + req.file.filename; //"/resources/static/assets/uploads/" likely to become "Excel/GoodGradesCreateUser.xlsx"
     readXlsxFile(path).then((rows) => {
       // skip header
       rows.shift();
@@ -26,7 +30,7 @@ const upload = async (req, res) => {
         };
         tutorials.push(tutorial);
       });
-      Tutorial.bulkCreate(tutorials)
+      Tutorial.bulkCreate(tutorials) //use sequelize model bulkCreate() method to save the tutorials array (first name, last name, email address, password, role) to MySQL db.
         .then(() => {
           res.status(200).send({
             message: "Uploaded the file successfully: " + req.file.originalname,
@@ -46,6 +50,8 @@ const upload = async (req, res) => {
     });
   }
 };
+
+//The getTutorials() function uses findAll() method to return all Tutorials stored in the database tutorials table.
 const getTutorials = (req, res) => {
   Tutorial.findAll()
     .then((data) => {
