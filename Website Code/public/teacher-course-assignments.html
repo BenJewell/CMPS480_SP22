@@ -8,7 +8,9 @@
     <script src="js/login-timeout.js"></script>
     <script src="js/sort-table.js"></script>
     <!-- Feather icons -->
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"
+        integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE"
+        crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -21,70 +23,40 @@
             <span class="navbar-toggler-icon"></span>
         </button>
     </header>
-
     <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"></nav>
 
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-            <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="teacher-dashboard.html">
-                            <span data-feather="home"></span>
-                            Dashboard
-                        </a>
-                    </li>
-                    <h6
-                        class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>Courses</span>
-                    </h6>
-                    <div id="course-list-side"></div>
-
-                    <h6
-                        class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>Account</span>
-                    </h6>
-                    <li class="nav-item">
-                        <a class="nav-link" href="logout.html">
-                            <span data-feather="log-out"></span>
-                            Log Out
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-        <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <div class="container d-flex flex-wrap justify-content-center pb-2 border-bottom">
-                <span class="d-flex align-items-center mt-3 mb-3 mb-lg-0 me-lg-auto text-dark text-decoration-none">
-                    <h2 id="courseTitle">English 101</h2>
-                </span>
-                <div class="btn-toolbar mb-2 mb-md-0">
-                    <div class="btn-group me-1">
-                        <button id="studentListBtn" type="button" class="btn btn-sm btn-outline-secondary"
-                            style="font-size:16pt; margin-top: 10px;">Student List</button>
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h2 id="courseTitle">Course Title</h2>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-1">
+                            <button id="studentListBtn" type="button" class="btn btn-sm btn-outline-secondary"
+                                style="font-size:16pt; margin-top: 10px;">Student List</button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-
-            <h3 class="mt-5">Assignments</h3>
-            <div class="table-responsive">
-                <table class="table table-striped sortable">
-                    <thead>
-                        <tr>
-                            <th scope="col">Assignment ID</th>
-                            <th scope="col">Name</th>
-                            <th scope="col" class="sorttable_nosort">Description</th>
-                            <th scope="col" class="sorttable_nosort">Due Date</th>
-                            <th scope="col">Students Graded</th>
-                        </tr>
-                    </thead>
-                    <tbody id="assignments">
-
-                    </tbody>
-                </table>
-            </div>
-
-
+                <h3 class="mt-5">Assignments</h3>
+                <div class="table-responsive">
+                    <table class="table table-striped sortable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Category</th>
+                                <th scope="col">Name</th>
+                                <th scope="col" class="sorttable_nosort">Description</th>
+                                <th scope="col">Due Date</th>
+                                <th scope="col">Students Graded</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assignments">
+                            <!-- API Insertion -->
+                        </tbody>
+                    </table>
+                </div>
+            </main>
         </div>
     </div>
 </body>
@@ -95,12 +67,12 @@
     window.addEventListener("load", async () => {
         const api = await apiCall(`teacher/assignments/${getQueryVariable('id')}`);
         document.getElementById("studentListBtn").setAttribute("onclick", `window.location.href='teacher-course.html?id=${getQueryVariable('id')}'`);
-       // document.getElementById("courseTitle").innerHTML = api.course.name;
+        document.getElementById("courseTitle").innerHTML = api.name;
         document.getElementById("assignments").innerHTML = "";
-        for (let assignment of api || []) {
+        for (let assignment of api.assignments || []) {
             document.getElementById("assignments").innerHTML += `
                         <tr>
-                            <td scope="col">${assignment.assignment_id}</td>
+                            <td scope="col">${assignment.assignment_category}
                             <td scope="col">${assignment.name}</td>
                             <td scope="col">${assignment.description}</td>
                             <td scope="col">${assignment.formatted_due_date}</td>
@@ -112,4 +84,5 @@
 
 </script>
 <script type="text/javascript">feather.replace({ 'aria-hidden': 'true' })</script>
+
 </html>

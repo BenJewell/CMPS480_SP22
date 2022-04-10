@@ -1,5 +1,5 @@
 const express = require('express');
-const {query, log_action} = require("../util/db");
+const { query, log_action } = require("../util/db");
 const router = express.Router();
 const auth = require("../middleware/auth");
 const validate = require('express-jsonschema').validate;
@@ -8,6 +8,26 @@ const validate = require('express-jsonschema').validate;
 router.get('/courses', auth.verifySessionAndRole("teacher"), function (req, res, next) {
   query("select * from Sections, Courses where instructor_id = ? and Courses.course_id = Sections.course_id", [res.locals.userId], d => {
     return res.send(d);
+  });
+});
+
+router.get('/homepage', auth.verifySessionAndRole("teacher"), function (req, res, next) {
+  query(`SELECT Sections.section_id, Courses.name, Courses.primary_code, Courses.secondary_code, Sections.section_code, COUNT(Section_Registrations.student_id) as student_count
+	          FROM Sections
+            INNER JOIN Courses ON Courses.course_id = Sections.course_id
+            INNER JOIN Section_Registrations ON Sections.section_id = Section_Registrations.section_id
+            WHERE instructor_id = ?
+            GROUP BY section_id
+            ORDER BY section_id;`, [res.locals.userId], courses => {
+    query(`SELECT Sections.section_id, (COUNT(*) - COUNT(points_received)) as pending
+              FROM Sections
+              INNER JOIN Assignments ON Sections.section_id = Assignments.section_id
+              INNER JOIN Grades ON Assignments.assignment_id = Grades.assignment_id
+              WHERE instructor_id = ?
+              GROUP BY section_id
+              ORDER BY section_id;`, [res.locals.userId], ungraded => {
+      return res.send({ courses: courses, ungraded: ungraded });
+    });
   });
 });
 
@@ -22,9 +42,16 @@ router.get('/course/:id', auth.verifySessionAndRole("teacher"), function (req, r
   }
 
   query("select * from Sections, Courses where instructor_id = ? and Sections.course_id = ? and Courses.course_id = Sections.course_id", [res.locals.userId, req.params.id], section => {
-    query("select Section_Registrations.*, Users.user_id, Users.first_name, Users.last_name, (SUM(Grades.points_received)/SUM(Assignments.points_possible)) AS total_grade from Section_Registrations, Users, Assignments, Grades where Assignments.section_id = ? and Section_Registrations.student_id = Grades.student_id and Users.user_id = Section_Registrations.student_id and Assignments.assignment_id = Grades.assignment_id and Grades.points_received IS NOT NULL GROUP BY Grades.student_id;",
+    query("select Section_Registrations.*, Users.user_id, Users.first_name, Users.last_name, (SUM(Grades.points_received)/SUM(Assignments.points_possible)) AS total_grade from Section_Registrations, Users, Assignments, Grades where Assignments.section_id = ? and Section_Registrations.student_id = Grades.student_id and Users.user_id = Section_Registrations.student_id and Assignments.assignment_id = Grades.assignment_id and Grades.points_received IS NOT NULL GROUP BY Grades.student_id ORDER BY Grades.student_id;",
       [section[0]["section_id"]], students => {
-        return res.send({ ...section[0], students: students });
+        query(`SELECT Grades.student_id, COALESCE(SUM(Grades.flagged_for_audit)) AS total_audits
+                  FROM Assignments, Grades 
+                  WHERE Assignments.section_id = ?
+                  AND Assignments.assignment_id = Grades.assignment_id
+                  GROUP BY Grades.student_id
+                  ORDER BY Grades.student_id;`, [req.params.id], audits => {
+          return res.send({ ...section[0], students: students, audits: audits });
+        });
       });
   });
 });
@@ -38,8 +65,17 @@ router.get('/student/:studentId/:courseId', auth.verifySessionAndRole("teacher")
 });
 
 router.get('/assignments/:id', auth.verifySessionAndRole("teacher"), function (req, res, next) {
-  query("select Grades.assignment_id, Assignments.name, Assignments.description, Assignments.due_date, count(Grades.points_received) as assignments_graded, count(Section_Registrations.student_id) as students_count from Grades inner join Assignments on Assignments.assignment_id = Grades.assignment_id inner join Section_Registrations on Section_Registrations.student_id = Grades.student_id where Assignments.section_id = Section_Registrations.section_id group by Assignments.assignment_id order by Assignments.due_date desc;", [req.params.id], assignments => {
-    return res.send(assignments);
+  query(`SELECT Assignments.assignment_category, Assignments.name, Assignments.description, DATE_FORMAT(Assignments.due_date, '%m/%d/%y %h:%i %p') AS formatted_due_date, count(Grades.points_received) as assignments_graded, count(Section_Registrations.student_id) as students_count 
+            FROM Grades 
+            INNER JOIN Assignments ON Assignments.assignment_id = Grades.assignment_id 
+            INNER JOIN Section_Registrations ON Section_Registrations.student_id = Grades.student_id 
+            WHERE Assignments.section_id = Section_Registrations.section_id 
+            AND Assignments.section_id = ?
+            GROUP BY Assignments.assignment_id 
+            ORDER BY Assignments.due_date desc;`, [req.params.id], assignments => {
+    query("SELECT * FROM Sections, Courses WHERE instructor_id = ? AND Sections.section_id = ? and Courses.course_id = Sections.course_id", [res.locals.userId, req.params.id], course => {
+      return res.send({ ...course[0], assignments: assignments });
+    });
   });
 });
 
@@ -48,7 +84,7 @@ router.get('/grades/single/:ids', auth.verifySessionAndRole("teacher"), function
   let IDarry = idString.split("-");
   let assignmentId = IDarry[0];
   let studentId = IDarry[1];
-  query("SELECT Assignments.name, Assignments.description, DATE_FORMAT(Assignments.due_date, '%m/%d/%y %h:%i %p') AS due_date, Grades.points_received, Assignments.points_possible, Grades.missing, Grades.active FROM Assignments JOIN Grades ON Grades.assignment_id = Assignments.assignment_id WHERE Grades.assignment_id = ? AND student_id = ?;", [assignmentId, studentId], b => {
+  query("SELECT Assignments.assignment_category, Assignments.name, Assignments.description, DATE_FORMAT(Assignments.due_date, '%m/%d/%y %h:%i %p') AS due_date, Grades.points_received, Assignments.points_possible, Grades.missing, Grades.active, Grades.flagged_for_audit, Grades.instructor_notes FROM Assignments JOIN Grades ON Grades.assignment_id = Assignments.assignment_id WHERE Grades.assignment_id = ? AND student_id = ?;", [assignmentId, studentId], b => {
     return res.send({ ...b[0] });
   });
 });
@@ -71,7 +107,15 @@ const gradeSchema = {
     activeCheck: {
       type: 'integer',
       required: true
-    }
+    },
+    auditCheck: {
+      type: 'integer',
+      required: true
+    },
+    instructorNotes: {
+      type: 'string',
+      required: true
+    },
   }
 };
 
@@ -88,11 +132,13 @@ router.post('/grades/single-update', validate({ body: gradeSchema }), function (
   let studentId = IDarry[1];
 
   // step 2
-  query("UPDATE Grades SET points_received = ?, missing = ?, active = ? WHERE assignment_id = ? AND student_id = ?",
+  query("UPDATE Grades SET points_received = ?, missing = ?, active = ?, flagged_for_audit = ?, instructor_notes = ? WHERE assignment_id = ? AND student_id = ?",
     [
       req.body.pointsReceived,
       req.body.missingCheck,
       req.body.activeCheck,
+      req.body.auditCheck,
+      req.body.instructorNotes,
       assignmentId,
       studentId
     ],

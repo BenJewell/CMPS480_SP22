@@ -99,14 +99,9 @@
             </table>
           </div>
 
-
-
-
-
-
-
           <div class="modal fade" id="audit_modal" tabindex="-1" role="dialog"
-            aria-labelledby="Audit message for instructor" aria-hidden="true">
+            aria-labelledby="Audit message for instructor" aria-hidden="true"
+            data-bs-keyboard="false" data-bs-backdrop="static">
             <div class="modal-dialog modal-dialog-centered" role="document">
               <div class="modal-content">
                 <div class="modal-header">
@@ -116,13 +111,14 @@
                   If you believe this assignment has been graded incorrectly, you can request your instructor to review
                   it.<br>
                   Enter your reasoning below to start a message thread:<br><br>
-                  To: <b><span id=instructorName>Instructor</span></b><br>
+                  To: <b><span id=instructorNameAudit>Instructor</span></b><br>
                   Subject: Requesting review of "<b><span id=assignmentName>Assignment Name</span></b>"<br>
                   Message:<br>
                   <textarea id="auditMessage" cols="60" rows="7"></textarea><br>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="auditCancel">Cancel</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                    id="auditCancel">Cancel</button>
                   <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="auditSubmit">Submit</button>
                 </div>
               </div>
@@ -146,6 +142,7 @@
               </div>
             </div>
           </div>
+
         </div>
         <div id="what-if" style="display: none;" class="pb-2 flex-column">
           <div class="justify-content-start align-items-center pt-1 pb-2">
@@ -274,15 +271,41 @@
           </table>
           <div class="flex-column">
             <form class="form-inline d-flex justify-content-start">
-              <button id="msgBtn" type="button" class="btn btn-primary mb-2 px-2 py-1 mx-1">
+              <button type="button" class="btn btn-primary my-2 px-2 py-1 mx-1 text-nowrap" data-bs-toggle="modal"
+                data-bs-target="#message_modal">
                 <span data-feather="send"></span> Send Message
               </button>
             </form>
           </div>
-        </div>
-      </main>
 
+          <div class="modal fade" id="message_modal" tabindex="-1" role="dialog"
+            aria-labelledby="Send message to instructor" aria-hidden="true"
+            data-bs-keyboard="false" data-bs-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Send Message</h5>
+                </div>
+                <div class="modal-body">
+                  To: <b><span id=instructorNameMessage>Instructor</span></b><br>
+                  Subject:<br>
+                  <textarea id="teacherSubject" cols="60" rows="2"></textarea><br>
+                  Message:<br>
+                  <textarea id="teacherMessage" cols="60" rows="7"></textarea><br>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="messageCancel">Cancel</button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="messageSend">Send</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
     </div>
+    </main>
+
+  </div>
   </div>
   <script src="js/bootstrap.bundle.min.js"></script>
   <script src="js/tableFunctions.js"></script>
@@ -418,44 +441,58 @@
         document.getElementById("instructor_email").innerHTML = info.email_address;
         document.getElementById("instructor_phone_number").innerHTML = info.phone_number;
         //For audit modal
-        document.getElementById("instructorName").innerHTML = info.first_name + " " + info.last_name;
+        document.getElementById("instructorNameAudit").innerHTML = info.first_name + " " + info.last_name;
+        //For teacher modal
+        document.getElementById("instructorNameMessage").innerHTML = info.first_name + " " + info.last_name;
       }
 
     });
 
-      //Audit checkbox onclick function
-      function auditCheck(box) {
-        //If box is already checked, leave checked and skip
-        if(!box.checked){
-          box.checked = true;
-          return true;
-        }
-        //Set unique text in modal
-        let assignmentName = box.parentNode.parentNode.childNodes[3].innerText;
-        document.getElementById("assignmentName").innerHTML = assignmentName;
-        //Set cancel button to not check the box
-        document.getElementById("auditCancel").onclick = () => {box.checked = false};
-        //Set submit button: change modal target, submitAudit call, empty text field
-        document.getElementById("auditSubmit").onclick = () => {
-          box.setAttribute("data-bs-target", "#checked_audit_modal");
-          let grades_id = parseInt(box.id.replace("audit_", ""));
-          let subject = "Audit Requested for '"+ assignmentName + "'";
-          let message = document.getElementById("auditMessage").value;
-          submitAudit(grades_id, subject, message);
-          document.getElementById("auditMessage").value = "";
-        };
+    //Audit checkbox onclick function
+    function auditCheck(box) {
+      //If box is already checked, leave checked and skip
+      if (!box.checked) {
+        box.checked = true;
+        return true;
       }
-      // update audit in DB, send message
-      async function submitAudit(gradesID, subject, message) {
-        let x = await apiCall(`student/audit`, "POST", {
-          grades_id: gradesID,
-          subject: subject,
-          message: message
-        });
-      }
+      //Set unique text in modal
+      let assignmentName = box.parentNode.parentNode.childNodes[3].innerText;
+      document.getElementById("assignmentName").innerHTML = assignmentName;
+      //Set cancel button to not check the box
+      document.getElementById("auditCancel").onclick = () => { box.checked = false };
+      //Set submit button: change modal target, submitAudit call, empty text field
+      document.getElementById("auditSubmit").onclick = () => {
+        box.setAttribute("data-bs-target", "#checked_audit_modal");
+        let grades_id = parseInt(box.id.replace("audit_", ""));
+        let subject = "Audit Requested for '" + assignmentName + "'";
+        let message = document.getElementById("auditMessage").value;
+        submitAudit(grades_id, subject, message);
+        document.getElementById("auditMessage").value = "";
+      };
+    }
+    // update audit in DB, send message
+    async function submitAudit(gradesID, subject, message) {
+      let x = await apiCall(`student/audit`, "POST", {
+        grades_id: gradesID,
+        subject: subject,
+        message: message
+      });
+    }
 
-    //On-click for send message button
-    document.getElementById("msgBtn").setAttribute("onclick", "() => location.href='/messages.html'");
+    //Teacher message modal: set cancel button to clear fields
+    document.getElementById("messageCancel").onclick = () => {
+      document.getElementById("teacherSubject").value = "";
+      document.getElementById("teacherMessage").value = "";
+    };
+    
+    //Teacher message modal: send message
+    document.getElementById("messageSend").onclick = async _ => {
+      await apiCall(`student/message`, "POST", {
+        section_id: parseInt(getQueryVariable('id')),
+        subject: document.getElementById("teacherSubject").value,
+        message: document.getElementById("teacherMessage").value
+      });
+    }
 
     // Search for an assignment by name
     function search() {
@@ -536,21 +573,6 @@
     }
     //Assign toggle button onclick
     document.getElementById("gradesToggle").onclick = gradesToggle;
-
-    //Send messages for the audit functionality
-    //submit-audit
-    function auditCheck(gradesID, assignmentName, instructorName){
-      document.getElementById("assignmentName").innerHTML = assignmentName;
-      document.getElementById("instructorName").innerHTML = instructorName;
-      document.getElementById("submit-audit").addEventListener("click", submitAudit(gradesID));
-    }
-    async function submitAudit(gradesID){
-      await apiCall(`inbox/messages`, "POST", {
-      recipient_id: userId,
-      subject: "Flagged for audit",
-      message: "",
-      });
-    }
 
   </script>
   <script type="text/javascript">feather.replace({ 'aria-hidden': 'true' })</script>
