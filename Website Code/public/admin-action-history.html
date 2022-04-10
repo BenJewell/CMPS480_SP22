@@ -70,17 +70,14 @@
                 <div
                     class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">User Action History</h1>
-                    <div class="right"><a class="btn btn-sm btn-secondary" href="admin-create-user.html">+ Create
-                            User</a></div>
                 </div>
 
 
                 <div class="table-responsive">
-                    <table class="table table-striped sortable">
+                    <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th scope="col">User ID</th>
-                                <th scope="col">Action</th>
+                                <th scope="col"></th>
                             </tr>
                         </thead>
                         <tbody id="actions"></tbody>
@@ -99,7 +96,6 @@
         for (let action of api) {
             document.getElementById("actions").innerHTML += `
                 <tr>
-                    <td scope="col">${action.user_id}</td>
                     <td scope="col">${action.first_name} ${action.last_name} (${action.user_id}) ${action.action_type} ${action.action_table} named ${action.action_target} on ${action.formatted_date}</td>
                 </tr> `;
         }
