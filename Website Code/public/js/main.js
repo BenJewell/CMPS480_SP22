@@ -20,7 +20,7 @@ const ROLE_NAVIGATION = {
                         <li class="nav-item">
                             <a class="nav-link" href="messages.html">` +
                               mail +
-                              `Messages<b>${unread > 0 ? " (" + unread + ")" : ""}</b>
+                              ` Messages<b>${unread > 0 ? " (" + unread + ")" : ""}</b>
                             </a>
                         </li>`;
         }
