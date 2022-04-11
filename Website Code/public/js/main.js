@@ -11,6 +11,11 @@ const ROLE_NAVIGATION = {
       label: "Account"
     },
     {
+      label: "Account",
+      icon: "user",
+      href: "account.html"
+    },
+    {
       id: "messagesNav",
         func: async _ => {
           let mail = feather.icons.mail.toSvg();
@@ -122,6 +127,11 @@ const ROLE_NAVIGATION = {
       label: "Action History",
       href: "admin-action-history.html",
       icon: "clock"
+    },
+    {
+      label: "Settings",
+      href: "admin-settings.html",
+      icon: "settings"
     }
   ]
 };
@@ -193,12 +203,21 @@ function getValue(name) {
   else return undefined;
 }
 
+// Audit Grades
+function requestAudit(grade) {
+  if (grade.checked) {
+    alert("hi");
+  } else {
+    alert("bye");
+  }
+}
+
 const LABEL_CLASSES =
     "sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted";
 
 function buildNavigation() {
   let user = getUser(false);
-  if (!user)
+  if (!user || !document.getElementById("sidebarMenu"))
     return;
   let navItems = [...ROLE_NAVIGATION[user.role], ...ROLE_NAVIGATION.all];
   document.getElementById("sidebarMenu").innerHTML =
@@ -240,6 +259,24 @@ function buildNavigation() {
   feather.replace();
 }
 
-window.addEventListener("load", () => {
+window.SETTINGS = {};
+window.addEventListener("load", async () => {
   buildNavigation();
+
+  (await apiCall("admin/settings")).map((setting) => window.SETTINGS[setting.key] = setting.value)
+
+  let title = document.title.split(" | ");
+  title[title.length - 1] = window.SETTINGS.school_name || "Good Grades";
+  document.title = title.join(" | ");
+
+  let navbarBrand = document.getElementsByClassName("navbar-brand");
+  if (navbarBrand.length) navbarBrand[0].innerHTML = window.SETTINGS.school_name || "Good Grades";
+
+  let loginElem = document.getElementById("login_logo");
+  if (loginElem) {
+    if (window.SETTINGS.login_logo_url && window.SETTINGS.login_logo_url !== "")
+      loginElem.src = window.SETTINGS.login_logo_url;
+    if (window.SETTINGS.login_background_url && window.SETTINGS.login_background_url !== "")
+      document.body.style.backgroundImage = `url(${window.SETTINGS.login_background_url})`;
+  }
 });
