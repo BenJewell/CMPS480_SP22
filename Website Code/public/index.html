@@ -3,8 +3,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Sign in to access your dashboard">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="Sign in to access your dashboard" name="description">
     <title>Good Grades</title>
 
 
@@ -15,27 +15,27 @@
 
 <body class="text-center">
 
-<main class="form-signin">
+<main class="form-signin bg-light rounded-3 shadow-lg" style="max-width:400px; padding: 2em;">
 
-    <form id="loginForm">
-        <img class="mb-4" src="Images/GoodGradesLogo.png" alt="" width="269" height="102">
-        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+    <form class="" id="loginForm">
+        <img alt="School logo" class="mb-4" id="login_logo" src="Images/GoodGradesLogo.png" width="269">
+        <h1 class="h3 mb-3 fw-normal">Sign In</h1>
 
-      <div id="loginError" class="alert alert-danger" role="alert" style="display: none;">
-        There was an error signing you in.
-      </div>
+        <div class="alert alert-danger" id="loginError" role="alert" style="display: none;">
+            There was an error signing you in.
+        </div>
 
         <div class="form-floating">
-            <input type="email" class="form-control" id="loginEmail" placeholder="name@example.com">
+            <input class="form-control" id="loginEmail" placeholder="name@example.com" type="email">
             <label for="loginEmail">Email address</label>
         </div>
         <div class="form-floating">
-            <input type="password" class="form-control" id="loginPassword" placeholder="Password">
+            <input class="form-control" id="loginPassword" placeholder="Password" type="password">
             <label for="loginPassword">Password</label>
         </div>
 
         <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-        <p class="mt-5 mb-3 text-muted">&copy; 2022</p>
+        <p class="mt-5 mb-3 text-muted">&copy; 2022 Good Grades</p>
     </form>
 </main>
 
