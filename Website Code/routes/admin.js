@@ -37,8 +37,19 @@ const STUDENT_GET_GRADES_QUERY = `
 
 
 // For actions log
+/*
 router.get('/actions', auth.verifySessionAndRole("admin"), function (req, res, next) {
-  query("select Users.first_name, Users.last_name, Actions_Log.*, DATE_FORMAT(Actions_Log.date, '%m/%d/%y %h:%i %p') AS formatted_date from Actions_Log, Users WHERE Actions_Log.user_id = Users.user_id;", [], d => {
+  query(`select Users.first_name, Users.last_name, Actions_Log.*, DATE_FORMAT(Actions_Log.date, '%m/%d/%y %h:%i %p')
+  AS formatted_date from Actions_Log, Users WHERE Actions_Log.user_id = Users.user_id, Actions_Log.action_table AND Actions_Log.action_target = Actions_Log.action_table
+  ORDER BY Actions_Log.date DESC;`, [], d => {
+    return res.send(d);
+  });
+});
+*/
+router.get('/actions', auth.verifySessionAndRole("admin"), function (req, res, next) {
+  query(`select Users.first_name, Users.last_name, Actions_Log.*, DATE_FORMAT(Actions_Log.date, '%m/%d/%y %h:%i %p')
+  AS formatted_date from Actions_Log, Users WHERE Actions_Log.user_id = Users.user_id, Actions_Log.action_table AND Actions_Log.action_target = Actions_Log.action_table
+  ORDER BY Actions_Log.date DESC;`, [], d => {
     return res.send(d);
   });
 });
@@ -105,8 +116,15 @@ router.post('/section/:id/students', auth.verifySessionAndRole("admin"), validat
     if (!data && error.code === "ER_DUP_ENTRY") {
       return res.send({ success: false, message: "Student is already enrolled in course section." })
     }
-    log_action(res.locals.userId, `added student id ${req.body.student_id} to`, req.params.id, "Section_Registrations")
-    return res.send({ success: true });
+    query("Select first_name, last_name from Users where user_id = ?", [res.locals.userId], (teacherData, error) => {
+      query("Select first_name, last_name from Users where user_id = ?", [req.body.student_id], (studentData, error) => {
+        query("Select course_id, section_code from Sections where section_id = ?", [req.params.id], (sectionData, error) => {
+          log_action(`${teacherData[0].first_name} ${teacherData[0].last_name} added student ${studentData[0].first_name} ${studentData[0].last_name} (${req.body.student_id}) to course ${sectionData[0].course_id} ${sectionData[0].section_code}`)
+          return res.send({ success: true });
+        })
+      })
+      //log_action(res.locals.userId, `added student id ${req.body.student_id} to`, req.params.id, "Section_Registrations")
+    });
   });
 });
 

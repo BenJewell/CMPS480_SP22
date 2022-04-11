@@ -9,12 +9,9 @@ const pool = mysql.createPool({
   debug: false
 });
 
-function log_action(performer, action_type, action_target, action_table) {
-  query("insert into Actions_Log values (null, ?, Now(), ?, ?, ?)", [
-    performer,
-    action_type,
-    action_target,
-    action_table
+function log_action(message) {
+  query("insert into Actions_Log (action_date, message) values (Now(), ?)", [
+    message
   ], (data, error) => {
     console.log(error);
     if (error) {

@@ -65,7 +65,7 @@
         for (let action of api) {
             document.getElementById("actions").innerHTML += `
                 <tr>
-                    <td scope="col">${action.first_name} ${action.last_name} (${action.user_id}) ${action.action_type} ${action.action_table} named ${action.action_target} on ${action.formatted_date}</td>
+                    <td scope="col">${action.first_name} ${action.last_name} (${action.user_id}) ${action.action_type} ${action.action_table} named (${action.action_target}) on ${action.formatted_date}</td>
                 </tr> `;
         }
     });
