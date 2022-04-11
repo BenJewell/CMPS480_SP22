@@ -47,9 +47,9 @@ router.get('/actions', auth.verifySessionAndRole("admin"), function (req, res, n
 });
 */
 router.get('/actions', auth.verifySessionAndRole("admin"), function (req, res, next) {
-  query(`select Users.first_name, Users.last_name, Actions_Log.*, DATE_FORMAT(Actions_Log.date, '%m/%d/%y %h:%i %p')
-  AS formatted_date from Actions_Log, Users WHERE Actions_Log.user_id = Users.user_id, Actions_Log.action_table AND Actions_Log.action_target = Actions_Log.action_table
-  ORDER BY Actions_Log.date DESC;`, [], d => {
+  query(`select Actions_Log.message, DATE_FORMAT(Actions_Log.action_date, '%m/%d/%y %h:%i %p')
+  AS formatted_date FROM Actions_Log
+  ORDER BY Actions_Log.action_date DESC;`, [], d => {
     return res.send(d);
   });
 });
@@ -111,7 +111,7 @@ const RegisterStudentSchema = {
 router.post('/section/:id/students', auth.verifySessionAndRole("admin"), validate({ body: RegisterStudentSchema }), function (req, res, next) {
   query("insert into Section_Registrations values (?, ?)", [
     req.params.id,
-    req.body.student_id,
+    req.body.student_id, // This should be snake case so it matches he delete one below.
   ], (data, error) => {
     if (!data && error.code === "ER_DUP_ENTRY") {
       return res.send({ success: false, message: "Student is already enrolled in course section." })
@@ -134,8 +134,15 @@ router.delete('/section/:id/students/:studentId', auth.verifySessionAndRole("adm
     req.params.studentId,
   ], _ => {
   });
-  log_action(res.locals.userId, `removed student id ${req.body.student_id} from`, req.params.id, "Section_Registrations")
-  return res.send({ success: true });
+  query("Select first_name, last_name from Users where user_id = ?", [res.locals.userId], (teacherData, error) => {
+    query("Select first_name, last_name from Users where user_id = ?", [req.params.studentId], (studentData, error) => {
+      query("Select course_id, section_code from Sections where section_id = ?", [req.params.id], (sectionData, error) => {
+        log_action(`${teacherData[0].first_name} ${teacherData[0].last_name} removed student ${studentData[0].first_name} ${studentData[0].last_name} (${req.params.studentId}) from course ${sectionData[0].course_id} ${sectionData[0].section_code}`)
+        return res.send({ success: true });
+      })
+    })
+    //log_action(res.locals.userId, `added student id ${req.body.student_id} to`, req.params.id, "Section_Registrations")
+  });
 });
 
 
