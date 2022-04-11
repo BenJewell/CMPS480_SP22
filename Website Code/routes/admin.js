@@ -38,19 +38,21 @@ const STUDENT_GET_GRADES_QUERY = `
 
 // For actions log
 router.get('/actions', auth.verifySessionAndRole("admin"), function (req, res, next) {
-  query("select Users.first_name, Users.last_name, Actions_Log.*, DATE_FORMAT(Actions_Log.date, '%m/%d/%y %h:%i %p') AS formatted_date from Actions_Log, Users WHERE Actions_Log.user_id = Users.user_id;", [], d => {
+  query(`select Actions_Log.message, DATE_FORMAT(Actions_Log.action_date, '%m/%d/%y %h:%i %p')
+  AS formatted_date FROM Actions_Log
+  ORDER BY Actions_Log.action_date DESC;`, [], d => {
     return res.send(d);
   });
 });
-// End actions log
 
-
+// get list of all courses for admin users table
 router.get('/courses', auth.verifySessionAndRole("admin"), function (req, res, next) {
   query("select Courses.*, Sections.*, CONCAT(Users.first_name, ' ', Users.last_name) as `instructor` from Courses, Sections, Users where Courses.course_id = Sections.course_id and Users.user_id = Sections.instructor_id", [], d => {
     return res.send({ data: d });
   });
 });
 
+// get list of all users for admin users table
 router.get('/users', auth.verifySessionAndRole("admin"), function (req, res, next) {
   query("select `user_id`, `first_name`, `last_name`, `email_address`, `role` from Users", [], d => {
     let results = [];
@@ -61,6 +63,7 @@ router.get('/users', auth.verifySessionAndRole("admin"), function (req, res, nex
   });
 });
 
+// not sure exactly what this one does
 router.get('/section/:id', auth.verifySessionAndRole("admin"), function (req, res, next) {
   query("select Sections.*, CONCAT(Users.first_name, ' ', Users.last_name) as `instructor` from Sections, Users where section_id = ? and Users.user_id = Sections.instructor_id", [req.params.id], section => {
     if (!section.length) {
@@ -78,6 +81,7 @@ router.get('/section/:id', auth.verifySessionAndRole("admin"), function (req, re
   });
 });
 
+// get the students registered for a section
 router.get('/section/:id/students', auth.verifySessionAndRole("admin"), function (req, res, next) {
   query("select Section_Registrations.*, Users.first_name, Users.last_name, Users.email_address from Section_Registrations, Users where section_id = ? and Users.user_id = Section_Registrations.student_id", [req.params.id], students => {
     if (!students.length) {
@@ -97,27 +101,46 @@ const RegisterStudentSchema = {
     }
   }
 };
+
+// For admin adding a student to a section
 router.post('/section/:id/students', auth.verifySessionAndRole("admin"), validate({ body: RegisterStudentSchema }), function (req, res, next) {
   query("insert into Section_Registrations values (?, ?)", [
     req.params.id,
-    req.body.student_id,
+    req.body.student_id, // This should be snake case so it matches he delete one below.
   ], (data, error) => {
     if (!data && error.code === "ER_DUP_ENTRY") {
       return res.send({ success: false, message: "Student is already enrolled in course section." })
     }
-    log_action(res.locals.userId, `added student id ${req.body.student_id} to`, req.params.id, "Section_Registrations")
-    return res.send({ success: true });
+    query("Select first_name, last_name from Users where user_id = ?", [res.locals.userId], (teacherData, error) => {
+      query("Select first_name, last_name from Users where user_id = ?", [req.body.student_id], (studentData, error) => {
+        query("Select course_id, section_code from Sections where section_id = ?", [req.params.id], (sectionData, error) => {
+          log_action(`${teacherData[0].first_name} ${teacherData[0].last_name} added student ${studentData[0].first_name}
+          ${studentData[0].last_name} (${req.body.student_id}) to section ${sectionData[0].course_id} ${sectionData[0].section_code}`)
+          return res.send({ success: true });
+        })
+      })
+      //log_action(res.locals.userId, `added student id ${req.body.student_id} to`, req.params.id, "Section_Registrations")
+    });
   });
 });
 
+// For admin removing a student from a section
 router.delete('/section/:id/students/:studentId', auth.verifySessionAndRole("admin"), function (req, res, next) {
   query("delete from Section_Registrations where section_id = ? and student_id = ?", [
     req.params.id,
     req.params.studentId,
   ], _ => {
   });
-  log_action(res.locals.userId, `removed student id ${req.body.student_id} from`, req.params.id, "Section_Registrations")
-  return res.send({ success: true });
+  query("Select first_name, last_name from Users where user_id = ?", [res.locals.userId], (teacherData, error) => {
+    query("Select first_name, last_name from Users where user_id = ?", [req.params.studentId], (studentData, error) => {
+      query("Select course_id, section_code from Sections where section_id = ?", [req.params.id], (sectionData, error) => {
+        log_action(`${teacherData[0].first_name} ${teacherData[0].last_name} removed student ${studentData[0].first_name}
+        ${studentData[0].last_name}(${req.params.studentId}) from section ${sectionData[0].course_id} ${sectionData[0].section_code}`)
+        return res.send({ success: true });
+      })
+    })
+    //log_action(res.locals.userId, `added student id ${req.body.student_id} to`, req.params.id, "Section_Registrations")
+  });
 });
 
 
@@ -142,6 +165,7 @@ const CourseUpdateSchema = {
     }
   }
 };
+// For an admin modifying course info
 router.put('/course/:id', auth.verifySessionAndRole("admin"), validate({ body: CourseUpdateSchema }), function (req, res, next) {
   query("update Courses set name = ?, description = ?, primary_code = ?, secondary_code = ? where course_id = ?", [
     req.body.name,
@@ -150,10 +174,14 @@ router.put('/course/:id', auth.verifySessionAndRole("admin"), validate({ body: C
     req.body.secondary_code,
     req.params.id,
   ], (data, error) => {
-    log_action(res.locals.userId, `modified course id ${req.body.course_id}`, req.params.id, "Courses")
+  }); // Not really sure why these brackets need to be here like this
+  query("Select first_name, last_name from Users where user_id = ?", [res.locals.userId], (teacherData, error) => {
+    log_action(`${teacherData[0].first_name} ${teacherData[0].last_name} updated information for course
+      ${req.body.name} (${req.body.primary_code} ${req.body.secondary_code})`)
     return res.send({ success: true });
-  });
+  })
 });
+//log_action(res.locals.userId, `added student id ${req.body.student_id} to`, req.params.id, "Section_Registrations")
 
 const SectionUpdateSchema = {
   type: 'object',
@@ -168,16 +196,23 @@ const SectionUpdateSchema = {
     },
   }
 };
+
+// Updating info on a section
 router.put('/section/:id', auth.verifySessionAndRole("admin"), validate({ body: SectionUpdateSchema }), function (req, res, next) {
   query("update Sections set instructor_id = ?, section_code = ? where section_id = ?", [
     req.body.instructor_id,
     req.body.section_code,
     req.params.id,
   ], (data, error) => {
-    log_action(res.locals.userId, `section id ${req.body.section_id} to`, req.params.id, "Sections")
-    return res.send({ success: true });
   });
-});
+  query("Select first_name, last_name from Users where user_id = ?", [res.locals.userId], (teacherData, error) => {
+      query("Select course_id, section_code from Sections where section_id = ?", [req.params.id], (sectionData, error) => {
+        log_action(`${teacherData[0].first_name} ${teacherData[0].last_name} updated info for ${req.body.section_code}
+        (${req.params.id})`)
+        return res.send({ success: true });
+      })
+    })
+  });
 
 router.get('/search/:role', auth.verifySessionAndRole("admin"), function (req, res, next) {
   query("select Users.user_id as `id`, CONCAT(Users.first_name, ' ', Users.last_name) as `text` from Users where role = ? and (concat(`first_name`, ' ', `last_name`) like ? or `email_address` like ? or user_id = ?)", [req.params.role, `%${req.query.q}%`, `%${req.query.q}%`, req.query.q], users => {
