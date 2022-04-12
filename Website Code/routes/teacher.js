@@ -124,7 +124,7 @@ step 1: split ID to get assignment ID and student ID
 step 2: update grades table with changes
 step 3: return success
 */
-router.post('/grades/single-update', validate({ body: gradeSchema }), function (req, res, next) {
+router.post('/grades/single-update', auth.verifySessionAndRole("teacher"), validate({ body: gradeSchema }), function (req, res, next) {
   // step 1
   let idString = String(req.body.ids).substring(11);
   let IDarry = idString.split("-");
