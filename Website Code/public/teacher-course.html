@@ -73,7 +73,7 @@
 
   window.addEventListener("load", async () => {
 
-    let graphGrades = [];
+    let grades = [];
 
     const api = await apiCall(`teacher/course/${getQueryVariable('id')}`);
     document.getElementById("courseTitle").innerHTML = api.name;
@@ -83,58 +83,140 @@
 
     var starBadge = `<span class="badge bg-info">${feather.icons['star'].toSvg()}</span>`;
     for (let student of api.students || []) {
-      for(let flags of api.audits || []){
+      for (let flags of api.audits || []) {
         if (student.student_id !== flags.student_id) continue;
-        graphGrades.push([`${student.first_name} ${student.last_name}`, checkNullZero(toPercentage(student.total_grade))]);
+        grades.push(checkNullZero(toPercentage(student.total_grade)));
         document.getElementById("students").innerHTML += `
                     <tr>
                         <td>#${checkNull(student.user_id)}</td>
                         <td>${checkNull(student.first_name)} ${checkNull(student.last_name)}</td>
-                        <td>${flags.total_audits > 0 ? starBadge + '<p style="display: none;">1</p>': '<p style="display: none;">0</p>'}</td>
+                        <td>${flags.total_audits > 0 ? starBadge + '<p style="display: none;">1</p>' : '<p style="display: none;">0</p>'}</td>
                         <td style="width: 10%; text-align: center; background-color: ${rowColor(student.total_grade)}">${checkNullZero(toPercentage(student.total_grade))}% - ${checkNullZero(letterGrade(student.total_grade))}</td>
                         <td class="text-end"><a href="teacher-student.html?studentId=${student.user_id}&courseId=${getQueryVariable('id')}" type="button" class="btn btn-secondary btn-sm">View Grades &rarr;</a></td>
                     </tr>
             `;
       }
     };
-    graphGrades.sort(function (item1, item2) {
-      return item1[1] - item2[1];
-    });
 
-    let labels = graphGrades.map((grade) => grade[0]);
-    let data = graphGrades.map((grade) => grade[1]);
-    console.log(graphGrades)
 
+    let gradeA = grades.reduce((r, a) => r + (a >= 90), 0);
+    let gradeB = grades.reduce((r, a) => r + (a >= 80 && a < 90), 0);
+    let gradeC = grades.reduce((r, a) => r + (a >= 70 && a < 80), 0);
+    let gradeD = grades.reduce((r, a) => r + (a >= 60 && a < 70), 0);
+    let gradeF = grades.reduce((r, a) => r + (a < 60), 0);
+
+    const data = {
+      labels: ['F: 0-59', 'D: 60-69', 'C: 70-79', 'B: 80-89', 'A: 90-100+'],
+      datasets: [{
+        label: 'Grade Distribution',
+        data: [gradeF, gradeD, gradeC, gradeB, gradeA],
+        backgroundColor: [
+          'hsla(0, 100%, 50%, 0.7)',
+          'hsla(30, 100%, 50%, 0.7)',
+          'hsla(60, 100%, 50%, 0.7)',
+          'hsla(100, 100%, 50%, 0.7)',
+          'hsla(160, 100%, 50%, 0.7)'
+        ],
+        borderColor: [
+          'hsla(0, 100%, 50%, 1)',
+          'hsla(30, 100%, 50%, 1)',
+          'hsla(60, 100%, 50%, 1)',
+          'hsla(100, 100%, 50%, 1)',
+          'hsla(160, 100%, 50%, 1)'
+        ],
+        borderWidth: 2
+      }]
+    };
+    
     let ctx = document.getElementById('myChart')
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: "Student Grades",
-          data: data,
-          lineTension: 0,
-          backgroundColor: 'transparent',
-          borderColor: '#007bff',
-          borderWidth: 4,
-          pointBackgroundColor: '#007bff'
-        }]
-      },
+    new Chart(ctx, config = {
+      type: 'bar',
+      data: data,
       options: {
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: false
-            }
-          }]
+        plugins: {
+          legend: {
+            display: false,
+          },
+          title: {
+                display: true,
+                text: 'Grade Distribution',
+                font: {
+                  size: 20,
+                  weight: 'bold'
+                }
+          },
+          customScale: {
+            grace: '10%',
+          }
         },
-        legend: {
-          display: false
+        scales: {
+          yAxes: {
+            ticks: {
+              beginAtZero: true,
+              callback: function (value) { if (value % 1 === 0) { return value; } },
+              title: {
+                    display: true,
+                    text: 'No. of Students',
+                    font: {
+                        size: 15,
+                        weight: 'bold'
+                    }
+              }
+            }
+          },
+          xAxes: {
+            title: {
+                display: true,
+                text: 'Grades',
+                font: {
+                  size: 15,
+                  weight: 'bold'
+                }
+          }
+          }
         }
       }
-    })
-  });
+    });
 
+/*
+          y: {
+            beginAtZero: true,
+          },
+type: 'bar',
+      data: data,
+      options: {
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        scales: {
+          x: {
+            type: 'linear',
+            position: 'bottom',
+          },
+          yAxes: {
+            ticks: {
+              beginAtZero: true,
+              callback: function (value) { if (value % 1 === 0) { return value; } }
+            }
+          }
+        }
+
+        options: {
+        plugins: {
+            title: {
+                display: true,
+                text: 'Custom Chart Title'
+            }
+        }
+    }
+        */
+
+
+
+
+  });
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>

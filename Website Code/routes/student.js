@@ -92,7 +92,7 @@ router.get('/calendar', auth.verifySessionAndRole("student"), function (req, res
           AND Sections.section_id = Assignments.section_id = Section_Registrations.section_id
           AND Courses.course_id = Sections.course_id 
           AND Assignments.due_date > now() 
-          ORDER BY Assignments.due_date
+          ORDER BY Assignments.due_date, Assignments.name;
   `, [res.locals.userId], table => {
     return res.send(table);
   });
@@ -127,7 +127,7 @@ router.post('/audit', validate({ body: AuditSchema }), auth.verifySessionAndRole
         res.locals.userId, req.body.grades_id, req.body.subject, req.body.message
       ], message => {
         // This will need tested/fixed after messages and audit implementation is done. { success: true }
-        log_action(res.locals.userId, `requested audit of ${req.body.grades_id}`, req.params.id, "Grades")
+        //log_action(res.locals.userId, `requested audit of ${req.body.grades_id}`, req.params.id, "Grades")
         return res.send({ success: true, id: message.insertId });
       });
     });
