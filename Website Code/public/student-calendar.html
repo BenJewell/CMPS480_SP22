@@ -76,7 +76,7 @@
         //List assignments
         document.getElementById("assignments-list").innerHTML += `
               <li class="list-group-item d-flex justify-content-between align-items-center course${api.course_id}">
-                ${api.assignment_name}
+                ${api.course_name} - ${api.assignment_name}
                 <span class="badge alert-primary tag-pill">${api.due_time}</span>
               </li>
           `;
