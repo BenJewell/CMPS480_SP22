@@ -59,7 +59,7 @@ const SettingsSchema = {
 };
 
 router.get('/settings', auth.verifySession(), function (req, res, next) {
-  query("select email_address, phone_number from Users where user_id = ?", [res.locals.userId], d => {
+  query("select first_name, last_name, email_address, phone_number from Users where user_id = ?", [res.locals.userId], d => {
     return res.send(d[0]);
   });
 });
