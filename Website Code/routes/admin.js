@@ -342,7 +342,7 @@ const SignUpSchema = {
  step 1: check for existing user under that email address
  step 2: insert user into users table
  */
-router.post('/users', validate({ body: SignUpSchema }), function (req, res, next) {
+router.post('/users', auth.verifySessionAndRole("admin"), validate({ body: SignUpSchema }), function (req, res, next) {
   // step 1
   query("select user_id from Users where email_address = ?", [
     req.body.email_address,
@@ -361,12 +361,13 @@ router.post('/users', validate({ body: SignUpSchema }), function (req, res, next
         req.body.password
       ],
       (data) => {
-      });
-    query("Select first_name, last_name from Users where user_id = ?", [res.locals.userId], (teacherData, error) => {
-      log_action(`${teacherData[0].first_name} ${teacherData[0].last_name} created account for ${req.body.role} ${req.body.first_name} ${req.body.last_name}
-            (${req.email_address})`)
-      return res.send({ success: true });
-    })
+        query("Select first_name, last_name from Users where user_id = ?", [res.locals.userId], (teacherData, error) => {
+          console.log(teacherData[0])
+          log_action(`${teacherData[0].first_name} ${teacherData[0].last_name} created account for ${req.body.role} ${req.body.first_name} ${req.body.last_name}
+            (${req.body.email_address})`)
+          return res.send({ success: true });
+        });
+      })
   });
 });
 
