@@ -122,7 +122,7 @@ const gradeSchema = {
 /*Edit student's grade for one assignment
 step 1: split ID to get assignment ID and student ID
 step 2: update grades table with changes
-step 3: return success
+step 3: Pulls all the info we need for the log entry and then builds it, and return success
 */
 router.post('/grades/single-update', auth.verifySessionAndRole("teacher"), validate({ body: gradeSchema }), function (req, res, next) {
   // step 1
@@ -144,17 +144,22 @@ router.post('/grades/single-update', auth.verifySessionAndRole("teacher"), valid
     ],
     (data) => {
       //step 3
+      query("Select first_name, last_name from Users where user_id = ?", [res.locals.userId], (teacherData, error) => {
+        console.log("trying to get record for", res.locals.userId)
+        query("Select first_name, last_name from Users where user_id = ?", [studentId], (studentData, error) => {
+          query("Select name, section_id from Assignments where assignment_id = ?", [assignmentId], (assignmentData, error) => {
+            query("Select section_code, course_id from Sections where section_id = ?", [assignmentData[0].section_id], (sectionData, error) => {
+              query("Select name, primary_code, secondary_code from Courses where course_id = ?", [sectionData[0].course_id], (courseData, error) => {
+                log_action(`${teacherData[0].first_name} ${teacherData[0].last_name} entered/updated student (${studentId}) ${studentData[0].first_name} 
+              ${studentData[0].last_name}'s grade for assignment ${assignmentData[0].name} (${assignmentId}) in section ${sectionData[0].section_code} 
+              of course ${courseData[0].name} (${courseData[0].primary_code} ${courseData[0].secondary_code})`)
+                return res.send({ success: true });
+              });
+            });
+          });
+        });
+      });
     });
-  query("Select first_name, last_name from Users where user_id = ?", [res.locals.userId], (teacherData, error) => {
-    console.log("trying to get record for", res.locals.userId)
-    query("Select first_name, last_name from Users where user_id = ?", [studentId], (studentData, error) => {
-      query("Select name from Assignments where assignment_id = ?", [assignmentId], (assignmentData, error) => {
-        log_action(`${teacherData[0].first_name} ${teacherData[0].last_name} entered/updated student (${studentId}) ${studentData[0].first_name}
-      ${studentData[0].last_name}'s grade for assignment ${assignmentData[0].name} (${assignmentId})`)
-        return res.send({ success: true });
-      })
-    });
-  });
-})
+});
 
 module.exports = router;
