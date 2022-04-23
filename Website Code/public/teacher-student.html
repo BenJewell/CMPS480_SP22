@@ -42,45 +42,45 @@
                 </div>
 
                 <div class="container">
-                    <div id="addError" class="alert alert-danger" role="alert" style="display: none;">
+                    <div id="addError" class="alert alert-danger my-1" role="alert" style="display: none;">
                         There was an error saving the changes. Please try again later.
                     </div>
 
-                    <div id="successMessage" class="w-25 alert alert-success alert-dismissible" style="display: none;">
-                        <strong>Success!</strong> Changes saved. The page will now refresh.
+                    <div id="successMessage" class="alert alert-success my-1" style="visibility: hidden;">
+                        <strong>Success! Changes saved.</strong>
                     </div>
 
-                    <h3 class="mt-5 border-bottom" id="formTitle" style="display: none;">Edit Grade</h3>
+                    <h3 class="mt-1 border-bottom" id="formTitle" style="display: none;">Edit Assignment</h3>
                     <form class="row gy-2 gx-3 align-items-center pb-5 border-bottom" id="assignmentForm"
                         style="display: none;">
                         <div class="col-auto">
-                            <label for="autoSizingInput">Name</label>
-                            <input readonly="readonly" type="text" class="form-control" id="assignmentName"
+                            <label for="assignmentName">Name</label>
+                            <input readonly type="text" class="form-control" id="assignmentName"
                                 placeholder="Assignment Name">
                         </div>
                         <div class="col-auto">
-                            <label for="autoSizingInput">Description</label>
-                            <input readonly="readonly" type="text" class="form-control" id="assignmentDescription"
+                            <label for="assignmentDescription">Description</label>
+                            <input readonly type="text" class="form-control" id="assignmentDescription"
                                 placeholder="Assignment Description">
                         </div>
                         <div class="col-auto">
-                            <label for="autoSizingInput">Due Date/Time</label>
-                            <input readonly="readonly" type="text" class="form-control" id="assignmentDue"
+                            <label for="assignmentDue">Due Date/Time</label>
+                            <input readonly type="text" class="form-control" id="assignmentDue"
                                 placeholder="Assignment Due Date/Time">
                         </div>
                         <div class="col-auto">
-                            <label for="autoSizingInputPoints">Points Received</label>
+                            <label for="pointsReceived">Points Received</label>
                             <input type="text" class="form-control" id="pointsReceived" placeholder="Points Received">
                         </div>
                         <div class="col-auto">
-                            <label for="autoSizingInputPointsTotal">Points Possible</label>
-                            <input readonly="readonly" type="text" class="form-control" id="pointsPossible"
+                            <label for="pointsPossible">Points Possible</label>
+                            <input readonly type="text" class="form-control" id="pointsPossible"
                                 placeholder="Points Possible">
                         </div>
                         <div class="col-auto">
-                            <label for="autoSizingInstructorNotes">Notes</label>
-                            <input type="text" class="form-control" id="instructorNotes"
-                                placeholder="Instructor Notes">
+                            <label for="instructorNotes">Notes</label>
+                            <textarea class="form-control" id="instructorNotes" placeholder="Instructor Notes"
+                                rows="1"></textarea>
                         </div>
                         <div class="col-auto">
                             <div class="form-check">
@@ -112,7 +112,7 @@
                         </div>
                     </form>
                 </div>
-                <h3 class="mt-5">Assignments</h3>
+                <h3 class="mt-1">Assignments</h3>
                 <div class="table-responsive">
                     <table class="table table-striped sortable">
                         <thead>
@@ -153,11 +153,14 @@
                 inactive: '<span class="badge bg-warning">Not active</span>',
                 flagged: `<span class="badge bg-info">${star}</span>`,
             };
-            document.getElementById("assignments").innerHTML = "";
             var edit = feather.icons.edit.toSvg();
-            for (let assignment of api.grades) {
-                var graded = checkNull(assignment.points_received);
-                document.getElementById("assignments").innerHTML += `
+
+            async function updateTable() {
+                let funcApi = await apiCall(`teacher/student/${getQueryVariable('studentId')}/${getQueryVariable('courseId')}`);
+                document.getElementById("assignments").innerHTML = "";
+                for (let assignment of funcApi.grades) {
+                    var graded = checkNull(assignment.points_received);
+                    document.getElementById("assignments").innerHTML += `
                    <tr>
                         <td>${assignment.assignment_category}</td>
                         <td>${assignment.name}</td>
@@ -171,7 +174,15 @@
                         <td><button class="btn btn-outline-secondary editBtns" id="editbutton_${assignment.assignment_id}-${assignment.student_id}">✎</button></td>
                     </tr>
                 `;
+                }
+                //Assign on click to edit buttons
+                var buttons = document.getElementsByClassName('editBtns');
+                for (var i = 0; i < buttons.length; i++) {
+                    buttons[i].addEventListener("click", (event) => editBtn(event));
+                }
             }
+            //Table fill on page load
+            await updateTable();
 
             //Fill edit fields and show them
             async function editBtn(event) {
@@ -186,7 +197,7 @@
                 document.getElementById("instructorNotes").value = editApi.instructor_notes;
                 document.getElementById("missingCheck").checked = (editApi.missing === 1 ? true : false);
                 document.getElementById("activeCheck").checked = (editApi.active === 1 ? true : false);
-                if(editApi.flagged_for_audit === 0){
+                if (editApi.flagged_for_audit === 0) {
                     document.getElementById("auditFormElement").style.display = "none";
                     document.getElementById("auditCheck").checked = false;
                 }
@@ -194,15 +205,10 @@
                 document.getElementById("assignmentForm").style.display = "block";
             }
 
-            //Assign on click to edit buttons
-            var buttons = document.getElementsByClassName('editBtns');
-            for (var i = 0; i < buttons.length; i++) {
-                buttons[i].addEventListener("click", (event) => editBtn(event));
-            }
+
 
             //Reset edit fields and hide them
-            function cancelEdits(event) {
-                event.preventDefault();
+            function cancelEdits() {
                 document.getElementById("assignmentName").value = "";
                 document.getElementById("assignmentDescription").value = "";
                 document.getElementById("assignmentDue").value = "";
@@ -215,12 +221,11 @@
                 document.getElementById("auditFormElement").style.display = "block";
                 document.getElementById("auditCheck").checked = false;
                 document.getElementById("assignmentForm").style.display = "none";
-                return false;
             }
             //Assign on click to cancel button
             document.getElementById("cancelEdits").addEventListener("click", (event) => cancelEdits(event), false);
 
-            //Create function for save button
+            //Function for save button
             async function saveEdits(event) {
                 event.preventDefault();
                 //modify points received for database formatting
@@ -233,7 +238,7 @@
                 let missingCheck = document.getElementById("missingCheck").checked ? 1 : 0;
                 let activeCheck = document.getElementById("activeCheck").checked ? 1 : 0;
                 var auditCheck;
-                if(document.getElementById("auditFormElement").style.display === "none"){
+                if (document.getElementById("auditFormElement").style.display === "none") {
                     auditCheck = 0;
                 } else {
                     auditCheck = document.getElementById("auditCheck").checked ? 0 : 1;
@@ -241,8 +246,11 @@
                 let instructorNotes = document.getElementById("instructorNotes").value;
                 let saveApi = await apiCall("teacher/grades/single-update", "POST", { ids: ids, pointsReceived: pointsReceived, missingCheck: missingCheck, activeCheck: activeCheck, auditCheck: auditCheck, instructorNotes: instructorNotes });
                 if (saveApi.success) {
-                    document.getElementById("successMessage").style.display = "inline";
-                    setTimeout(() => window.location.reload(), 2500);
+                    document.getElementById("successMessage").style.visibility = "visible";
+                    //Update table on success
+                    await updateTable();
+                    setTimeout(() => document.getElementById("successMessage").style.visibility = "hidden", 5000);
+                    cancelEdits();
                 } else {
                     cancelEdits();
                     showError("There was an error saving the changes. Please try again later.");
@@ -255,7 +263,7 @@
 
             //Helper: Show error message
             function showError(text) {
-                document.getElementById("addError").style.display = "block";
+                document.getElementById("addError").style.display = "flex";
                 document.getElementById("addError").innerHTML = text;
             }
         });
