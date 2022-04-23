@@ -1,6 +1,14 @@
 const API_HOST = "."; // leave blank if testing locally
 //const API_HOST = "http://45.55.44.163/json";
 
+
+async function logoutAudit(reason) {
+  console.log("trying to log", reason)
+  await apiCall(`users/logout`, "POST", {
+    reason: reason
+  })
+};
+
 // configuration to build nav bar on the side based on user's role
 // this was introduced so we can share pages for the
 // same role (e.g. messenger) and easily display the correct navbar
@@ -35,8 +43,9 @@ const ROLE_NAVIGATION = {
       icon: "log-out",
       href: function () {
         if (confirm("Are you sure you want to end your session?")) {
-          window.localStorage.removeItem("user");
-          return document.location = "index.html";
+          logoutAudit("Logout button clicked")
+          //window.localStorage.removeItem("user");
+          //return document.location = "index.html";
         }
       }
     }
