@@ -1,40 +1,37 @@
-        // Set timeout variables.
-        var timoutWarning = 900000; // Display warning in 15 Mins.
-        var logoutUrl = 'logout.html'; // URL to logout page.
+async function logoutAudit(reason) {
+    await apiCall(`users/logout`, "POST", { reason: reason });
+};
 
-        var warningTimer;
+// Set timeout variables.
+var timoutWarning = 900000; // Display warning in 15 Mins.
 
-        // Start warning timer.
-        function StartWarningTimer() {
-            warningTimer = setTimeout("IdleTimeout()", timoutWarning);
-            // console.log("Timer set")
-        }
+var warningTimer;
 
-        // Reset timer.
-        function ResetTimeOutTimer() {
-            // console.log("")
-            clearTimeout(warningTimer)
-            StartWarningTimer();
-        }
+// Start warning timer.
+function StartWarningTimer() {
+    warningTimer = setTimeout("IdleTimeout()", timoutWarning);
+}
 
-        // Logout the user.
-        function IdleTimeout() {
-            console.log("Idle detected")
-            //clearTimeout(warningTimer);
-            //IdleTimeout()
-            window.location = logoutUrl;
-        }
+// Reset timer.
+function ResetTimeOutTimer() {
+    clearTimeout(warningTimer)
+    StartWarningTimer();
+}
 
-        StartWarningTimer() // Initial timer on page load
+// Logout the user.
+function IdleTimeout() {
+    console.log("Idle detected")
+    logoutAudit("Session timeout")
+    window.localStorage.removeItem("user");
+    document.location = "index.html?timeout=true";
+}
 
-        // document.addEventListener("mousemove", function (evt) {
-        //     ResetTimeOutTimer()
-        // });
+StartWarningTimer() // Initial timer on page load
 
-        document.addEventListener("click", function (evt) {
-            ResetTimeOutTimer()
-        });
+document.addEventListener("click", function (evt) {
+    ResetTimeOutTimer()
+});
 
-        window.addEventListener("scroll", function (evt) {
-            ResetTimeOutTimer()
-        });
+window.addEventListener("scroll", function (evt) {
+    ResetTimeOutTimer()
+});

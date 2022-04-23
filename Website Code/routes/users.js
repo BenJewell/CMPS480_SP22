@@ -31,21 +31,19 @@ router.post('/login', validate({ body: LoginSchema }), function (req, res, next)
     query("update `Users` set `session_key` = ? where `user_id` = ?", [data[0].key, data[0].id], () => {
     });
     query("Select first_name, last_name from Users where user_id = ?", [data[0].id], (userData, error) => {
-      log_action(`${userData[0].first_name} ${userData[0].last_name}' (${data[0].id}) logged into the system succesfully`)
+      log_action(`${userData[0].first_name} ${userData[0].last_name} (${data[0].id}) logged into the system succesfully`)
     });
     return res.send({ success: true, ...data[0] });
   });
 });
 
 
-router.post('/logout', function (req, res, next) {
-  [], data => {
-    console.log("got a logout request", req.body.reason)
-    query("Select first_name, last_name from Users where user_id = ?", [res.locals.userId], (userData, error) => {
-      log_action(`${userData[0].first_name} ${userData[0].last_name}' (${res.locals.userId}) logged out of the system with a reason of "${req.body.reason}"`)
-    });
-    return res.send({ success: true });
-  };
+router.post('/logout', auth.verifySession(), function (req, res, next) {
+  //console.log("got a logout request", req.body.reason)
+  query("Select first_name, last_name from Users where user_id = ?", [res.locals.userId], (userData, error) => {
+    log_action(`${userData[0].first_name} ${userData[0].last_name} (${res.locals.userId}) logged out of the system with a reason of "${req.body.reason}"`)
+  });
+  return res.send({ success: true });
 });
 
 

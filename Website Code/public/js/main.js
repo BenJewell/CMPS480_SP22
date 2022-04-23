@@ -3,10 +3,7 @@ const API_HOST = "."; // leave blank if testing locally
 
 
 async function logoutAudit(reason) {
-  console.log("trying to log", reason)
-  await apiCall(`users/logout`, "POST", {
-    reason: reason
-  })
+  await apiCall(`users/logout`, "POST", { reason: reason });
 };
 
 // configuration to build nav bar on the side based on user's role
@@ -44,8 +41,8 @@ const ROLE_NAVIGATION = {
       href: function () {
         if (confirm("Are you sure you want to end your session?")) {
           logoutAudit("Logout button clicked")
-          //window.localStorage.removeItem("user");
-          //return document.location = "index.html";
+          window.localStorage.removeItem("user");
+          return document.location = "index.html";
         }
       }
     }
@@ -174,6 +171,7 @@ function getUser(role) {
 
 
 async function apiCall(path, method = "GET", data = undefined) {
+//console.log(path, method, data)
   let key = "";
   let user = window.localStorage.getItem("user");
   if (user) {
