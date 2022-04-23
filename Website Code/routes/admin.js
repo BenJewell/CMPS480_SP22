@@ -7,39 +7,43 @@ const validate = require('express-jsonschema').validate;
 // more complex and/or long queries
 // stored here for readability
 const STUDENT_GET_SECTIONS_QUERY = `
-    select s.section_id,
+    select c.course_id,
+           c.name                                 as course_name,
+           c.primary_code,
+           c.secondary_code,
+           s.section_id,
            s.*,
            concat(u.first_name, ' ', u.last_name) as instructor_name
     from Sections s,
+         Courses c,
          Section_Registrations sr,
          Users u
     where sr.student_id = ?
       and u.user_id = s.instructor_id
       and s.section_id = sr.section_id
+      and c.course_id = s.course_id
 `;
 const STUDENT_GET_GRADES_QUERY = `
-    select Courses.course_id,
-           Courses.name                                                     as course_name,
-           Courses.primary_code,
-           Courses.secondary_code,
-           (sum(Grades.points_received) / sum(Assignments.points_possible)) as total_grade
-    from Assignments,
-         Grades,
-         Courses
+    select a.section_id,
+           (sum(g.points_received) / sum(a.points_possible)) as
+               total_grade
+    from Assignments a,
+         Grades g
     where student_id = ?
-      and Assignments.assignment_id = Grades.assignment_id
-      and Courses.course_id = Assignments.course_id
-      and Grades.points_received is not null
-      and Grades.active = 1
-    group by Courses.course_id
+      and a.assignment_id = g.assignment_id
+      and g.points_received is not null
+      and g.active = 1
+    group by a.section_id
 `;
 
 
 // For actions log
 router.get('/actions', auth.verifySessionAndRole("admin"), function (req, res, next) {
-  query(`select Actions_Log.message, DATE_FORMAT(Actions_Log.action_date, '%m/%d/%y %h:%i %p')
-  AS formatted_date FROM Actions_Log
-  ORDER BY Actions_Log.action_date DESC;`, [], d => {
+  query(`select Actions_Log.message,
+                DATE_FORMAT(Actions_Log.action_date, '%m/%d/%y %h:%i %p')
+                    AS formatted_date
+         FROM Actions_Log
+         ORDER BY Actions_Log.action_date DESC;`, [], d => {
     return res.send(d);
   });
 });
@@ -89,11 +93,11 @@ router.get('/users', auth.verifySessionAndRole("admin"), function (req, res, nex
 router.get('/section/:id', auth.verifySessionAndRole("admin"), function (req, res, next) {
   query("select Sections.*, CONCAT(Users.first_name, ' ', Users.last_name) as `instructor` from Sections, Users where section_id = ? and Users.user_id = Sections.instructor_id", [req.params.id], section => {
     if (!section.length) {
-      return res.send({ success: false });
+      return res.send({success: false});
     }
     query("select * from Courses where course_id = ?", [section[0].course_id], course => {
       if (!course.length) {
-        return res.send({ success: false });
+        return res.send({success: false});
       }
       return res.send({
         section: section[0],
@@ -109,7 +113,7 @@ router.get('/section/:id/students', auth.verifySessionAndRole("admin"), function
     if (!students.length) {
       return res.send({ data: [] });
     }
-    return res.send({ data: students })
+    return res.send({data: students})
   });
 });
 
@@ -125,20 +129,20 @@ const RegisterStudentSchema = {
 };
 
 // For admin adding a student to a section
-router.post('/section/:id/students', auth.verifySessionAndRole("admin"), validate({ body: RegisterStudentSchema }), function (req, res, next) {
+router.post('/section/:id/students', auth.verifySessionAndRole("admin"), validate({body: RegisterStudentSchema}), function (req, res, next) {
   query("insert into Section_Registrations values (?, ?)", [
     req.params.id,
     req.body.student_id, // This should be snake case so it matches he delete one below.
   ], (data, error) => {
     if (!data && error.code === "ER_DUP_ENTRY") {
-      return res.send({ success: false, message: "Student is already enrolled in course section." })
+      return res.send({success: false, message: "Student is already enrolled in course section."})
     }
     query("Select first_name, last_name from Users where user_id = ?", [res.locals.userId], (teacherData, error) => {
       query("Select first_name, last_name from Users where user_id = ?", [req.body.student_id], (studentData, error) => {
         query("Select course_id, section_code from Sections where section_id = ?", [req.params.id], (sectionData, error) => {
           log_action(`${teacherData[0].first_name} ${teacherData[0].last_name} added student ${studentData[0].first_name}
           ${studentData[0].last_name} (${req.body.student_id}) to section ${sectionData[0].course_id} ${sectionData[0].section_code}`)
-          return res.send({ success: true });
+          return res.send({success: true});
         })
       })
       //log_action(res.locals.userId, `added student id ${req.body.student_id} to`, req.params.id, "Section_Registrations")
@@ -158,7 +162,7 @@ router.delete('/section/:id/students/:studentId', auth.verifySessionAndRole("adm
       query("Select course_id, section_code from Sections where section_id = ?", [req.params.id], (sectionData, error) => {
         log_action(`${teacherData[0].first_name} ${teacherData[0].last_name} removed student ${studentData[0].first_name}
         ${studentData[0].last_name}(${req.params.studentId}) from section ${sectionData[0].course_id} ${sectionData[0].section_code}`)
-        return res.send({ success: true });
+        return res.send({success: true});
       })
     })
     //log_action(res.locals.userId, `added student id ${req.body.student_id} to`, req.params.id, "Section_Registrations")
@@ -188,7 +192,7 @@ const CourseUpdateSchema = {
   }
 };
 // For an admin modifying course info
-router.put('/course/:id', auth.verifySessionAndRole("admin"), validate({ body: CourseUpdateSchema }), function (req, res, next) {
+router.put('/course/:id', auth.verifySessionAndRole("admin"), validate({body: CourseUpdateSchema}), function (req, res, next) {
   query("update Courses set name = ?, description = ?, primary_code = ?, secondary_code = ? where course_id = ?", [
     req.body.name,
     req.body.description,
@@ -200,7 +204,7 @@ router.put('/course/:id', auth.verifySessionAndRole("admin"), validate({ body: C
   query("Select first_name, last_name from Users where user_id = ?", [res.locals.userId], (teacherData, error) => {
     log_action(`${teacherData[0].first_name} ${teacherData[0].last_name} updated information for course
       ${req.body.name} (${req.body.primary_code} ${req.body.secondary_code})`)
-    return res.send({ success: true });
+    return res.send({success: true});
   })
 });
 //log_action(res.locals.userId, `added student id ${req.body.student_id} to`, req.params.id, "Section_Registrations")
@@ -220,7 +224,7 @@ const SectionUpdateSchema = {
 };
 
 // Updating info on a section
-router.put('/section/:id', auth.verifySessionAndRole("admin"), validate({ body: SectionUpdateSchema }), function (req, res, next) {
+router.put('/section/:id', auth.verifySessionAndRole("admin"), validate({body: SectionUpdateSchema}), function (req, res, next) {
   query("update Sections set instructor_id = ?, section_code = ? where section_id = ?", [
     req.body.instructor_id,
     req.body.section_code,
@@ -239,7 +243,7 @@ router.put('/section/:id', auth.verifySessionAndRole("admin"), validate({ body: 
 // Not sure what this one is for
 router.get('/search/:role', auth.verifySessionAndRole("admin"), function (req, res, next) {
   query("select Users.user_id as `id`, CONCAT(Users.first_name, ' ', Users.last_name) as `text` from Users where role = ? and (concat(`first_name`, ' ', `last_name`) like ? or `email_address` like ? or user_id = ?)", [req.params.role, `%${req.query.q}%`, `%${req.query.q}%`, req.query.q], users => {
-    return res.send({ items: users })
+    return res.send({items: users})
   });
 });
 
@@ -247,7 +251,7 @@ router.get('/search/:role', auth.verifySessionAndRole("admin"), function (req, r
 router.get('/user/:id', auth.verifySessionAndRole("admin"), function (req, res, next) {
   query("select `user_id`, `first_name`, `last_name`, `email_address`, `role` from Users where user_id = ?", [req.params.id], d => {
     if (!d.length) {
-      return res.send({ success: false, message: "User not found" });
+      return res.send({success: false, message: "User not found"});
     }
     let user = d[0];
 
@@ -256,7 +260,7 @@ router.get('/user/:id', auth.verifySessionAndRole("admin"), function (req, res, 
       query(STUDENT_GET_SECTIONS_QUERY, [req.params.id], sections => {
         query(STUDENT_GET_GRADES_QUERY, [req.params.id], grades => {
           let courses = {};
-          sections.map((data) => courses[data.course_id] = data);
+          sections.map((data) => courses[data.section_id] = data);
 
           for (let grade of grades)
             // skip if no longer enrolled in this course
@@ -352,7 +356,10 @@ router.post('/users', auth.verifySessionAndRole("admin"), validate({ body: SignU
       return res.send({ success: false, message: "Account already exists with this email address" });
     }
     // step 2
-    query("insert into Users values (null, ?, ?, null, ?, ?, sha1(?), sha1(concat(now(), user_id, first_name, null)), null)",
+
+
+    // Artifacts from merge conflict
+/*     query("insert into Users values (null, ?, ?, null, ?, ?, sha1(?), sha1(concat(now(), user_id, first_name, null)), null)",
       [
         req.body.first_name,
         req.body.last_name,
@@ -365,7 +372,22 @@ router.post('/users', auth.verifySessionAndRole("admin"), validate({ body: SignU
           console.log(teacherData[0])
           log_action(`${teacherData[0].first_name} ${teacherData[0].last_name} created account for ${req.body.role} ${req.body.first_name} ${req.body.last_name}
             (${req.body.email_address})`)
-          return res.send({ success: true });
+          return res.send({ success: true }); */
+
+    query("insert into Users (user_id, first_name, last_name, email_address, role, password, session_key) values (null, ?, ?, ?, ?, sha1(?), sha1(concat(now(), user_id, first_name)))",
+        [
+          req.body.first_name,
+          req.body.last_name,
+          req.body.email_address,
+          req.body.role,
+          req.body.password
+        ],
+        (data) => {
+        query("Select first_name, last_name from Users where user_id = ?", [res.locals.userId], (teacherData, error) => {
+          console.log(teacherData[0])
+          log_action(`${teacherData[0].first_name} ${teacherData[0].last_name} created account for ${req.body.role} ${req.body.first_name} ${req.body.last_name}
+            (${req.body.email_address})`)
+          return res.send({success: true, id: data.insertId})
         });
       })
   });
