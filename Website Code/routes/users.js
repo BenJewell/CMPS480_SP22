@@ -1,5 +1,5 @@
 const express = require('express');
-const {query, log_action} = require("../util/db");
+const { query, log_action } = require("../util/db");
 const router = express.Router();
 const validate = require('express-jsonschema').validate;
 const auth = require("../middleware/auth");
@@ -19,21 +19,33 @@ const LoginSchema = {
   }
 };
 
-router.post('/login', validate({body: LoginSchema}), function (req, res, next) {
+router.post('/login', validate({ body: LoginSchema }), function (req, res, next) {
   query("select `user_id` as `id`, `first_name` as `name`, `role`, sha1(concat(now(), `user_id`, `first_name`)) as `key` from `Users` where `email_address` = ? and `password` = SHA1(?)", [
     req.body.email,
     req.body.password
   ], data => {
     if (!data || !data.length) {
-      log_action(res.locals.userId, `failed to login to the system ${req.body.student_id}`, req.params.id, "Users")
-      return res.send({success: false});
+      log_action(`A user failed to login to the system with an email address of ${req.body.email}`)
+      return res.send({ success: false });
     }
     query("update `Users` set `session_key` = ? where `user_id` = ?", [data[0].key, data[0].id], () => {
     });
-    log_action(res.locals.userId, `logged into the system succesfully ${req.body.student_id}`, req.params.id, "Users")
-    return res.send({success: true, ...data[0]});
+    query("Select first_name, last_name from Users where user_id = ?", [data[0].id], (userData, error) => {
+      log_action(`${userData[0].first_name} ${userData[0].last_name} (${data[0].id}) logged into the system succesfully`)
+    });
+    return res.send({ success: true, ...data[0] });
   });
 });
+
+
+router.post('/logout', auth.verifySession(), function (req, res, next) {
+  //console.log("got a logout request", req.body.reason)
+  query("Select first_name, last_name from Users where user_id = ?", [res.locals.userId], (userData, error) => {
+    log_action(`${userData[0].first_name} ${userData[0].last_name} (${res.locals.userId}) logged out of the system with a reason of "${req.body.reason}"`)
+  });
+  return res.send({ success: true });
+});
+
 
 const SettingsSchema = {
   type: 'object',
@@ -64,7 +76,7 @@ router.get('/settings', auth.verifySession(), function (req, res, next) {
   });
 });
 
-router.put('/settings', validate({body: SettingsSchema}), auth.verifySession(), function (req, res, next) {
+router.put('/settings', validate({ body: SettingsSchema }), auth.verifySession(), function (req, res, next) {
 
   query("update Users set email_address = ?, phone_number = ? where user_id = ?", [req.body.email_address, req.body.phone_number, res.locals.userId], _ => {
     if (req.body.new_password !== "") {
@@ -74,10 +86,10 @@ router.put('/settings', validate({body: SettingsSchema}), auth.verifySession(), 
         res.locals.userId,
         req.body.old_password,
       ], _ => {
-        return res.send({success: true})
+        return res.send({ success: true })
       })
     } else {
-      return res.send({success: true})
+      return res.send({ success: true })
     }
   });
 });

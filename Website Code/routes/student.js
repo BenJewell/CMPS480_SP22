@@ -125,10 +125,20 @@ router.post('/audit', validate({ body: AuditSchema }), auth.verifySessionAndRole
     (data) => {
       query("insert into Messages (sender_id, recipient_id, date, updated_at, subject, message, sender_is_read) values (?, (SELECT Sections.instructor_id FROM Grades, Assignments, Sections WHERE grades_id = ? AND Grades.assignment_id = Assignments.assignment_id AND Assignments.section_id = Sections.section_id), NOW(), NOW(), ?, ?, 0)", [
         res.locals.userId, req.body.grades_id, req.body.subject, req.body.message
-      ], message => {
-        // This will need tested/fixed after messages and audit implementation is done. { success: true }
-        //log_action(res.locals.userId, `requested audit of ${req.body.grades_id}`, req.params.id, "Grades")
-        return res.send({ success: true, id: message.insertId });
+      ], data => {
+        query("Select first_name, last_name from Users where user_id = ?", [res.locals.userId], (userData, error) => {
+          query("Select assignment_id from Grades where grades_id = ?", [req.body.grades_id], (gradesData, error) => {
+            query("Select name, section_id from Assignments where assignment_id = ?", [gradesData[0].assignment_id], (assignmentData, error) => {
+              query("Select section_code, course_id from Sections where section_id = ?", [assignmentData[0].section_id], (sectionData, error) => {
+                query("Select name, primary_code, secondary_code from Courses where course_id = ?", [sectionData[0].course_id], (courseData, error) => {
+                  log_action(`Student ${userData[0].first_name} ${userData[0].last_name} submitted an audit request for ${assignmentData[0].name}
+                  in section ${sectionData[0].section_code} of course ${courseData[0].name}`)
+                  return res.send({ success: true, id: data.insertId })
+                });
+              });
+            });
+          });
+        });
       });
     });
 });
