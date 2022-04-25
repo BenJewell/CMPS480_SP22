@@ -162,4 +162,111 @@ router.post('/grades/single-update', auth.verifySessionAndRole("teacher"), valid
     });
 });
 
+//assignment schema
+const AssignmentSchema = {
+  type: 'object',
+  properties: {
+    assignemnt_id: {
+      type: 'string',
+      required: true
+    },
+    section_id: {
+      type: 'string',
+      required: true
+    },
+    name: {
+      type: 'string',
+      required: true
+    },
+    discrpition: {
+      type: 'string',
+      required: true
+    },
+    pointsReceived: {
+      type: ['integer', 'null'],
+      required: true
+    },
+    due_date: {
+      type: 'datetime',
+      required: true
+    },
+    assignment_category: {
+      type: 'string',
+      required: true
+    },
+  }
+};
+
+//create assignments
+router.post('/assigments', auth.verifySessionAndRole("teacher"), validate({ body: AssignmentSchema }), function (req, res, next) {
+  // step 1
+  query("select assignment_id from Assignments where assignment_id = ?", [
+    req.body.assignemnt_id,
+  ], data => {
+    if (data.length !== 0) {
+      // account with email already exists
+      return res.send({ success: false, message: "Assignment already exists with this ID" });
+    }
+
+    query("insert into Assignments (assignment_id, section_id, name, points_possible, description, due_date , assignment_category) values (?, ?, ?, ?, ?, ?, ?)",
+        [
+          req.body.assignemnt_id,
+          req.body.section_id,
+          req.body.name, 
+          req.body.discrpition,
+          req.body.points_possible,
+          req.body.due_date,
+          req.body.assignment_category
+        ]);
+  });
+});
+
+//meetings
+const MeetingSchema = {
+  type: 'object',
+  properties: {
+    section_id: {
+      type: 'string',
+      required: true
+    },
+    date: {
+      type: 'datetime',
+      required: true
+    },
+  }
+};
+
+router.post('/Attendance_Meetings', auth.verifySessionAndRole("teacher"), validate({ body: MeetingSchema }), function (req, res, next) {
+
+  query("insert into Assignments (section_id, date) values (?, ?)",
+        [
+          req.body.section_id,
+          req.body.date
+        ]);
+  });
+
+
+//attendance
+const AttendanceSchema = {
+  type: 'object',
+  properties: {
+    attendance_id: {
+      type: 'string',
+      required: true
+    },
+    user_id: {
+      type: 'string',
+      required: true
+    },
+  }
+};
+
+router.post('/Attendance_Records', auth.verifySessionAndRole("teacher"), validate({ body: AttendanceSchema }), function (req, res, next) {
+  query("insert into Assignments (user_id,attendance_id) values (?,?)",
+      [
+        req.body.attendance_id,
+        req.body.user_id
+      ]);
+});
+
 module.exports = router;
