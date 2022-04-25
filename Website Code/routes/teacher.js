@@ -166,7 +166,7 @@ router.post('/grades/single-update', auth.verifySessionAndRole("teacher"), valid
 const AssignmentSchema = {
   type: 'object',
   properties: {
-    assignemnt_id: {
+    assignment_id: {
       type: 'string',
       required: true
     },
@@ -178,16 +178,16 @@ const AssignmentSchema = {
       type: 'string',
       required: true
     },
-    discrpition: {
+    description: {
       type: 'string',
       required: true
     },
-    pointsReceived: {
-      type: ['integer', 'null'],
+    points_possible: {
+      type: 'string',
       required: true
     },
     due_date: {
-      type: 'datetime',
+      type: 'string',
       required: true
     },
     assignment_category: {
@@ -198,7 +198,7 @@ const AssignmentSchema = {
 };
 
 //create assignments
-router.post('/assigments', auth.verifySessionAndRole("teacher"), validate({ body: AssignmentSchema }), function (req, res, next) {
+router.post('/assignments', auth.verifySessionAndRole("teacher"), validate({ body: AssignmentSchema }), function (req, res, next) {
   // step 1
   query("select assignment_id from Assignments where assignment_id = ?", [
     req.body.assignemnt_id,
@@ -208,16 +208,18 @@ router.post('/assigments', auth.verifySessionAndRole("teacher"), validate({ body
       return res.send({ success: false, message: "Assignment already exists with this ID" });
     }
 
-    query("insert into Assignments (assignment_id, section_id, name, points_possible, description, due_date , assignment_category) values (?, ?, ?, ?, ?, ?, ?)",
+    query("insert into Assignments (assignment_id, section_id, name, points_possible, description, due_date, assignment_category) values (?, ?, ?, ?, ?, ?, ?)",
         [
-          req.body.assignemnt_id,
+          req.body.assignment_id,
           req.body.section_id,
           req.body.name, 
-          req.body.discrpition,
           req.body.points_possible,
+          req.body.description,
           req.body.due_date,
           req.body.assignment_category
-        ]);
+        ], data => { 
+          return res.send({ success: true });
+        });
   });
 });
 

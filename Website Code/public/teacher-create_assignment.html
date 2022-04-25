@@ -90,7 +90,7 @@
                         </div>
                         <div class="col-6">
                             <label for="points_possible	" class="form-label">points possible</label>
-                            <input type="int" class="form-control" id="section_id" placeholder="points_possible">
+                            <input type="int" class="form-control" id="points_possible" placeholder="points_possible">
                         </div>
                         <div class="col-6">
                             <label for="due_date" class="form-label">due date</label>
@@ -129,9 +129,10 @@
         document.getElementById("message").innerHTML = message;
         document.getElementById("message").style.display = "block";
       }
-  
+
       document.getElementById("assignment-form").addEventListener("submit", async function (e) {
         e.preventDefault();
+        let dropdown = document.getElementById("assignment_category");
         try {
           const resp = await apiCall(`teacher/assignments`, "POST", {
             assignment_id: getValue("assignment_id"),
@@ -140,12 +141,11 @@
             description: getValue("description"),
             points_possible: getValue("points_possible"),
             due_date: getValue("due_date"),
-            category: getValue("category"),
+            assignment_category: dropdown.options[dropdown.selectedIndex].text,
           });
           if (resp.success === false)
             return showMessage("student", "danger", resp.message || "There was an error");
-  
-          document.location = `teacher-course.html?id=${resp.id}`;
+          document.location = `teacher-course.html?id=${getValue("section_id")}`;
         } catch (e) {
           showMessage("danger", "The assignment could not be created. Please ensure all fields are filled in and valid.");
         }
