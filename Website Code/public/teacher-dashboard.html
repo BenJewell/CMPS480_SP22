@@ -40,12 +40,14 @@
                 <span class="d-flex align-items-center mt-3 mb-3 mb-lg-0 me-lg-auto text-dark text-decoration-none">
                     <h2>Courses</h2>
                 </span>
+                <form class="form-inline d-flex justify-content-end">
+                    <button type="button" id="assignmentBtn" class="btn btn-primary mx-1 py-1">Create assignment</button>
+                    <button type="button" id="attendanceBtn" class="btn btn-primary mx-1 py-1">Attendance</button>
+                    <button type="button" id="meetingBtn" class="btn btn-primary mx-1 py-1">Create Meeting</button>
+                </form>
             </div>
-            <div class="btn-group">
-                <button onclick="location.href='teacher-create_assignment.html'" class="btn btn-primary">Create assignment</button>
-                <button onclick="location.href='teacher-attendance.html'" class="btn btn-primary">Attendance</button>
-                <button onclick="location.href='teacher-meetings.html'" class="btn btn-primary">Create Meeting</button>
-              </div>
+
+
             <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-5" id="courses">
 
                 <div class="alert alert-info" role="alert">
@@ -60,6 +62,10 @@
 <script src="js/main.js" type="text/javascript"></script>
 <script type="text/javascript">
     window.addEventListener("load", async () => {
+        document.getElementById("assignmentBtn").setAttribute("onclick", `window.location.href='/teacher-create_assignment.html'`);
+        document.getElementById("attendanceBtn").setAttribute("onclick", `window.location.href='/teacher-attendance.html'`);
+        document.getElementById("meetingBtn").setAttribute("onclick", `window.location.href='/teacher-meetings.html'`);
+
         const api = await apiCall("teacher/homepage");
         document.getElementById("courses").innerHTML = "";
         var book = feather.icons.book.toSvg();
