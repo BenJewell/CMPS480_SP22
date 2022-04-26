@@ -100,9 +100,12 @@
                         <div class="col-md-4">
                             <label for="assignment_category" class="form-label">assignment category</label>
                             <select id="assignment_category" class="form-select">
-                                <option>quiz</option>
-                                <option>disscusion</option>
-                                <option>homework</option>
+                                <option>Quiz</option>
+                                <option>Test</option>
+                                <option>Essay</option>
+                                <option>Discussion</option>
+                                <option>Homework</option>
+                                <option>In-Class</option>
                             </select>
                         </div>
                         <div class="col-12">
@@ -143,9 +146,11 @@
             due_date: getValue("due_date"),
             assignment_category: dropdown.options[dropdown.selectedIndex].text,
           });
-          if (resp.success === false)
-            return showMessage("student", "danger", resp.message || "There was an error");
-          document.location = `teacher-course.html?id=${getValue("section_id")}`;
+          if (resp.success === false){
+            return showMessage("danger", resp.message || "There was an error");
+          }  else {
+            document.location = `teacher-course.html?id=${getValue("section_id")}`;
+          }
         } catch (e) {
           showMessage("danger", "The assignment could not be created. Please ensure all fields are filled in and valid.");
         }
