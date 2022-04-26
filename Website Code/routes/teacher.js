@@ -199,27 +199,41 @@ const AssignmentSchema = {
 
 //create assignments
 router.post('/assignments', auth.verifySessionAndRole("teacher"), validate({ body: AssignmentSchema }), function (req, res, next) {
-  // step 1
   query("select assignment_id from Assignments where assignment_id = ?", [
-    req.body.assignemnt_id,
+    req.body.assignment_id
   ], data => {
     if (data.length !== 0) {
-      // account with email already exists
+      // assignment with ID already exists
       return res.send({ success: false, message: "Assignment already exists with this ID" });
     }
-
+    //Create assignment entry
     query("insert into Assignments (assignment_id, section_id, name, points_possible, description, due_date, assignment_category) values (?, ?, ?, ?, ?, ?, ?)",
-        [
-          req.body.assignment_id,
+      [
+        req.body.assignment_id,
+        req.body.section_id,
+        req.body.name,
+        req.body.points_possible,
+        req.body.description,
+        req.body.due_date,
+        req.body.assignment_category
+      ], assignment => {
+        //create grades entries
+        query(`SELECT student_id FROM Section_Registrations where section_id = ?`, [
           req.body.section_id,
-          req.body.name, 
-          req.body.points_possible,
-          req.body.description,
-          req.body.due_date,
-          req.body.assignment_category
-        ], data => { 
-          return res.send({ success: true });
+        ], students => {
+          var queryText = 'INSERT INTO Grades (student_id, assignment_id) VALUES ';
+          for (let x of students) {
+            queryText += '(' + x.student_id + ', ' + req.body.assignment_id + '),';
+          }
+          queryText = queryText.slice(0, -1) + ";";
+          query(queryText, [], grades => {
+            if (grades.length === 0) {
+              return res.send({ success: false, message: "Error occured assigning students to assignment. Please contact the help desk." });
+            }
+            return res.send({ success: true, message: "Success" });
+          });
         });
+      });
   });
 });
 
@@ -241,11 +255,11 @@ const MeetingSchema = {
 router.post('/Attendance_Meetings', auth.verifySessionAndRole("teacher"), validate({ body: MeetingSchema }), function (req, res, next) {
 
   query("insert into Assignments (section_id, date) values (?, ?)",
-        [
-          req.body.section_id,
-          req.body.date
-        ]);
-  });
+    [
+      req.body.section_id,
+      req.body.date
+    ]);
+});
 
 
 //attendance
@@ -265,10 +279,10 @@ const AttendanceSchema = {
 
 router.post('/Attendance_Records', auth.verifySessionAndRole("teacher"), validate({ body: AttendanceSchema }), function (req, res, next) {
   query("insert into Assignments (user_id,attendance_id) values (?,?)",
-      [
-        req.body.attendance_id,
-        req.body.user_id
-      ]);
+    [
+      req.body.attendance_id,
+      req.body.user_id
+    ]);
 });
 
 module.exports = router;
